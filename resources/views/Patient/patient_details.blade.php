@@ -83,17 +83,18 @@
                                     <td class="font-weight-bold">Referred By</td>
                                     <td class="text-center">:</td>
                                     <td>
-                                        @if ($patient->referred_by == 'none')
+                                        @php $refName = optional($patient->referral)->name; @endphp
+                                        @if (empty($patient->referred_by) || $patient->referred_by === 'none' || $refName === null)
                                             None
                                         @else
-                                            {{ $patient->referral->name }}
+                                            {{ $refName }}
                                         @endif
                                     </td>
                                 </tr>
                                 <tr>
                                     <td class="font-weight-bold">Register By</td>
                                     <td class="text-center">:</td>
-                                    <td>{{ $patient->registerd_by }}</td>
+                                    <td>{{ optional($patient->user)->name ?? $patient->registerd_by ?? 'N/A' }}</td>
                                 </tr>
                                 {{-- <tr>
                                     <td class="font-weight-bold">Approved By</td>

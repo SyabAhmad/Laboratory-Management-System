@@ -36,13 +36,20 @@ class LabTestCatController extends Controller
      */
     public function store(Request $request)
     {
-        $labtest = new LabTestCat;
-        $labtest->cat_name =$request->cat_name;
-        $labtest->department =$request->department;
-        $labtest->price =$request->price;
-        $labtest->status = 1;
-        $labtest->save();
-        return response()->json(['success'=>'Data Add successfully.']);
+        $request->validate([
+            'cat_name'   => 'required|string|max:191',
+            'department' => 'nullable|string|max:191',
+            'price'      => 'nullable|numeric',
+        ]);
+
+        $labtest = LabTestCat::create([
+            'cat_name'   => $request->input('cat_name'),
+            'department' => $request->input('department'),
+            'price'      => $request->input('price', 0),
+            'status'     => 1,
+        ]);
+
+        return response()->json(['success' => 'Data added successfully.', 'data' => $labtest]);
     }
 
     /**
@@ -77,12 +84,19 @@ class LabTestCatController extends Controller
      */
     public function update(Request $request)
     {
-        $labtest = LabTestCat::find($request->id);
-        $labtest->cat_name = $request->input('cat_name1');
-        $labtest->department = $request->input('department1');
-        $labtest->price = $request->input('price1');
-        $labtest->update();
-        return response()->json($labtest);
+        $validated = $request->validate([
+            'id'        => 'required|integer|exists:labtest,id',
+            'test_name' => 'required_without:cat_name|string|max:191',
+            'cat_name'  => 'required_without:test_name|string|max:191',
+            'price'     => 'nullable|numeric',
+        ]);
+
+        $labtest = LabTestCat::find($validated['id']);
+        $labtest->test_name = $request->input('test_name', $request->input('cat_name'));
+        $labtest->price     = $validated['price'] ?? $labtest->price;
+        $labtest->save();
+
+        return response()->json(['success' => 'Data updated successfully.', 'data' => $labtest]);
     }
 
     /**

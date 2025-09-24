@@ -22,19 +22,9 @@ class PatientsController extends Controller
             $data = Patients::orderBy('id', 'DESC')->get();
             return DataTables::of($data)
                 ->addIndexColumn()
-                // ->addColumn('status', function ($item) {
-                //     $togolebutton = '<input ' . ($item->users->status == "Active" ? "checked" : "") .' type="checkbox" class="status" id="status" data-id="'.$item->user_id.'" />';
-                //     $togolebutton .= '<script>
-                //                         $(".status").bootstrapToggle({
-                //                             on: "Active",
-                //                             off: "Pending",
-                //                             onstyle: "success",
-                //                             offstyle: "danger",
-                //                             size: "small"
-                //                         });
-                //                     </script>';
-                //     return $togolebutton;
-                // })
+                ->addColumn('age', function ($row) {
+                    return $row->age;
+                })
                 ->addColumn('action', function ($row) {
                     $btn = '<a href="javascript:void(0);" class="btn btn-warning btn-sm editbtn" data-id="' . $row->id . '"><i class="fas fa-edit"></i></a>';
                     $btn .= '&nbsp&nbsp<a href='.(route("patients.profile", $row->id)).' class="btn btn-info btn-sm detailsview" data-id="' . $row->id . '"><i class="fas fa-eye"></i></a>';
@@ -65,41 +55,39 @@ class PatientsController extends Controller
      */
     public function store(Request $request)
     {
-        // $user = new User;
-        // $user->name = $request->name;
-        // $user->email = $request->email;
-        // $user->password = Hash::make($request->password);
-        // $user->user_type = 'patient';
-        // $user->status = 'Pending';
-        // if($request->hasFile('image')){
-        //     $image = $request->file('image');
-        //     $image_name = rand(0,100).'_'.$image->getClientOriginalName();
-        //     $image->move(public_path().'/assets/HMS/patient/',$image_name);
-        //     $user->profile_photo_path = $image_name;
-        // }
-        // $user->save();
-        $patientcount = Patients::get()->count();
+        // basic validation (add rules you need)
+        $request->validate([
+            'name' => 'required|string|max:191',
+            'mobile_phone' => 'nullable|string|max:50',
+            'dob' => 'nullable|date',
+            // add other validation rules as required
+        ]);
+
+        $patientcount = Patients::count();
+
         $patient = new Patients;
-        // $patient->user_id = 0;
-        $patient->patient_id = date('Ym').'0'.$patientcount + 1;
+        // ensure proper concatenation and arithmetic
+        $patient->patient_id = date('Ym') . '0' . ($patientcount + 1);
+        // associate currently authenticated user so $patient->user is not null in views
+        $patient->user_id = Auth::id();
+
         $patient->name = $request->name;
         $patient->mobile_phone = $request->mobile_phone;
         $patient->address = $request->address;
         $patient->gender = $request->gender;
-        // $patient->lmp = $request->lmp;
         $patient->dob = $request->dob;
-        $patient->blood_group = $request->blood_group ?? null; 
+        $patient->blood_group = $request->blood_group ?? null;
         $patient->note = $request->note;
         $patient->bp = $request->bp;
         $patient->height = $request->height;
         $patient->weight = $request->weight;
         $patient->referred_by = $request->referred_by && $request->referred_by !== 'none'
-    ? $request->referred_by 
-    : null;
-        $patient->registerd_by = Auth::user()->name;
+            ? $request->referred_by
+            : null;
+        $patient->registerd_by = Auth::user() ? Auth::user()->name : null;
         $patient->save();
-        return redirect()->route('patients.list');
 
+        return redirect()->route('patients.list');
     }
 
     public function statuschange($id, Request $request)
@@ -117,8 +105,9 @@ class PatientsController extends Controller
      */
     public function show($id)
     {
-        $patient = Patients::find($id);
-        return view('Patient.patient_details',compact('patient'));
+        // fail fast if not found and eager-load related models used by the view
+        $patient = Patients::with(['user', 'referral'])->findOrFail($id);
+        return view('Patient.patient_details', compact('patient'));
     }
 
     /**
@@ -127,9 +116,15 @@ class PatientsController extends Controller
      * @param  \App\Models\Patients  $patients
      * @return \Illuminate\Http\Response
      */
-    public function edit(Patients $patients)
+    public function edit($id)
     {
-        //
+        $patient = Patients::findOrFail($id);
+
+        if (request()->ajax()) {
+            return response()->json($patient);
+        }
+
+        return view('Patient.edit', compact('patient'));
     }
 
     /**
