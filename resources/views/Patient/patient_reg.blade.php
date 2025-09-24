@@ -120,27 +120,28 @@
                                 </div>
                             </div>
 
-                            <div class="form-group row">
+                            <!-- <div class="form-group row">
                                 <label for="height" class="col-sm-4 col-form-label">Height</label>
                                 <div class="col-sm-7">
                                     <input type="text" parsley-type="text" class="form-control" id="lmp"
                                         name="height" placeholder="201.2">
                                 </div>
-                            </div>
+                            </div> -->
 
-                            <div class="form-group row">
+                            <!-- <div class="form-group row">
                                 <label for="weight" class="col-sm-4 col-form-label">Weight</label>
                                 <div class="col-sm-7">
                                     <input type="text" parsley-type="text" class="form-control" id="weight"
                                         name="weight" placeholder="170.5">
                                 </div>
-                            </div>
+                            </div> -->
 
                             <div class="form-group row">
-                                <label for="bp" class="col-sm-4 col-form-label">Blood pressure</label>
+                                <!-- replaced blood pressure input with test category submission fields -->
+                                <input type="hidden" name="test_category" id="test_category" value="">
+                                <label class="col-sm-4 col-form-label">Selected Tests</label>
                                 <div class="col-sm-7">
-                                    <input type="text" parsley-type="text" class="form-control" id="bp"
-                                        name="bp" placeholder="80/120">
+                                    <input type="text" readonly id="selected_tests_display" class="form-control" placeholder="No tests selected">
                                 </div>
                             </div>
 
@@ -162,16 +163,59 @@
                             <div class="form-group row">
                                 <label for="referred_by" class="col-sm-4 col-form-label">Referred By<span
                                         class="text-danger">*</span></label>
-                                <div class="col-sm-7">
-                                    <select class="form-control" id="referred_by" required name="referred_by">
-                                        <option selected value="none">None</option>
-                                        @foreach (App\Models\Referrals::get() as $item)
-                                            <option value={{ $item->id }}>{{ $item->name }}</option>
-                                        @endforeach
+                                    <div class="col-sm-7">
+                                    <input type="text" parsley-type="text" class="form-control" id="referred_by"
+                                        name="referred_by" placeholder="Referred By">
+                                </div>
+                                
+                            </div>
 
-                                    </select>
+                            <!-- Test Categories Section -->
+                            <div class="form-group row">
+                                <label class="col-sm-4 col-form-label">Test Categories<span class="text-danger">*</span></label>
+                                <div class="col-sm-7">
+                                    <div class="checkbox-group">
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" name="tests[]" value="Blood Test" id="test1">
+                                            <label class="form-check-label" for="test1">Blood Test</label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" name="tests[]" value="Urine Test" id="test2">
+                                            <label class="form-check-label" for="test2">Urine Test</label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" name="tests[]" value="X-Ray" id="test3">
+                                            <label class="form-check-label" for="test3">X-Ray</label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" name="tests[]" value="ECG" id="test4">
+                                            <label class="form-check-label" for="test4">ECG</label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" name="tests[]" value="MRI" id="test5">
+                                            <label class="form-check-label" for="test5">MRI</label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" name="tests[]" value="CT Scan" id="test6">
+                                            <label class="form-check-label" for="test6">CT Scan</label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" name="tests[]" value="Ultrasound" id="test7">
+                                            <label class="form-check-label" for="test7">Ultrasound</label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" name="tests[]" value="Laboratory Test" id="test8">
+                                            <label class="form-check-label" for="test8">Laboratory Test</label>
+                                        </div>
+                                        <!-- Add more test options as needed -->
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" name="tests[]" value="Other" id="test9">
+                                            <label class="form-check-label" for="test9">Other</label>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
+                            <!-- End Test Categories Section -->
 
                             <div class="form-group row">
                                 <label for="address" class="col-sm-4 col-form-label">Note</label>
@@ -196,4 +240,29 @@
             </div>
         </div>
     </div>
+@endsection
+
+<!-- add JS to collect checkbox values into the hidden test_category field -->
+@section('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.querySelector('form[method="POST"]');
+    const checkboxes = Array.from(document.querySelectorAll('input[name="tests[]"]'));
+    const hidden = document.getElementById('test_category');
+    const display = document.getElementById('selected_tests_display');
+
+    function updateTests() {
+        const values = checkboxes.filter(cb => cb.checked).map(cb => cb.value);
+        hidden.value = values.join(','); // you will adapt migration to accept this
+        display.value = values.length ? values.join(', ') : '';
+    }
+
+    checkboxes.forEach(cb => cb.addEventListener('change', updateTests));
+    updateTests();
+
+    form.addEventListener('submit', function () {
+        updateTests(); // ensure hidden input is populated before submit
+    });
+});
+</script>
 @endsection

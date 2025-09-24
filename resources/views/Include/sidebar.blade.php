@@ -33,19 +33,19 @@
                             </a>
                         </li>
 
-                        <li>
+                        <!-- <li>
                             <a href="{{ route('user') }}">
                                 <i class="fas fa-users"></i>
                                 <span> Users </span>
                             </a>
-                        </li>
+                        </li> -->
 
-                        <li>
+                        <!-- <li>
                             <a href="{{ route('employees') }}">
                                 <i class="fas fa-user-friends"></i>
                                 <span> Employee </span>
                             </a>
-                        </li>
+                        </li>-->
                         <li>
                             <a href="{{ route('activities') }}">
                                 <i class="fas fa-user-friends"></i>
@@ -53,12 +53,12 @@
                             </a>
                         </li>
 
-                        <li>
+                        <!-- <li>
                             <a href="{{ route('Attendance') }}">
                                 <i class="fas fa-user-friends"></i>
                                 <span> Attendance </span>
                             </a>
-                        </li>
+                        </li> -->
 
                         <li>
                             <a href="javascript: void(0);">
@@ -83,7 +83,7 @@
                             </a>
                         </li>
 
-                        <li>
+                        <!-- <li>
                             <a href="javascript: void(0);">
                                 <i class="fas fa-boxes"></i>
                                 <span> Inventory Managemen </span>
@@ -97,7 +97,7 @@
                                     <a href="{{ route('inventories.history') }}">Purchase History</a>
                                 </li>
                             </ul>
-                        </li>
+                        </li> -->
 
                         <li>
                             <a href="{{ route('referrels.list') }}">
@@ -123,33 +123,33 @@
                             </ul>
                         </li>
 
-                        <li>
+                        <!-- <li>
                             <a href="{{ route('pathology') }}">
                                 <i class="fas fa-vial"></i>
                                 <span> Pathology </span>
                             </a>
-                        </li>
+                        </li> -->
 
-                        <li>
+                        <!-- <li>
                             <a href="{{ route('radiology') }}">
                                 <i class="fas fa-skeleton"></i>
                                 <span> Radiology </span>
                             </a>
-                        </li>
+                        </li> -->
 
-                        <li>
+                        <!-- <li>
                             <a href="{{ route('Electrocardiography') }}">
                                 <i class="fas fa-monitor-heart-rate"></i>
                                 <span> Electrocardiography </span>
                             </a>
-                        </li>
+                        </li> -->
 
-                        <li>
+                        <!-- <li>
                             <a href="{{ route('ultrasonography') }}">
                                 <i class="fas fa-monitor-heart-rate"></i>
                                 <span> Ultrasonography </span>
                             </a>
-                        </li>
+                        </li> -->
 
                         <li>
                             <a href="{{ route('reportbooth') }}">

@@ -19,14 +19,14 @@ class CreatePatientsTable extends Migration
             $table->string('gender')->nullable();
             $table->string('blood_group')->nullable();
             $table->text('note')->nullable();
-            $table->string('bp')->nullable();
-            $table->string('height')->nullable();
-            $table->string('weight')->nullable();
+            $table->json('test_category')->nullable();
+            $table->json('test_report')->nullable();
+
             $table->string('registerd_by')->nullable();
-            $table->unsignedBigInteger('referred_by')->nullable();
+            $table->string('referred_by')->nullable();
             $table->timestamps();
 
-            $table->foreign('referred_by')->references('id')->on('referrals')->onDelete('set null');
+            // $table->foreign('referred_by')->references('id')->on('referrals')->onDelete('set null');
         });
     }
 

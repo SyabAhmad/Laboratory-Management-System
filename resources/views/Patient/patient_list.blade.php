@@ -36,6 +36,7 @@
                                 <th>Phone</th>
                                 <th>Age</th>
                                 <th>Gender</th>
+                                <th>Referred By</th>
                                 <th>Blood Group</th>
                                 <th>Action</th>
                             </tr>
@@ -77,7 +78,12 @@
                 }, {
                     data: 'gender',
                     name: 'gender'
-                }, {
+                },
+                {
+                    data: 'referred_by',
+                    name: 'referred_by'
+                },
+                 {
                     data: 'blood_group',
                     name: 'blood_group'
                 }, {
