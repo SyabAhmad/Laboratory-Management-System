@@ -25,6 +25,10 @@ class Patients extends Model
         // ...add other fields from your patients table
     ];
 
+    protected $casts = [
+        'test_category' => 'array',
+    ];
+
     // append computed attributes to arrays / JSON
     // protected $appends = ['age'];
 
@@ -38,7 +42,8 @@ class Patients extends Model
 
     public function referral()
     {
-        return $this->belongsTo(Referrals::class, 'referred_by');
+        // return $this->belongsTo(Referrals::class, 'referred_by');
+        return $this->belongsTo(Bill::class, 'referred_by');
     }
 
     // patient usually has many bills

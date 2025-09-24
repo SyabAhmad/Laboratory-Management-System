@@ -78,12 +78,10 @@ class PatientsController extends Controller
         $patient->age = $request->age;
         $patient->blood_group = $request->blood_group ?? null;
         $patient->note = $request->note;
-        $patient->bp = $request->bp;
-        $patient->height = $request->height;
-        $patient->weight = $request->weight;
-        $patient->referred_by = $request->referred_by && $request->referred_by !== 'none'
-            ? $request->referred_by
-            : null;
+        // $patient->test_report = $request->test_report;
+        $patient->referred_by = $request->referred_by;
+        // store selected tests as JSON array
+        $patient->test_category = $request->input('tests') ? json_encode($request->input('tests')) : null;
         $patient->registerd_by = Auth::user() ? Auth::user()->name : null;
         $patient->save();
 
