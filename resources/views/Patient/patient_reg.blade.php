@@ -77,10 +77,11 @@
                             </div>
 
                             <div class="form-group row">
-                                <label for="age" class="col-sm-4 col-form-label">Date Of Birth</label>
+                                <label for="age" class="col-sm-4 col-form-label">Age<span
+                                        class="text-danger">*</span></label>
                                 <div class="col-sm-7">
-                                    <input type="date" parsley-type="text" class="form-control" id="name"
-                                        name="dob">
+                                    <input type="number" parsley-type="text" class="form-control" id="age"
+                                        name="age">
                                 </div>
                             </div>
 

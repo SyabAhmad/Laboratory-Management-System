@@ -59,7 +59,7 @@ class PatientsController extends Controller
         $request->validate([
             'name' => 'required|string|max:191',
             'mobile_phone' => 'nullable|string|max:50',
-            'dob' => 'nullable|date',
+            'age' => 'nullable|string|max:3',
             // add other validation rules as required
         ]);
 
@@ -75,7 +75,7 @@ class PatientsController extends Controller
         $patient->mobile_phone = $request->mobile_phone;
         $patient->address = $request->address;
         $patient->gender = $request->gender;
-        $patient->dob = $request->dob;
+        $patient->age = $request->age;
         $patient->blood_group = $request->blood_group ?? null;
         $patient->note = $request->note;
         $patient->bp = $request->bp;

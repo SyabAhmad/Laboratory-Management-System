@@ -16,7 +16,7 @@ class Patients extends Model
     protected $fillable = [
         'first_name',
         'last_name',
-        'dob',
+        'age',
         'gender',
         'phone',
         'email',
@@ -26,7 +26,7 @@ class Patients extends Model
     ];
 
     // append computed attributes to arrays / JSON
-    protected $appends = ['age'];
+    // protected $appends = ['age'];
 
     // public function users(){
     //     return $this->belongsTo(User::class, 'user_id');
@@ -48,12 +48,12 @@ class Patients extends Model
     }
 
     // computed age accessor
-    public function getAgeAttribute()
-    {
-        if (empty($this->dob)) {
-            return null;
-        }
+    // public function getAgeAttribute()
+    // {
+    //     if (empty($this->dob)) {
+    //         return null;
+    //     }
 
-        return Carbon::parse($this->dob)->age;
-    }
+    //     return Carbon::parse($this->dob)->age;
+    // }
 }
