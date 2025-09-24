@@ -133,6 +133,24 @@
                     }
                 });
             });
+
+            // open edit modal
+            $('body').on('click', '.editbtn', function() {
+                var id = $(this).data('id');
+                if (!id) { console.error('editbtn missing data-id'); return; }
+
+                // build URL without relying on a named route
+                var url = "{{ url('patients') }}/" + id + "/edit";
+
+                $.get(url)
+                  .done(function(res) {
+                    // populate modal fields...
+                    $('#editPatientModal').modal('show');
+                  })
+                  .fail(function(xhr) {
+                    console.error('Failed to load patient:', xhr.status, xhr.responseText);
+                  });
+            });
         });
 
 
