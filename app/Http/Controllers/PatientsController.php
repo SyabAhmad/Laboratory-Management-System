@@ -57,10 +57,14 @@ class PatientsController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:191',
-            'mobile_phone' => 'nullable|string|max:50',
-            'age' => 'nullable|string|max:3',
+            'mobile_phone' => 'required|string|max:50',
+            'address' => 'required|string',
+            'gender' => 'required|string',
+            'age' => 'required|string|max:3',
             'receiving_date' => 'required|date',
             'reporting_date' => 'required|date',
+            'test_category'   => 'required|array|min:1',
+            'test_category.*' => 'string|max:255',
         ]);
 
         $patientcount = Patients::count();
@@ -79,7 +83,10 @@ class PatientsController extends Controller
         $patient->reporting_date = $request->reporting_date;
         $patient->note = $request->note;
         $patient->referred_by = $request->referred_by;
-        $patient->test_category = $request->input('test_category');
+        
+        // Convert array to JSON for storage
+        $patient->test_category = json_encode($request->test_category);
+        
         $patient->registerd_by = Auth::user() ? Auth::user()->name : null;
         $patient->save();
 
@@ -115,6 +122,18 @@ class PatientsController extends Controller
     public function edit($id)
     {
         $patient = Patients::findOrFail($id);
+        
+        // Decode test_category if it's JSON
+        if (!empty($patient->test_category)) {
+            $patient->test_category_array = json_decode($patient->test_category, true);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                // If it's not valid JSON, try to split by comma
+                $patient->test_category_array = array_map('trim', explode(',', $patient->test_category));
+            }
+        } else {
+            $patient->test_category_array = [];
+        }
+        
         return view('Patient.patient_edit', compact('patient'));
     }
 

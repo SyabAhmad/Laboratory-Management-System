@@ -1,4 +1,3 @@
-
 @extends('Layout.master')
 @section('title', 'Edit Patient')
 
@@ -108,7 +107,7 @@
 
                                 <div class="form-group">
                                     <label for="receiving_date">Receiving Date <span class="text-danger">*</span></label>
-                                    <input type="date" class="form-control @error('receiving_date') is-invalid @enderror" id="receiving_date" name="receiving_date" value="{{ old('receiving_date', $patient->receiving_date) }}" required>
+                                    <input type="date" class="form-control @error('receiving_date') is-invalid @enderror" id="receiving_date" name="receiving_date" value="{{ old('receiving_date', $patient->receiving_date ? $patient->receiving_date->format('Y-m-d') : '') }}" required>
                                     @error('receiving_date')
                                         <span class="invalid-feedback">{{ $message }}</span>
                                     @enderror
@@ -116,7 +115,7 @@
 
                                 <div class="form-group">
                                     <label for="reporting_date">Reporting Date <span class="text-danger">*</span></label>
-                                    <input type="date" class="form-control @error('reporting_date') is-invalid @enderror" id="reporting_date" name="reporting_date" value="{{ old('reporting_date', $patient->reporting_date) }}" required>
+                                    <input type="date" class="form-control @error('reporting_date') is-invalid @enderror" id="reporting_date" name="reporting_date" value="{{ old('reporting_date', $patient->reporting_date ? $patient->reporting_date->format('Y-m-d') : '') }}" required>
                                     @error('reporting_date')
                                         <span class="invalid-feedback">{{ $message }}</span>
                                     @enderror
@@ -152,7 +151,22 @@
                     <h4 class="header-title mb-3">Selected Tests</h4>
                     
                     @php
-                        $selectedTests = $patient->test_category ? explode(',', $patient->test_category) : [];
+                        // Handle both JSON array and comma-separated string
+                        $selectedTests = [];
+                        if (!empty($patient->test_category)) {
+                            if (is_array($patient->test_category)) {
+                                $selectedTests = $patient->test_category;
+                            } elseif (is_string($patient->test_category)) {
+                                // Try to decode as JSON first
+                                $decoded = json_decode($patient->test_category, true);
+                                if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                                    $selectedTests = $decoded;
+                                } else {
+                                    // Fall back to comma-separated
+                                    $selectedTests = array_map('trim', explode(',', $patient->test_category));
+                                }
+                            }
+                        }
                     @endphp
 
                     @if(count($selectedTests) > 0)
@@ -168,7 +182,7 @@
                                 </thead>
                                 <tbody>
                                     @foreach($selectedTests as $index => $test)
-                                        @if(trim($test))
+                                        @if(!empty(trim($test)))
                                             <tr>
                                                 <td>{{ $index + 1 }}</td>
                                                 <td>{{ trim($test) }}</td>
@@ -252,52 +266,54 @@
 
 @section('scripts')
 <script>
-    // Handle Add Test Data button click
-    $('.add-test-data-btn').on('click', function() {
-        var testName = $(this).data('test-name');
-        var patientId = $(this).data('patient-id');
-        
-        $('#test_patient_id').val(patientId);
-        $('#test_name').val(testName);
-        $('#display_test_name').val(testName);
-    });
+    $(document).ready(function() {
+        // Handle Add Test Data button click
+        $('.add-test-data-btn').on('click', function() {
+            var testName = $(this).data('test-name');
+            var patientId = $(this).data('patient-id');
+            
+            $('#test_patient_id').val(patientId);
+            $('#test_name').val(testName);
+            $('#display_test_name').val(testName);
+        });
 
-    // Handle Test Data Form submission
-    $('#testDataForm').on('submit', function(e) {
-        e.preventDefault();
-        
-        var formData = $(this).serialize();
-        
-        $.ajax({
-            type: 'POST',
-            url: '{{ route("patients.test.data.store") }}',
-            data: formData,
-            success: function(response) {
-                $('#testDataModal').modal('hide');
-                $('#testDataForm')[0].reset();
-                
-                Swal.fire({
-                    title: 'Success!',
-                    text: 'Test data saved successfully',
-                    icon: 'success',
-                    showConfirmButton: false,
-                    timer: 1500
-                });
-                
-                // Reload the page to show updated data
-                setTimeout(function() {
-                    location.reload();
-                }, 1500);
-            },
-            error: function(xhr) {
-                Swal.fire({
-                    title: 'Error!',
-                    text: 'Failed to save test data',
-                    icon: 'error',
-                    showConfirmButton: false,
-                    timer: 1500
-                });
-            }
+        // Handle Test Data Form submission
+        $('#testDataForm').on('submit', function(e) {
+            e.preventDefault();
+            
+            var formData = $(this).serialize();
+            
+            $.ajax({
+                type: 'POST',
+                url: '{{ route("patients.test.data.store") }}',
+                data: formData,
+                success: function(response) {
+                    $('#testDataModal').modal('hide');
+                    $('#testDataForm')[0].reset();
+                    
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'Test data saved successfully',
+                        icon: 'success',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                    
+                    // Reload the page to show updated data
+                    setTimeout(function() {
+                        location.reload();
+                    }, 1500);
+                },
+                error: function(xhr) {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Failed to save test data',
+                        icon: 'error',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                }
+            });
         });
     });
 </script>

@@ -33,6 +33,7 @@ class Patients extends Model
     protected $casts = [
         'receiving_date' => 'date',
         'reporting_date' => 'date',
+        'test_category' => 'array', // Cast to array automatically
     ];
 
     // append computed attributes to arrays / JSON
