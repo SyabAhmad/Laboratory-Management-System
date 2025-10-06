@@ -52,6 +52,101 @@
 
     </div> <!-- container -->
 
+    <!-- Edit Patient Modal -->
+    <div class="modal fade" id="editPatientModal" tabindex="-1" aria-labelledby="editPatientModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editPatientModalLabel">Edit Patient</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="editPatientForm">
+                    @csrf
+                    @method('PUT')
+                    <input type="hidden" id="edit_patient_id" name="patient_id">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="edit_name">Full Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="edit_name" name="name" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="edit_mobile_phone">Mobile Number <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="edit_mobile_phone" name="mobile_phone" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="edit_gender">Gender <span class="text-danger">*</span></label>
+                                    <select class="form-control" id="edit_gender" name="gender" required>
+                                        <option value="">Choose One Option</option>
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="edit_age">Age <span class="text-danger">*</span></label>
+                                    <input type="number" class="form-control" id="edit_age" name="age" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="edit_blood_group">Blood Group</label>
+                                    <select class="form-control" id="edit_blood_group" name="blood_group">
+                                        <option value="">Choose One Option</option>
+                                        <option value="A+">A+</option>
+                                        <option value="A-">A-</option>
+                                        <option value="B+">B+</option>
+                                        <option value="B-">B-</option>
+                                        <option value="O+">O+</option>
+                                        <option value="O-">O-</option>
+                                        <option value="AB+">AB+</option>
+                                        <option value="AB-">AB-</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="edit_address">Address <span class="text-danger">*</span></label>
+                                    <textarea class="form-control" id="edit_address" name="address" rows="3" required></textarea>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="edit_receiving_date">Receiving Date <span class="text-danger">*</span></label>
+                                    <input type="date" class="form-control" id="edit_receiving_date" name="receiving_date" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="edit_reporting_date">Reporting Date <span class="text-danger">*</span></label>
+                                    <input type="date" class="form-control" id="edit_reporting_date" name="reporting_date" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="edit_referred_by">Referred By</label>
+                                    <input type="text" class="form-control" id="edit_referred_by" name="referred_by">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="edit_note">Note</label>
+                                    <textarea class="form-control" id="edit_note" name="note" rows="3"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Update Patient</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script>
         $(function() {
             var table = $('.patitent_datatable').DataTable({
@@ -96,16 +191,18 @@
                     'copy', 'excel', 'pdf'
                 ]
             });
+
+            // Delete button handler
             $('body').on('click', '.deletebtn', function() {
                 var id = $(this).data("id");
                 Swal.fire({
                     title: 'Are you sure?',
-                    text: "If You Remove A Employee, This System Also Remove User ID. You Will Not Be Able To Recover It!",
+                    text: "You will not be able to recover this patient record!",
                     icon: "warning",
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',
                     cancelButtonColor: '#d33',
-                    confirmButtonText: 'Yes'
+                    confirmButtonText: 'Yes, delete it!'
                 }).then((result) => {
                     if (result.value === true) {
                         var token = $("meta[name='csrf-token']").attr("content");
@@ -119,46 +216,108 @@
                             success: function(data) {
                                 Swal.fire({
                                     title: 'Deleted!',
-                                    text: 'Your file has been deleted.',
+                                    text: 'Patient record has been deleted.',
                                     icon: 'success',
                                     showConfirmButton: false,
+                                    timer: 1500
                                 });
                                 table.draw();
                             },
                             error: function(data) {
                                 Swal.fire({
-                                    title: 'Alert!',
-                                    text: 'Something Wrong',
-                                    icon: 'alert',
+                                    title: 'Error!',
+                                    text: 'Something went wrong',
+                                    icon: 'error',
                                     showConfirmButton: false,
+                                    timer: 1500
                                 });
-                                // console.log('Error:', data);
                             }
-                        })
-
+                        });
                     }
                 });
             });
 
-            // open edit modal
+            // Edit button handler - open modal and populate fields
             $('body').on('click', '.editbtn', function() {
                 var id = $(this).data('id');
-                if (!id) { console.error('editbtn missing data-id'); return; }
+                if (!id) { 
+                    console.error('editbtn missing data-id'); 
+                    return; 
+                }
 
-                // build URL without relying on a named route
                 var url = "{{ url('patients') }}/" + id + "/edit";
 
                 $.get(url)
-                  .done(function(res) {
-                    // populate modal fields...
-                    $('#editPatientModal').modal('show');
-                  })
-                  .fail(function(xhr) {
-                    console.error('Failed to load patient:', xhr.status, xhr.responseText);
-                  });
+                    .done(function(res) {
+                        // Populate modal fields with patient data
+                        $('#edit_patient_id').val(res.id);
+                        $('#edit_name').val(res.name);
+                        $('#edit_mobile_phone').val(res.mobile_phone);
+                        $('#edit_gender').val(res.gender);
+                        $('#edit_age').val(res.age);
+                        $('#edit_blood_group').val(res.blood_group);
+                        $('#edit_address').val(res.address);
+                        $('#edit_receiving_date').val(res.receiving_date);
+                        $('#edit_reporting_date').val(res.reporting_date);
+                        $('#edit_referred_by').val(res.referred_by);
+                        $('#edit_note').val(res.note);
+                        
+                        // Show the modal
+                        $('#editPatientModal').modal('show');
+                    })
+                    .fail(function(xhr) {
+                        console.error('Failed to load patient:', xhr.status, xhr.responseText);
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'Failed to load patient data',
+                            icon: 'error',
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+                    });
+            });
+
+            // Update patient form submission
+            $('#editPatientForm').on('submit', function(e) {
+                e.preventDefault();
+                
+                var id = $('#edit_patient_id').val();
+                var url = "{{ url('patients') }}/" + id;
+                var formData = new FormData(this);
+                
+                $.ajax({
+                    type: 'POST',
+                    url: url,
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        $('#editPatientModal').modal('hide');
+                        $('#editPatientForm')[0].reset();
+                        
+                        Swal.fire({
+                            title: 'Success!',
+                            text: 'Patient updated successfully',
+                            icon: 'success',
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+                        
+                        table.draw();
+                    },
+                    error: function(xhr) {
+                        console.error('Update failed:', xhr.responseText);
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'Failed to update patient',
+                            icon: 'error',
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+                    }
+                });
             });
         });
-
 
         $(document).on('change', '#status', function() {
             var id = $(this).attr('data-id');
@@ -190,7 +349,6 @@
                     });
                 },
                 error: function(error) {
-                    alert(catstatus);
                     Swal.fire({
                         position: 'top-end',
                         icon: 'error',
@@ -203,6 +361,5 @@
             });
         });
     </script>
-
 
 @endsection

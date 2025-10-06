@@ -26,7 +26,7 @@ class PatientsController extends Controller
                     return $row->age;
                 })
                 ->addColumn('action', function ($row) {
-                    $btn = '<a href="javascript:void(0);" class="btn btn-warning btn-sm editbtn" data-id="' . $row->id . '"><i class="fas fa-edit"></i></a>';
+                    $btn = '<a href="'.route('patients.edit', $row->id).'" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>';
                     $btn .= '&nbsp&nbsp<a href='.(route("patients.profile", $row->id)).' class="btn btn-info btn-sm detailsview" data-id="' . $row->id . '"><i class="fas fa-eye"></i></a>';
                     $btn = $btn . '&nbsp&nbsp<a href="javascript:void(0);" data-id="' . $row->id .'" class="btn btn-danger btn-sm deletebtn"> <i class="fas fa-trash"></i> </a>';
                     return $btn;
@@ -55,20 +55,18 @@ class PatientsController extends Controller
      */
     public function store(Request $request)
     {
-        // basic validation (add rules you need)
         $request->validate([
             'name' => 'required|string|max:191',
             'mobile_phone' => 'nullable|string|max:50',
             'age' => 'nullable|string|max:3',
-            // add other validation rules as required
+            'receiving_date' => 'required|date',
+            'reporting_date' => 'required|date',
         ]);
 
         $patientcount = Patients::count();
 
         $patient = new Patients;
-        // ensure proper concatenation and arithmetic
         $patient->patient_id = date('Ym') . '0' . ($patientcount + 1);
-        // associate currently authenticated user so $patient->user is not null in views
         $patient->user_id = Auth::id();
 
         $patient->name = $request->name;
@@ -77,15 +75,15 @@ class PatientsController extends Controller
         $patient->gender = $request->gender;
         $patient->age = $request->age;
         $patient->blood_group = $request->blood_group ?? null;
+        $patient->receiving_date = $request->receiving_date;
+        $patient->reporting_date = $request->reporting_date;
         $patient->note = $request->note;
-        // $patient->test_report = $request->test_report;
         $patient->referred_by = $request->referred_by;
-        // store selected tests as JSON array
-        $patient->test_category = $request->input('tests') ? json_encode($request->input('tests')) : null;
+        $patient->test_category = $request->input('test_category');
         $patient->registerd_by = Auth::user() ? Auth::user()->name : null;
         $patient->save();
 
-        return redirect()->route('patients.list');
+        return redirect()->route('patients.list')->with('success', 'Patient registered successfully');
     }
 
     public function statuschange($id, Request $request)
@@ -95,58 +93,88 @@ class PatientsController extends Controller
         $user->update();
         return response()->json(['success' => 'Status changed successfully.']);
     }
+
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Patients  $patients
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
-        // fail fast if not found and eager-load related models used by the view
-        $patient = Patients::with(['user', 'referral'])->findOrFail($id);
+        $patient = Patients::with(['user', 'bills'])->findOrFail($id);
         return view('Patient.patient_details', compact('patient'));
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Patients  $patients
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
     {
         $patient = Patients::findOrFail($id);
-
-        if (request()->ajax()) {
-            return response()->json($patient);
-        }
-
-        return view('Patient.edit', compact('patient'));
+        return view('Patient.patient_edit', compact('patient'));
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Patients  $patients
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Patients $patients)
+    public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:191',
+            'mobile_phone' => 'nullable|string|max:50',
+            'age' => 'nullable|string|max:3',
+            'receiving_date' => 'required|date',
+            'reporting_date' => 'required|date',
+        ]);
+
+        $patient = Patients::findOrFail($id);
+        
+        $patient->name = $request->name;
+        $patient->mobile_phone = $request->mobile_phone;
+        $patient->address = $request->address;
+        $patient->gender = $request->gender;
+        $patient->age = $request->age;
+        $patient->blood_group = $request->blood_group ?? null;
+        $patient->receiving_date = $request->receiving_date;
+        $patient->reporting_date = $request->reporting_date;
+        $patient->note = $request->note;
+        $patient->referred_by = $request->referred_by;
+        $patient->save();
+
+        return redirect()->route('patients.edit', $id)->with('success', 'Patient updated successfully');
+    }
+
+    /**
+     * Store test data for a patient
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function storeTestData(Request $request)
+    {
+        // This will be implemented to store test data
+        // For now, just return success
+        return response()->json(['success' => 'Test data saved successfully']);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Patients  $patients
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
-        $employees = Patients::find($id);
-                $employees->delete();
-                return response()->json(['success'=>'Data Delete successfully.']);
+        $patient = Patients::find($id);
+        $patient->delete();
+        return response()->json(['success'=>'Patient deleted successfully.']);
     }
 }

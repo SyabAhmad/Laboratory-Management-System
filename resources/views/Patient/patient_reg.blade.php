@@ -37,22 +37,6 @@
                                         name="name" placeholder="Mr. Jon Rechard">
                                 </div>
                             </div>
-                            {{-- <div class="form-group row">
-                                <label for="email" class="col-sm-4 col-form-label">Email<span
-                                        class="text-danger">*</span></label>
-                                <div class="col-sm-7">
-                                    <input type="email" required parsley-type="text" class="form-control" id="email"
-                                        name="email" placeholder="example@example.com">
-                                </div>
-                            </div> --}}
-
-                            {{-- <div class="form-group row">
-                                <label for="home_phone" class="col-sm-4 col-form-label">Home Phone </label>
-                                <div class="col-sm-7">
-                                    <input type="phone" parsley-type="text" class="form-control" id="home_phone"
-                                        name="home_phone" placeholder="Phone Number">
-                                </div>
-                            </div> --}}
 
                             <div class="form-group row">
                                 <label for="mobile_phone" class="col-sm-4 col-form-label">Mobile Number<span
@@ -109,6 +93,14 @@
                                     </select>
                                 </div>
                             </div>
+
+                            <div class="form-group row">
+                                <label for="receiving_date" class="col-sm-4 col-form-label">Receiving Date<span class="text-danger">*</span></label>
+                                <div class="col-sm-7">
+                                    <input type="date" required class="form-control" id="receiving_date"
+                                        name="receiving_date">
+                                </div>
+                            </div>
                         </div>
 
                         <div class="col-sm-6">
@@ -120,21 +112,13 @@
                                 </div>
                             </div>
 
-                            <!-- <div class="form-group row">
-                                <label for="height" class="col-sm-4 col-form-label">Height</label>
+                            <div class="form-group row">
+                                <label for="reporting_date" class="col-sm-4 col-form-label">Reporting Date<span class="text-danger">*</span></label>
                                 <div class="col-sm-7">
-                                    <input type="text" parsley-type="text" class="form-control" id="lmp"
-                                        name="height" placeholder="201.2">
+                                    <input type="date" required class="form-control" id="reporting_date"
+                                        name="reporting_date">
                                 </div>
-                            </div> -->
-
-                            <!-- <div class="form-group row">
-                                <label for="weight" class="col-sm-4 col-form-label">Weight</label>
-                                <div class="col-sm-7">
-                                    <input type="text" parsley-type="text" class="form-control" id="weight"
-                                        name="weight" placeholder="170.5">
-                                </div>
-                            </div> -->
+                            </div>
 
                             <div class="form-group row">
                                 <!-- replaced blood pressure input with test category submission fields -->
@@ -144,21 +128,6 @@
                                     <input type="text" readonly id="selected_tests_display" class="form-control" placeholder="No tests selected">
                                 </div>
                             </div>
-
-                            {{-- <div class="form-group row">
-                                <label for="salary" class="col-sm-4 col-form-label">Image</label>
-                                <div class="col-sm-7">
-                                    <input type="file" class="form-control border-0" id="image" name="image">
-                                </div>
-                            </div> --}}
-
-                            {{-- <div class="form-group row">
-                                <label for="password" class="col-sm-4 col-form-label">Password<span
-                                        class="text-danger">*</span></label>
-                                <div class="col-sm-7">
-                                    <input type="password" required class="form-control" id="password" name="password">
-                                </div>
-                            </div> --}}
 
                             <div class="form-group row">
                                 <label for="referred_by" class="col-sm-4 col-form-label">Referred By<span
@@ -207,7 +176,6 @@
                                             <input class="form-check-input" type="checkbox" name="tests[]" value="Laboratory Test" id="test8">
                                             <label class="form-check-label" for="test8">Laboratory Test</label>
                                         </div>
-                                        <!-- Add more test options as needed -->
                                         <div class="form-check mb-2">
                                             <input class="form-check-input" type="checkbox" name="tests[]" value="Other" id="test9">
                                             <label class="form-check-label" for="test9">Other</label>
@@ -242,7 +210,6 @@
     </div>
 @endsection
 
-<!-- add JS to collect checkbox values into the hidden test_category field -->
 @section('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
@@ -253,7 +220,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function updateTests() {
         const values = checkboxes.filter(cb => cb.checked).map(cb => cb.value);
-        hidden.value = values.join(','); // you will adapt migration to accept this
+        hidden.value = values.join(',');
         display.value = values.length ? values.join(', ') : '';
     }
 
@@ -261,7 +228,7 @@ document.addEventListener('DOMContentLoaded', function () {
     updateTests();
 
     form.addEventListener('submit', function () {
-        updateTests(); // ensure hidden input is populated before submit
+        updateTests();
     });
 });
 </script>

@@ -120,6 +120,8 @@
                         <tr>
                             <th>Age</th>
                             <th>LMP</th>
+                            <th>Receiving Date</th>
+                            <th>Reporting Date</th>
                             <th>BP</th>
                             <th>Height</th>
                             <th>Weight</th>
@@ -129,6 +131,8 @@
                         <tr>
                             <td>{{ $patient->age }}</td>
                             <td>{{ $patient->lmp }}</td>
+                            <td>{{ $patient->receiving_date ? \Carbon\Carbon::parse($patient->receiving_date)->format('Y-m-d') : 'N/A' }}</td>
+                            <td>{{ $patient->reporting_date ? \Carbon\Carbon::parse($patient->reporting_date)->format('Y-m-d') : 'N/A' }}</td>
                             <td>{{ $patient->bp }}</td>
                             <td>{{ $patient->height }}</td>
                             <td>{{ $patient->weight }}</td>

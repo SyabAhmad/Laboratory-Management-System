@@ -14,19 +14,25 @@ class Patients extends Model
 
     // allow mass assignment for creating patients
     protected $fillable = [
-        'first_name',
-        'last_name',
-        'age',
-        'gender',
-        'phone',
-        'email',
+        'patient_id',
         'user_id',
+        'name',
+        'mobile_phone',
+        'address',
+        'gender',
+        'age',
+        'blood_group',
+        'receiving_date',
+        'reporting_date',
+        'note',
         'referred_by',
-        // ...add other fields from your patients table
+        'test_category',
+        'registerd_by',
     ];
 
     protected $casts = [
-        'test_category' => 'array',
+        'receiving_date' => 'date',
+        'reporting_date' => 'date',
     ];
 
     // append computed attributes to arrays / JSON
@@ -37,19 +43,18 @@ class Patients extends Model
     // }
     public function user()
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class);
     }
 
     public function referral()
     {
-        // return $this->belongsTo(Referrals::class, 'referred_by');
-        return $this->belongsTo(Bill::class, 'referred_by');
+        return $this->belongsTo(User::class, 'referred_by');
     }
 
     // patient usually has many bills
     public function bills()
     {
-        return $this->hasMany(Bill::class, 'patient_id');
+        return $this->hasMany(Bills::class, 'patient_id');
     }
 
     // computed age accessor
