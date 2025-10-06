@@ -59,6 +59,7 @@ Route::middleware(['auth:sanctum', 'verified'])
             // Patients Routes
             Route::get('/patients', 'App\Http\Controllers\PatientsController@index')->name('patients.list');
             Route::get('/new/patients', 'App\Http\Controllers\PatientsController@create')->name('patients.create');
+            
             Route::post('/new/patients/store', 'App\Http\Controllers\PatientsController@store')->name('patients.store');
             Route::get('/patients/status/{id}','App\Http\Controllers\PatientsController@statuschange')->name('patients.status');
             Route::get('/patients/{id}/edit', 'App\Http\Controllers\PatientsController@edit')->name('patients.edit');
@@ -144,4 +145,5 @@ Route::middleware(['auth:sanctum', 'verified'])
 Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [App\Http\Controllers\UserController::class, 'profile'])->name('user.profile');
     Route::put('/profile/update', [App\Http\Controllers\UserController::class, 'updateProfile'])->name('user.profile.update');
+    Route::post('/patients/store-test-data', [App\Http\Controllers\PatientsController::class, 'storeTestData'])->name('patients.storeTestData');
 });

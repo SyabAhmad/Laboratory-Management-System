@@ -27,7 +27,9 @@ class Patients extends Model
         'note',
         'referred_by',
         'test_category',
+        'test_report', // Add this
         'registerd_by',
+        'status',
     ];
 
     protected $casts = [

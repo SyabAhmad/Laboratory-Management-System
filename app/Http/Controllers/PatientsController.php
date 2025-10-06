@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Yajra\DataTables\Facades\DataTables;
 
 class PatientsController extends Controller
@@ -179,9 +180,32 @@ class PatientsController extends Controller
      */
     public function storeTestData(Request $request)
     {
-        // This will be implemented to store test data
-        // For now, just return success
-        return response()->json(['success' => 'Test data saved successfully']);
+        $payload = $request->validate([
+            'patient_id' => 'required|exists:patients,id',
+            'test_name' => 'required|string',
+            'test_data' => 'required|array',
+        ]);
+
+        $patient = Patients::findOrFail($payload['patient_id']);
+
+        $existing = [];
+        if (!empty($patient->test_report)) {
+            $decoded = json_decode($patient->test_report, true);
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                $existing = $decoded;
+            }
+        }
+
+        $existing[$payload['test_name']] = $payload['test_data'];
+
+        $patient->test_report = json_encode($existing, JSON_UNESCAPED_UNICODE);
+        $patient->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Test data saved successfully.',
+            'data' => $existing,
+        ]);
     }
 
     /**
