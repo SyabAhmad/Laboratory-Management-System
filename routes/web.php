@@ -56,11 +56,15 @@ Route::middleware(['auth:sanctum', 'verified'])
             Route::put('/employees/edit/{id}','App\Http\Controllers\EmployeesController@update')->name('employees.update');
             Route::delete('/employees/{id}','App\Http\Controllers\EmployeesController@destroy')->name('employees.destroy');
 
-            // Patients ROutes
+            // Patients Routes
             Route::get('/patients', 'App\Http\Controllers\PatientsController@index')->name('patients.list');
             Route::get('/new/patients', 'App\Http\Controllers\PatientsController@create')->name('patients.create');
+            
             Route::post('/new/patients/store', 'App\Http\Controllers\PatientsController@store')->name('patients.store');
             Route::get('/patients/status/{id}','App\Http\Controllers\PatientsController@statuschange')->name('patients.status');
+            Route::get('/patients/{id}/edit', 'App\Http\Controllers\PatientsController@edit')->name('patients.edit');
+            Route::put('/patients/{id}', 'App\Http\Controllers\PatientsController@update')->name('patients.update');
+            Route::post('/patients/test-data', 'App\Http\Controllers\PatientsController@storeTestData')->name('patients.test.data.store');
             Route::get('/patients/details/{id}','App\Http\Controllers\PatientsController@show')->name('patients.profile');
             Route::delete('/patients/{id}','App\Http\Controllers\PatientsController@destroy')->name('patients.destroy');
 
@@ -98,11 +102,8 @@ Route::middleware(['auth:sanctum', 'verified'])
             Route::get('/reportbooth', 'App\Http\Controllers\ReportGenarationController@reportbooth')->name('reportbooth');
             Route::get('/reportbooth/status/{id}/{status}','App\Http\Controllers\ReportGenarationController@report_statuschange');
             Route::get('/report/details/{id}','App\Http\Controllers\ReportGenarationController@report_details');
-            // Route::get('/expanseledger', 'App\Http\Controllers\ReportGenarationController@expanseledger')->name('expanseledger');
-            // Route::get('/expanseledger/details', 'App\Http\Controllers\ReportGenarationController@expanseledgerdetails')->name('expanseledgerdetails');
 
             //tEST Report  Rout
-
             Route::get('/pathology', 'App\Http\Controllers\XrayReportController@pathology')->name('pathology');
             Route::get('/pathology/testresult/{id}','App\Http\Controllers\XrayReportController@pathologyedit')->name('pathologyedit');
             Route::get('/pathology/inventory/{id}','App\Http\Controllers\XrayReportController@pathologyinstrument')->name('pathologyinstrument');
@@ -120,6 +121,7 @@ Route::middleware(['auth:sanctum', 'verified'])
             Route::get('/Electrocardiography', 'App\Http\Controllers\XrayReportController@Electrocardiography')->name('Electrocardiography');
             Route::get('/Electrocardiography/testresult/{id}','App\Http\Controllers\XrayReportController@Electrocardiographyedit');
             Route::put('/Electrocardiography/result/{id}','App\Http\Controllers\XrayReportController@Electrocardiographyreport');
+
             //Inventories Route
             Route::get('/inventories', 'App\Http\Controllers\InventoriesController@index')->name('inventories');
             Route::get('/inventories/history', 'App\Http\Controllers\InventoriesController@getInventories')->name('inventories.history');
@@ -137,4 +139,11 @@ Route::middleware(['auth:sanctum', 'verified'])
             Route::get('/activities','App\Http\Controllers\DaityActivitiesController@index')->name('activities');
             Route::post('/activities/add','App\Http\Controllers\DaityActivitiesController@store')->name('activities.add');
             Route::put('/activities/update','App\Http\Controllers\DaityActivitiesController@update')->name('activities.update');
+});
+
+// User Profile Routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('/profile', [App\Http\Controllers\UserController::class, 'profile'])->name('user.profile');
+    Route::put('/profile/update', [App\Http\Controllers\UserController::class, 'updateProfile'])->name('user.profile.update');
+    Route::post('/patients/store-test-data', [App\Http\Controllers\PatientsController::class, 'storeTestData'])->name('patients.storeTestData');
 });

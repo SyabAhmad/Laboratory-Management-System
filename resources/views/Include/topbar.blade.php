@@ -29,7 +29,7 @@
                 </div>
 
                 <!-- item-->
-                <a href="javascript:void(0);" class="dropdown-item notify-item" style="color: #ecf0f1; border-bottom: 1px solid #7f8c8d;">
+                <a href="{{ route('user.profile') }}" class="dropdown-item notify-item" style="color: #ecf0f1; border-bottom: 1px solid #7f8c8d;">
                     <i class="dripicons-user" style="color: #3498db;"></i>
                     <span>My Account</span>
                 </a>

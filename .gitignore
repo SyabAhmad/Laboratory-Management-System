@@ -13,3 +13,7 @@ npm-debug.log
 yarn-error.log
 /.idea
 /.vscode
+
+
+#Ignore vscode AI rules
+.github\instructions\codacy.instructions.md

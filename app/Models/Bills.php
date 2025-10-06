@@ -11,10 +11,14 @@ class Bills extends Model
 
     protected $table = 'bills';
 
-    // public function users(){
-    //     return $this->belongsTo(User::class, 'patient_id','id');
-    // }
-    public function patients(){
-        return $this->belongsTo(Patients::class, 'patient_id','id');
+    protected $guarded = []; // adjust as needed, or use $fillable
+
+    /**
+     * Optional: relation back to patient.
+     * Adjust foreign key / model class name if your patients model differs.
+     */
+    public function patient()
+    {
+        return $this->belongsTo(Patients::class, 'patient_id');
     }
 }
