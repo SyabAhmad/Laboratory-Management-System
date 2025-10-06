@@ -180,32 +180,86 @@ class PatientsController extends Controller
      */
     public function storeTestData(Request $request)
     {
-        $payload = $request->validate([
-            'patient_id' => 'required|exists:patients,id',
-            'test_name' => 'required|string',
-            'test_data' => 'required|array',
-        ]);
+        try {
+            Log::info('=== TEST DATA STORE REQUEST STARTED ===');
+            Log::info('Request Method: ' . $request->method());
+            Log::info('Request Content Type: ' . $request->header('Content-Type'));
+            Log::info('All Request Data:', $request->all());
+            Log::info('JSON Input:', $request->json()->all());
+            
+            $request->validate([
+                'patient_id' => 'required|exists:patients,id',
+                'test_name' => 'required|string',
+                'test_data' => 'required|array',
+            ]);
 
-        $patient = Patients::findOrFail($payload['patient_id']);
+            Log::info('Validation passed');
 
-        $existing = [];
-        if (!empty($patient->test_report)) {
-            $decoded = json_decode($patient->test_report, true);
-            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
-                $existing = $decoded;
+            $patient = Patients::findOrFail($request->input('patient_id'));
+            Log::info('Patient found:', ['id' => $patient->id, 'name' => $patient->name]);
+            
+            // Get existing test reports
+            $testReports = [];
+            if (!empty($patient->test_report)) {
+                $decoded = json_decode($patient->test_report, true);
+                if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                    $testReports = $decoded;
+                }
             }
+            
+            Log::info('Existing test reports:', $testReports);
+            
+            // Add or update the test data
+            $testReports[$request->input('test_name')] = $request->input('test_data');
+            
+            Log::info('Updated test reports:', $testReports);
+            
+            // Save back to database as JSON
+            $jsonString = json_encode($testReports);
+            Log::info('JSON string to save:', ['json' => $jsonString]);
+            
+            $patient->test_report = $jsonString;
+            $saved = $patient->save();
+            
+            Log::info('Save result:', ['saved' => $saved]);
+            
+            // Verify the data was saved
+            $patient->refresh();
+            Log::info('Verified saved data:', ['test_report' => $patient->test_report]);
+
+            if (!$saved) {
+                Log::error('Failed to save - save() returned false');
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to save test data'
+                ], 500);
+            }
+
+            Log::info('=== TEST DATA STORE REQUEST COMPLETED SUCCESSFULLY ===');
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Test data saved successfully',
+                'data' => $testReports
+            ]);
+            
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            Log::error('Validation failed:', ['errors' => $e->errors()]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            Log::error('=== ERROR SAVING TEST DATA ===');
+            Log::error('Error message: ' . $e->getMessage());
+            Log::error('Error trace: ' . $e->getTraceAsString());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage()
+            ], 500);
         }
-
-        $existing[$payload['test_name']] = $payload['test_data'];
-
-        $patient->test_report = json_encode($existing, JSON_UNESCAPED_UNICODE);
-        $patient->save();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Test data saved successfully.',
-            'data' => $existing,
-        ]);
     }
 
     /**

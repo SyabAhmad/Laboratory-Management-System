@@ -137,19 +137,20 @@
                                     @if($testCategories->count() > 0)
                                         <div class="row">
                                             @foreach($testCategories as $category)
-                                                <div class="custom-control custom-checkbox">
-                                                    <input type="checkbox"
-                                                           class="custom-control-input"
-                                                           id="test_{{ $category->id }}"
-                                                           name="test_category[]"
-                                                           value="{{ $category->cat_name }}"
-                                                           {{ in_array($category->cat_name, old('test_category', [])) ? 'checked' : '' }}>
-                                                    <label class="custom-control-label" for="test_{{ $category->id }}">
-                                                        {{ $category->cat_name }}
-                                                        @if($category->price)
-                                                            <small class="text-muted">({{ number_format($category->price, 2) }} PKR)</small>
-                                                        @endif
-                                                    </label>
+                                                <div class="col-md-4 col-sm-6 mb-2">
+                                                    <div class="custom-control custom-checkbox">
+                                                        <input type="checkbox" 
+                                                               class="custom-control-input test-checkbox" 
+                                                               id="test_{{ $category->id }}" 
+                                                               value="{{ $category->cat_name }}" 
+                                                               data-price="{{ $category->price }}">
+                                                        <label class="custom-control-label" for="test_{{ $category->id }}">
+                                                            {{ $category->cat_name }}
+                                                            @if($category->price)
+                                                                <small class="text-muted">({{ number_format($category->price, 2) }} PKR)</small>
+                                                            @endif
+                                                        </label>
+                                                    </div>
                                                 </div>
                                             @endforeach
                                         </div>
