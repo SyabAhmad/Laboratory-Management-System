@@ -65,7 +65,7 @@ class PatientsController extends Controller
                     $btn  = '<a href="' . route('patients.edit', $row->id) . '" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>';
                     $btn .= '&nbsp;&nbsp;<a href="' . route("patients.profile", $row->id) . '" class="btn btn-info btn-sm detailsview" data-id="' . $row->id . '"><i class="fas fa-eye"></i></a>';
                     $btn .= '&nbsp;&nbsp;<a href="javascript:void(0);" data-id="' . $row->id . '" class="btn btn-danger btn-sm deletebtn"><i class="fas fa-trash"></i></a>';
-                    $btn .= '&nbsp;&nbsp;<a href="' . route("billing.create", ["patient_id" => $row->id]) . '" class="btn btn-success btn-sm"><i class="fas fa-file-invoice-dollar"></i> Bill</a>';
+                    $btn .= '&nbsp;&nbsp;<a href="' . route("billing.create", ['id' => $row->id]) . '" class="btn btn-success btn-sm"><i class="fas fa-file-invoice-dollar"></i> Bill</a>';
                     return $btn;
                 })
 

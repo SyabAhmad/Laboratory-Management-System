@@ -76,25 +76,28 @@
 
                 <!-- Start col -->
                 <div class="col-sm-4">
-                    <div class="card rounded">
-                        <div class="card-body rounded dashboard-card-body-4">
-                            <div class='px-3 py-3 justify-content-between'>
-                                <div class="row">
-                                    <div class="col-sm-3 my-auto text-center">
-                                        <i class="fas fa-user-injured fa-3x dashboard-card-icon"></i>
-                                    </div>
-                                    <div class="col-sm-9">
-                                        <h4 class="card-title  text-center">Patients </h4>
-                                        <div>
-                                            <p class="text-center dashboard-card-text">
-                                                {{ App\Models\Patients::get()->count() }}</p>
-                                        </div>
-                                    </div>
-                                </div>
+    <a href="{{ route('patients.list') }}" class="text-decoration-none">
+        <div class="card rounded h-100">
+            <div class="card-body rounded dashboard-card-body-4">
+                <div class='px-3 py-3 justify-content-between'>
+                    <div class="row">
+                        <div class="col-sm-3 my-auto text-center">
+                            <i class="fas fa-user-injured fa-3x dashboard-card-icon"></i>
+                        </div>
+                        <div class="col-sm-9">
+                            <h4 class="card-title text-center">Patients</h4>
+                            <div>
+                                <p class="text-center dashboard-card-text">
+                                    {{ App\Models\Patients::get()->count() }}
+                                </p>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </a>
+</div>
                 <!-- end col -->
                 <!-- Start col -->
                 <div class="col-sm-4">

@@ -324,47 +324,65 @@
                     }
                 });
             });
-        });
 
-        $(document).on('change', '#status', function() {
-            var id = $(this).attr('data-id');
-            console.log(id);
-            if (this.checked) {
-                var catstatus = 'Active';
-            } else {
-                var catstatus = 'Pending';
-            }
-            var url = "{{ URL::route('patients.status', '') }}/" + id;
-            $.ajax({
-                dataType: "json",
-                url: url,
-                method: 'get',
-                data: {
-                    'id': id,
-                    'status': catstatus
-                },
-                success: function(result1) {
-                    console.log(result1);
-                    Swal.fire({
-                        position: 'top-end',
-                        icon: 'success',
-                        title: catstatus,
-                        text: "The user's status has been updated",
-                        showConfirmButton: false,
-                        timerProgressBar: true,
-                        timer: 1800
-                    });
-                },
-                error: function(error) {
-                    Swal.fire({
-                        position: 'top-end',
-                        icon: 'error',
-                        title: 'We have some error',
-                        showConfirmButton: false,
-                        timerProgressBar: true,
-                        timer: 1800
-                    });
+            // Bill button - redirect to create bill route
+            $('body').on('click', '.billbtn', function() {
+                var id = $(this).data('id');
+                if (!id) {
+                    console.error('billbtn missing data-id');
+                    return;
                 }
+
+                console.log('Patient ID for billing:', id);
+                
+                // Generate the billing route URL
+                var url = "{{ route('billing.create', '') }}/" + id;
+                
+                // Redirect to billing page
+                window.location.href = url;
+            });
+
+            // Status toggle handler
+            $(document).on('change', '#status', function() {
+                var id = $(this).attr('data-id');
+                console.log(id);
+                if (this.checked) {
+                    var catstatus = 'Active';
+                } else {
+                    var catstatus = 'Pending';
+                }
+                var url = "{{ URL::route('patients.status', '') }}/" + id;
+                $.ajax({
+                    dataType: "json",
+                    url: url,
+                    method: 'get',
+                    data: {
+                        'id': id,
+                        'status': catstatus
+                    },
+                    success: function(result1) {
+                        console.log(result1);
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'success',
+                            title: catstatus,
+                            text: "The user's status has been updated",
+                            showConfirmButton: false,
+                            timerProgressBar: true,
+                            timer: 1800
+                        });
+                    },
+                    error: function(error) {
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'error',
+                            title: 'We have some error',
+                            showConfirmButton: false,
+                            timerProgressBar: true,
+                            timer: 1800
+                        });
+                    }
+                });
             });
         });
     </script>
