@@ -60,6 +60,13 @@ class Patients extends Model
         return $this->hasMany(Bills::class, 'patient_id');
     }
 
+    public function tests()
+    {
+        // Fetch related test categories based on test_category JSON/array column
+        return \App\Models\LabTestCat::whereIn('id', $this->test_category ?? [])->get();
+    }
+
+
     // computed age accessor
     // public function getAgeAttribute()
     // {

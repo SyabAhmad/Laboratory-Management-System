@@ -26,7 +26,7 @@
         @if (Auth::user()->user_type == 'Admin' || Auth::user()->user_type == 'Super Admin')
             <div class="row">
                 <!-- Start col -->
-                <div class="col-sm-4">
+                {{-- <div class="col-sm-4">
                     <div class="card rounded">
                         <a href="#">
                             <div class="card-body rounded dashboard-card-body-1">
@@ -47,10 +47,10 @@
                             </div>
                         </a>
                     </div>
-                </div>
+                </div> --}}
                 <!-- end col -->
                 <!-- Start col -->
-                <div class="col-sm-4">
+                {{-- <div class="col-sm-4">
                     <div class="card rounded">
                         <a href="#">
                             <div class="card-body rounded dashboard-card-body-2">
@@ -71,7 +71,7 @@
                             </div>
                         </a>
                     </div>
-                </div>
+                </div> --}}
                 <!-- end col -->
 
                 <!-- Start col -->
@@ -97,7 +97,7 @@
                 </div>
                 <!-- end col -->
                 <!-- Start col -->
-                <div class="col-sm-6">
+                <div class="col-sm-4">
                     <div class="card rounded">
                         <a href="#">
                             <div class="card-body rounded dashboard-card-body-3">

@@ -76,7 +76,8 @@
 
                                 <div class="form-group">
                                     <label for="edit_mobile_phone">Mobile Number <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="edit_mobile_phone" name="mobile_phone" required>
+                                    <input type="text" class="form-control" id="edit_mobile_phone" name="mobile_phone"
+                                        required>
                                 </div>
 
                                 <div class="form-group">
@@ -117,13 +118,17 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="edit_receiving_date">Receiving Date <span class="text-danger">*</span></label>
-                                    <input type="date" class="form-control" id="edit_receiving_date" name="receiving_date" required>
+                                    <label for="edit_receiving_date">Receiving Date <span
+                                            class="text-danger">*</span></label>
+                                    <input type="date" class="form-control" id="edit_receiving_date"
+                                        name="receiving_date" required>
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="edit_reporting_date">Reporting Date <span class="text-danger">*</span></label>
-                                    <input type="date" class="form-control" id="edit_reporting_date" name="reporting_date" required>
+                                    <label for="edit_reporting_date">Reporting Date <span
+                                            class="text-danger">*</span></label>
+                                    <input type="date" class="form-control" id="edit_reporting_date"
+                                        name="reporting_date" required>
                                 </div>
 
                                 <div class="form-group">
@@ -156,37 +161,39 @@
                     url: "{{ route('patients.list') }}",
                 },
                 columns: [{
-                    data: 'DT_RowIndex',
-                    name: 'DT_RowIndex'
-                }, {
-                    data: 'patient_id',
-                    name: 'patient_id'
-                }, {
-                    data: 'name',
-                    name: 'name'
-                },  {
-                    data: 'mobile_phone',
-                    name: 'mobile_phone'
-                }, {
-                    data: 'age',
-                    name: 'age'
-                }, {
-                    data: 'gender',
-                    name: 'gender'
-                },
-                {
-                    data: 'referred_by',
-                    name: 'referred_by'
-                },
-                 {
-                    data: 'blood_group',
-                    name: 'blood_group'
-                }, {
-                    data: 'action',
-                    name: 'action',
-                    orderable: true,
-                    searchable: true
-                }, ],
+                        data: 'DT_RowIndex',
+                        name: 'DT_RowIndex'
+                    }, {
+                        data: 'patient_id',
+                        name: 'patient_id'
+                    }, {
+                        data: 'name',
+                        name: 'name'
+                    }, {
+                        data: 'mobile_phone',
+                        name: 'mobile_phone'
+                    }, {
+                        data: 'age',
+                        name: 'age'
+                    }, {
+                        data: 'gender',
+                        name: 'gender'
+                    },
+                    {
+                        data: 'referred_by',
+                        name: 'referred_by'
+                    },
+                    {
+                        data: 'blood_group',
+                        name: 'blood_group'
+                    },
+                    {
+                        data: 'action',
+                        name: 'action',
+                        orderable: true,
+                        searchable: true
+                    },
+                ],
                 buttons: [
                     'copy', 'excel', 'pdf'
                 ]
@@ -240,9 +247,9 @@
             // Edit button handler - open modal and populate fields
             $('body').on('click', '.editbtn', function() {
                 var id = $(this).data('id');
-                if (!id) { 
-                    console.error('editbtn missing data-id'); 
-                    return; 
+                if (!id) {
+                    console.error('editbtn missing data-id');
+                    return;
                 }
 
                 var url = "{{ url('patients') }}/" + id + "/edit";
@@ -261,7 +268,7 @@
                         $('#edit_reporting_date').val(res.reporting_date);
                         $('#edit_referred_by').val(res.referred_by);
                         $('#edit_note').val(res.note);
-                        
+
                         // Show the modal
                         $('#editPatientModal').modal('show');
                     })
@@ -280,11 +287,11 @@
             // Update patient form submission
             $('#editPatientForm').on('submit', function(e) {
                 e.preventDefault();
-                
+
                 var id = $('#edit_patient_id').val();
                 var url = "{{ url('patients') }}/" + id;
                 var formData = new FormData(this);
-                
+
                 $.ajax({
                     type: 'POST',
                     url: url,
@@ -294,7 +301,7 @@
                     success: function(response) {
                         $('#editPatientModal').modal('hide');
                         $('#editPatientForm')[0].reset();
-                        
+
                         Swal.fire({
                             title: 'Success!',
                             text: 'Patient updated successfully',
@@ -302,7 +309,7 @@
                             showConfirmButton: false,
                             timer: 1500
                         });
-                        
+
                         table.draw();
                     },
                     error: function(xhr) {

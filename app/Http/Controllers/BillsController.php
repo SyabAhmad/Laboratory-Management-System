@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Bills;
 use App\Models\LabTestCat;
+use App\Models\Patients;
+// use App\Models\LabTest;
 use App\Models\MainCompanys;
 use App\Models\Payments;
 use App\Models\TestReport;
@@ -24,76 +26,76 @@ class BillsController extends Controller
         return view('Bill.bills', compact('tests'));
     }
 
-    public function allbills(Request $request){
+    public function allbills(Request $request)
+    {
 
         // dd($request);
-        if($request->ajax()){
+        if ($request->ajax()) {
             $data = Bills::orderBy('id', 'DESC')->get();
             return DataTables::of($data)
-            ->addIndexColumn()
-            ->addColumn('patient_id', function ($item) {
-                $patient_id = $item->patients->patient_id;
-                return $patient_id;
-            })
-            ->addColumn('patient_name', function ($item) {
-                $patient_name = $item->patients->name;
-                return $patient_name;
-            })
-            ->addColumn('billing_date', function ($item) {
-                $billing_date = $item->created_at->format('d-m-Y');
-                return $billing_date;
-            })
-            ->addColumn('all_test', function ($item) {
-                $all_test = json_decode($item->all_test);
-                foreach($all_test as $test)
-                    {
+                ->addIndexColumn()
+                ->addColumn('patient_id', function ($item) {
+                    $patient_id = $item->patients->patient_id;
+                    return $patient_id;
+                })
+                ->addColumn('patient_name', function ($item) {
+                    $patient_name = $item->patients->name;
+                    return $patient_name;
+                })
+                ->addColumn('billing_date', function ($item) {
+                    $billing_date = $item->created_at->format('d-m-Y');
+                    return $billing_date;
+                })
+                ->addColumn('all_test', function ($item) {
+                    $all_test = json_decode($item->all_test);
+                    foreach ($all_test as $test) {
                         $all_test_name[] = $test->test_name;
                     }
-                return $all_test_name;
-            })
-            ->addColumn('action', function ($row) {
-                $btn = '&nbsp&nbsp<a href='.(route("billing.details", $row->id)).' class="btn btn-info btn-sm detailsview" data-id="' . $row->id . '"><i class="fas fa-eye"></i></a>';
-                return $btn;
-            })
-            ->rawColumns(['patient_id','patient_name','all_test','action','billing_date',])
-            ->make(true);
+                    return $all_test_name;
+                })
+                ->addColumn('action', function ($row) {
+                    $btn = '&nbsp&nbsp<a href=' . (route("billing.details", $row->id)) . ' class="btn btn-info btn-sm detailsview" data-id="' . $row->id . '"><i class="fas fa-eye"></i></a>';
+                    return $btn;
+                })
+                ->rawColumns(['patient_id', 'patient_name', 'all_test', 'action', 'billing_date',])
+                ->make(true);
         }
 
 
         return view('Bill.allbills');
     }
-    public function allbills1(Request $request){
+    public function allbills1(Request $request)
+    {
 
-        if($request->ajax()){
+        if ($request->ajax()) {
             $data = Bills::orderBy('id', 'DESC')->get();
             return DataTables::of($data)
-            ->addIndexColumn()
-            ->addColumn('patient_id', function ($item) {
-                $patient_id = $item->patients->patient_id;
-                return $patient_id;
-            })
-            ->addColumn('patient_name', function ($item) {
-                $patient_name = $item->patients->name;
-                return $patient_name;
-            })
-            ->addColumn('billing_date', function ($item) {
-                $billing_date = $item->created_at->format('d-m-Y');
-                return $billing_date;
-            })
-            ->addColumn('all_test', function ($item) {
-                $all_test = json_decode($item->all_test);
-                foreach($all_test as $test)
-                    {
+                ->addIndexColumn()
+                ->addColumn('patient_id', function ($item) {
+                    $patient_id = $item->patients->patient_id;
+                    return $patient_id;
+                })
+                ->addColumn('patient_name', function ($item) {
+                    $patient_name = $item->patients->name;
+                    return $patient_name;
+                })
+                ->addColumn('billing_date', function ($item) {
+                    $billing_date = $item->created_at->format('d-m-Y');
+                    return $billing_date;
+                })
+                ->addColumn('all_test', function ($item) {
+                    $all_test = json_decode($item->all_test);
+                    foreach ($all_test as $test) {
                         $all_test_name[] = $test->test_name;
                     }
-                return $all_test_name;
-            })
-            ->addColumn('action', function ($row) {
-                $btn = '&nbsp&nbsp<a href='.(route("billing.details", $row->id)).' class="btn btn-info btn-sm detailsview" data-id="' . $row->id . '"><i class="fas fa-eye"></i></a>';
-                return $btn;
-            })
-            ->rawColumns(['patient_id','patient_name','all_test','action','billing_date',])
-            ->make(true);
+                    return $all_test_name;
+                })
+                ->addColumn('action', function ($row) {
+                    $btn = '&nbsp&nbsp<a href=' . (route("billing.details", $row->id)) . ' class="btn btn-info btn-sm detailsview" data-id="' . $row->id . '"><i class="fas fa-eye"></i></a>';
+                    return $btn;
+                })
+                ->rawColumns(['patient_id', 'patient_name', 'all_test', 'action', 'billing_date',])
+                ->make(true);
         }
 
 
@@ -105,10 +107,21 @@ class BillsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create($id = null)
     {
-        //
+        $patient = null;
+
+        if ($id) {
+            $patient = \App\Models\Patients::find($id);
+        }
+
+        $tests = \App\Models\LabTestCat::all();
+
+        return view('Bill.bills', compact('patient', 'tests'));
     }
+
+
+
 
     /**
      * Store a newly created resource in storage.
@@ -122,7 +135,7 @@ class BillsController extends Controller
         $bills->bill_no = $request->bill_no;
         $bills->patient_id = $request->patient_id;
         $all_test = [];
-        for ($i=0; $i < count($request->id); $i++) {
+        for ($i = 0; $i < count($request->id); $i++) {
             $all_test[] = [
                 'id' => $request->id[$i],
                 'test_name' => $request->cat_name[$i],
@@ -141,7 +154,7 @@ class BillsController extends Controller
         $bills->employee_name = Auth::user()->name;
         $bills->save();
 
-        for($j=0; $j < count($request->id); $j++){
+        for ($j = 0; $j < count($request->id); $j++) {
             $testreport = new TestReport;
             $testreport->patient_id = $bills->patient_id;
             $testreport->invoice_id = $bills->id;
@@ -152,7 +165,7 @@ class BillsController extends Controller
 
         $payments = new Payments;
         $payments->type = 'Income';
-        $payments->account_head = $bills->bill_no.'/'. optional($bills->users)->name;
+        $payments->account_head = $bills->bill_no . '/' . optional($bills->users)->name;
         $payments->amount = $request->pay;
         $payments->date = date('y-m-d');
         $payments->employee_name = Auth::user()->name;
@@ -163,7 +176,6 @@ class BillsController extends Controller
         $maincompany->update();
 
         return response()->json($bills);
-
     }
 
     /**
