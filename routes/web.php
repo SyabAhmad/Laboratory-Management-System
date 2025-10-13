@@ -40,19 +40,6 @@ Route::middleware(['auth:sanctum', 'verified'])
         Route::get('/users/referral/{id}', 'App\Http\Controllers\UserController@referral')->name('user.referral');
         Route::get('/users/billing/{id}', 'App\Http\Controllers\UserController@billing')->name('user.billing');
 
-        // Billing system routes
-        Route::get('/billing/create', 'App\Http\Controllers\UserController@create')->name('billing.create');
-        // returns JSON: patient + registered tests
-        // Route::get('/patients/{id}/registered-tests', 'App\Http\Controllers\PatientsController@registeredTests')->name('patients.registered_tests');
-        // return patient's registered tests (used by billing page)
-        Route::get('/patients/{id}/registered-tests', 'App\Http\Controllers\PatientsController@registeredTests')->name('patients.registered_tests');
-
-
-        Route::post('/billing/add', 'App\Http\Controllers\UserController@store')->name('billing.add');
-        Route::get('/patients/search', 'App\Http\Controllers\PatientsController@search')->name('patients.search');
-
-
-
         Route::get('/users/pathology/{id}', 'App\Http\Controllers\UserController@pathology')->name('user.pathology');
         Route::get('/users/radiology/{id}', 'App\Http\Controllers\UserController@radiology')->name('user.radiology');
         Route::get('/users/electrocardiography/{id}', 'App\Http\Controllers\UserController@electrocardiography')->name('user.electrocardiography');
@@ -73,7 +60,6 @@ Route::middleware(['auth:sanctum', 'verified'])
         // Patients Routes
         Route::get('/patients', 'App\Http\Controllers\PatientsController@index')->name('patients.list');
         Route::get('/new/patients', 'App\Http\Controllers\PatientsController@create')->name('patients.create');
-
         Route::post('/new/patients/store', 'App\Http\Controllers\PatientsController@store')->name('patients.store');
         Route::get('/patients/status/{id}', 'App\Http\Controllers\PatientsController@statuschange')->name('patients.status');
         Route::get('/patients/{id}/edit', 'App\Http\Controllers\PatientsController@edit')->name('patients.edit');
@@ -81,6 +67,7 @@ Route::middleware(['auth:sanctum', 'verified'])
         Route::post('/patients/test-data', 'App\Http\Controllers\PatientsController@storeTestData')->name('patients.test.data.store');
         Route::get('/patients/details/{id}', 'App\Http\Controllers\PatientsController@show')->name('patients.profile');
         Route::delete('/patients/{id}', 'App\Http\Controllers\PatientsController@destroy')->name('patients.destroy');
+        Route::get('/patients/{id}/registered-tests', 'App\Http\Controllers\PatientsController@registeredTests')->name('patients.registered_tests');
 
         // Referrals Route
         Route::get('/referrals', 'App\Http\Controllers\ReferralController@index')->name('referrels.list');
@@ -96,14 +83,18 @@ Route::middleware(['auth:sanctum', 'verified'])
         Route::get('/labtest/edit/{id}', 'App\Http\Controllers\LabTestCatController@edit')->name('labtest.edit');
         Route::put('/labtest/update', 'App\Http\Controllers\LabTestCatController@update')->name('labtest.update');
 
-        // Billing System Route
-        Route::get('/billing', 'App\Http\Controllers\BillsController@index')->name('billing');
-        Route::get('/allbilling', 'App\Http\Controllers\BillsController@allbills')->name('allbills');
-        Route::get('/all/billing', 'App\Http\Controllers\BillsController@allbills')->name('all.bills');
+        // Billing System Routes - MUST come before /billing
+        Route::get('/billing/create/{id}', 'App\Http\Controllers\BillsController@create')->name('billing.create');
+        Route::get('/billing/registered-tests/{id}', 'App\Http\Controllers\BillsController@getRegisteredTests')->name('billing.get-registered-tests');
         Route::post('/billing/add', 'App\Http\Controllers\BillsController@store')->name('billing.add');
         Route::get('/billing/details/{id}', 'App\Http\Controllers\BillsController@show')->name('billing.details');
+        Route::get('/allbilling', 'App\Http\Controllers\BillsController@allbills')->name('allbills');
+        Route::get('/all/billing', 'App\Http\Controllers\BillsController@allbills')->name('all.bills');
+        Route::get('/billing', 'App\Http\Controllers\BillsController@index')->name('billing');
+        Route::get('/billing/{patient}/registered-tests', [App\Http\Controllers\BillsController::class, 'getRegisteredTests'])
+        ->name('billing.registeredTests');
 
-        // Billing System Route
+        // Payments Route
         Route::get('/transection/record', 'App\Http\Controllers\PaymentsController@index')->name('transection.record');
         Route::get('/transection/other', 'App\Http\Controllers\PaymentsController@create')->name('other.transection');
         Route::post('/transection/other/post', 'App\Http\Controllers\PaymentsController@store')->name('other.transection.store');
@@ -117,7 +108,7 @@ Route::middleware(['auth:sanctum', 'verified'])
         Route::get('/reportbooth/status/{id}/{status}', 'App\Http\Controllers\ReportGenarationController@report_statuschange');
         Route::get('/report/details/{id}', 'App\Http\Controllers\ReportGenarationController@report_details');
 
-        //tEST Report  Rout
+        //Test Report Route
         Route::get('/pathology', 'App\Http\Controllers\XrayReportController@pathology')->name('pathology');
         Route::get('/pathology/testresult/{id}', 'App\Http\Controllers\XrayReportController@pathologyedit')->name('pathologyedit');
         Route::get('/pathology/inventory/{id}', 'App\Http\Controllers\XrayReportController@pathologyinstrument')->name('pathologyinstrument');
