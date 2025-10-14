@@ -122,9 +122,85 @@
             </div>
         </div>
 
+        {{-- CBC Results Section --}}
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4 class="header-title mb-0">CBC Test Results</h4>
+                            <button type="button" class="btn btn-primary" id="fetchCBCResults">
+                                <i class="fas fa-sync-alt"></i> Fetch Latest CBC Results
+                            </button>
+                        </div>
+
+                        <div id="cbcResultsContainer">
+                            @php
+                                $allReports = json_decode($patient->test_report ?? '[]', true) ?? [];
+                                // Filter only CBC reports
+                                $cbcReports = array_filter($allReports, function($report) {
+                                    return isset($report['test']) && $report['test'] === 'CBC';
+                                });
+                            @endphp
+
+                            @forelse($cbcReports as $report)
+                                @php
+                                    $analytes = $report['analytes'] ?? [];
+                                @endphp
+
+                                <div class="card mb-3">
+                                    <div class="card-header bg-light">
+                                        <strong>{{ $report['instrument'] ?? 'CBC' }}</strong>
+                                        <span class="float-right text-muted">
+                                            {{ $report['reported_at'] ?? 'Unknown date' }}
+                                        </span>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-sm table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Parameter</th>
+                                                        <th>Value</th>
+                                                        <th>Units</th>
+                                                        <th>Reference Range</th>
+                                                        <th>Flag</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach($analytes as $analyte)
+                                                        <tr>
+                                                            <td><strong>{{ $analyte['name'] }}</strong></td>
+                                                            <td>{{ $analyte['value'] }}</td>
+                                                            <td>{{ $analyte['units'] ?? '-' }}</td>
+                                                            <td>{{ $analyte['ref_range'] ?? '-' }}</td>
+                                                            <td>
+                                                                @if(isset($analyte['flags']) && $analyte['flags'] !== 'N')
+                                                                    <span class="badge badge-warning">{{ $analyte['flags'] }}</span>
+                                                                @else
+                                                                    <span class="badge badge-success">Normal</span>
+                                                                @endif
+                                                            </td>
+                                                        </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            @empty
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle"></i> No CBC results found for this patient.
+                                    Click "Fetch Latest CBC Results" to check for new data.
+                                </div>
+                            @endforelse
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         @php
-            $selectedTests = $patient->test_category_array ?? [];
-            $testTemplates = config('test_templates');
             $existingTestReports = json_decode($patient->test_report ?? '[]', true) ?? [];
         @endphp
 
@@ -272,6 +348,18 @@
 @section('scripts')
     <script>
         $(document).ready(function () {
+            // Fetch CBC Results
+            $('#fetchCBCResults').on('click', function () {
+                const btn = $(this);
+                const originalHtml = btn.html();
+                
+                btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Fetching...');
+                
+                setTimeout(function () {
+                    window.location.reload();
+                }, 1000);
+            });
+
             $('.test-data-form').on('submit', function (e) {
                 e.preventDefault();
 

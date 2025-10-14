@@ -41,7 +41,4 @@
         <!-- END wrapper -->
 
 @include('Include.script')
-    @yield('scripts')
-</body>
-
-</html>
+@yield('scripts')

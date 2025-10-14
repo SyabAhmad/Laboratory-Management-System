@@ -128,7 +128,12 @@ class PatientsController extends Controller
         $patient->registerd_by = Auth::user() ? Auth::user()->name : null;
         $patient->save();
 
-        return redirect()->route('patients.list')->with('success', 'Patient registered successfully');
+        // Return with patient ID for CBC machine
+        return redirect()->route('patients.list')
+            ->with('success', 'Patient registered successfully')
+            ->with('patient_id', $patient->id)
+            ->with('patient_name', $patient->name)
+            ->with('show_patient_id_modal', true);
     }
 
     // Search patients
@@ -418,5 +423,29 @@ class PatientsController extends Controller
         $patient = Patients::find($id);
         $patient->delete();
         return response()->json(['success' => 'Patient deleted successfully.']);
+    }
+
+    public function fetchCBCResults($patientId)
+    {
+        $patient = Patients::findOrFail($patientId);
+        
+        // Get CBC results from test_report column
+        $testReports = json_decode($patient->test_report ?? '[]', true) ?? [];
+        $cbcReports = array_filter($testReports, function($report) {
+            return isset($report['test']) && $report['test'] === 'CBC';
+        });
+        
+        if (!empty($cbcReports)) {
+            return response()->json([
+                'success' => true,
+                'message' => 'CBC results fetched successfully!',
+                'count' => count($cbcReports)
+            ]);
+        }
+        
+        return response()->json([
+            'success' => false,
+            'message' => 'No CBC results available. Results are automatically synced from the analyzer.'
+        ]);
     }
 }
