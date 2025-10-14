@@ -185,55 +185,66 @@ class BillsController extends Controller
     public function store(Request $request)
     {
         try {
-            $validated = $request->validate([
-                'patient_id' => 'required|exists:patients,id',
-                'bill_no' => 'required|string',
-                'gtotal' => 'required|numeric',
-                'discount' => 'nullable|numeric',
-                'total_' => 'required|numeric',
-                'pay' => 'nullable|numeric',
-                'paidby' => 'required|string',
-                'id' => 'required|array',
-                'cat_name' => 'required|array',
-                'price' => 'required|array',
-            ]);
+            $patientId = $request->input('patient_id');
+            $selectedNames = array_filter((array) $request->input('cat_name', []));
 
-            // Prepare test data
-            $tests = [];
-            foreach ($validated['id'] as $index => $testId) {
-                $tests[] = [
-                    'test_id' => $testId,
-                    'test_name' => $validated['cat_name'][$index],
-                    'price' => $validated['price'][$index]
-                ];
+            if ($patientId && !empty($selectedNames)) {
+                $patient = Patients::find($patientId);
+
+                if ($patient) {
+                    $rawCategories = $patient->test_category ?? [];
+                    if (!is_array($rawCategories)) {
+                        $decoded = json_decode($rawCategories, true);
+                        if (json_last_error() === JSON_ERROR_NONE) {
+                            $rawCategories = $decoded;
+                        } else {
+                            $rawCategories = array_map('trim', explode(',', (string) $rawCategories));
+                        }
+                    }
+
+                    $normalized = [];
+                    $idLookups = [];
+
+                    foreach ($rawCategories as $entry) {
+                        if (is_array($entry)) {
+                            if (!empty($entry['cat_name'])) {
+                                $normalized[] = $entry['cat_name'];
+                            } elseif (!empty($entry['id']) && is_numeric($entry['id'])) {
+                                $idLookups[] = (int) $entry['id'];
+                            }
+                        } elseif (is_numeric($entry)) {
+                            $idLookups[] = (int) $entry;
+                        } elseif (is_string($entry) && $entry !== '') {
+                            $normalized[] = $entry;
+                        }
+                    }
+
+                    if (!empty($idLookups)) {
+                        $fetched = LabTestCat::whereIn('id', array_unique($idLookups))
+                            ->pluck('cat_name')
+                            ->filter()
+                            ->all();
+                        $normalized = array_merge($normalized, $fetched);
+                    }
+
+                    $merged = array_values(array_unique(array_merge($normalized, $selectedNames)));
+                    $patient->test_category = json_encode($merged);
+                    $patient->save();
+                }
             }
-
-            // Create the bill
-            $bill = Bills::create([
-                'patient_id' => $validated['patient_id'],
-                'bill_no' => $validated['bill_no'],
-                'all_test' => json_encode($tests),
-                'subtotal' => $validated['gtotal'],
-                'discount' => $validated['discount'] ?? 0,
-                'total_amount' => $validated['total_'],
-                'paid_amount' => $validated['pay'] ?? 0,
-                'payment_type' => $validated['paidby'],
-                'approval_code' => $request->input('abbroval_code'),
-                'created_by' => Auth::id(),
-            ]);
 
             return response()->json([
                 'success' => true,
-                'message' => 'Bill created successfully',
-                'bill_id' => $bill->id
+                'message' => 'Bill saved successfully.',
             ]);
-                
         } catch (\Exception $e) {
-            Log::error('Error in BillsController@store: ' . $e->getMessage());
-            
+            Log::error('BillsController@store failed: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+            ]);
+
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to create bill: ' . $e->getMessage()
+                'message' => 'Failed to save bill.',
             ], 500);
         }
     }
@@ -316,5 +327,32 @@ class BillsController extends Controller
                 'message' => 'Failed to delete bill: ' . $e->getMessage()
             ], 500);
         }
+    }
+
+    public function createTestRequest(Request $request)
+    {
+        $validated = $request->validate([
+            'patient_id' => 'required|exists:patients,id',
+            'test_id' => 'required|exists:labtest,id',
+        ]);
+        
+        // Create pending test with accession
+        $accession = 'ACC-' . str_pad(rand(1, 999999), 6, '0', STR_PAD_LEFT);
+        
+        $testReport = TestReport::create([
+            'patient_id' => $validated['patient_id'],
+            'test_id' => $validated['test_id'],
+            'invoice_id' => null, // Link to bill if needed
+            'result' => json_encode([
+                'status' => 'pending',
+                'accession_no' => $accession,
+                'created_at' => now()->toISOString(),
+            ]),
+        ]);
+        
+        return response()->json([
+            'accession' => $accession,
+            'test_report_id' => $testReport->id,
+        ]);
     }
 }

@@ -27,53 +27,54 @@ class Patients extends Model
         'note',
         'referred_by',
         'test_category',
-        'test_report', // Add this
+        'test_report',
         'registerd_by',
-        'status',
     ];
 
     protected $casts = [
         'receiving_date' => 'date',
         'reporting_date' => 'date',
-        'test_category' => 'array', // Cast to array automatically
     ];
 
-    // append computed attributes to arrays / JSON
-    // protected $appends = ['age'];
-
-    // public function users(){
-    //     return $this->belongsTo(User::class, 'user_id');
-    // }
+    /**
+     * Get the user that registered this patient
+     */
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    public function referral()
-    {
-        return $this->belongsTo(User::class, 'referred_by');
-    }
-
-    // patient usually has many bills
+    /**
+     * Get all bills for this patient
+     */
     public function bills()
     {
-        return $this->hasMany(Bills::class, 'patient_id');
+        return $this->hasMany(Bill::class, 'patient_id');
     }
 
-    public function tests()
+    /**
+     * Get all test reports for this patient
+     */
+    public function testReports()
     {
-        // Fetch related test categories based on test_category JSON/array column
-        return \App\Models\LabTestCat::whereIn('id', $this->test_category ?? [])->get();
+        return $this->hasMany(TestReport::class, 'patient_id');
     }
 
+    /**
+     * Get age attribute (if birth_date exists, calculate from it)
+     */
+    public function getAgeAttribute($value)
+    {
+        // If age is stored directly, return it
+        if ($value) {
+            return $value;
+        }
 
-    // computed age accessor
-    // public function getAgeAttribute()
-    // {
-    //     if (empty($this->dob)) {
-    //         return null;
-    //     }
+        // If you have a birth_date column, calculate age
+        if (isset($this->attributes['birth_date'])) {
+            return \Carbon\Carbon::parse($this->attributes['birth_date'])->age;
+        }
 
-    //     return Carbon::parse($this->dob)->age;
-    // }
+        return null;
+    }
 }

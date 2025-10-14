@@ -68,6 +68,7 @@ Route::middleware(['auth:sanctum', 'verified'])
         Route::get('/patients/details/{id}', 'App\Http\Controllers\PatientsController@show')->name('patients.profile');
         Route::delete('/patients/{id}', 'App\Http\Controllers\PatientsController@destroy')->name('patients.destroy');
         Route::get('/patients/{id}/registered-tests', 'App\Http\Controllers\PatientsController@registeredTests')->name('patients.registered_tests');
+        Route::get('/patients/{id}/fetch-cbc-results', [PatientController::class, 'fetchCBCResults'])->name('patients.fetchCBCResults');
 
         // Referrals Route
         Route::get('/referrals', 'App\Http\Controllers\ReferralController@index')->name('referrels.list');
