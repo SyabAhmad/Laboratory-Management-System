@@ -29,17 +29,18 @@ class BillsController extends Controller
     public function allbills(Request $request)
     {
         if ($request->ajax()) {
-            $data = Bills::orderBy('id', 'DESC')->get();
+            $data = Bills::with('patient')->orderBy('id', 'DESC')->get();
+
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('patient_id', function ($item) {
-                    return $item->patients->patient_id;
+                    return optional($item->patient)->patient_id ?? 'N/A';
                 })
                 ->addColumn('patient_name', function ($item) {
-                    return $item->patients->name;
+                    return optional($item->patient)->name ?? 'N/A';
                 })
                 ->addColumn('billing_date', function ($item) {
-                    return $item->created_at->format('d-m-Y');
+                    return $item->created_at ? $item->created_at->format('d-m-Y') : 'N/A';
                 })
                 ->addColumn('all_test', function ($item) {
                     $all_test = json_decode($item->all_test);
@@ -49,19 +50,20 @@ class BillsController extends Controller
                             $all_test_name[] = $test->test_name;
                         }
                     }
-                    return $all_test_name;
+                    return implode(', ', $all_test_name);
                 })
                 ->addColumn('action', function ($row) {
-                    $btn = '&nbsp&nbsp<a href=' . (route("billing.details", $row->id)) . ' class="btn btn-info btn-sm detailsview" data-id="' . $row->id . '"><i class="fas fa-eye"></i></a>';
+                    $btn = '&nbsp;&nbsp;<a href="' . route("billing.details", $row->id) . '" class="btn btn-info btn-sm detailsview" data-id="' . $row->id . '"><i class="fas fa-eye"></i></a>';
                     return $btn;
                 })
-                ->rawColumns(['patient_id', 'patient_name', 'all_test', 'action', 'billing_date',])
+                ->rawColumns(['action'])
                 ->make(true);
         }
 
         return view('Bill.allbills');
     }
-    
+
+
     public function allbills1(Request $request)
     {
         if ($request->ajax()) {
@@ -187,67 +189,65 @@ class BillsController extends Controller
         try {
             $patientId = $request->input('patient_id');
             $selectedNames = array_filter((array) $request->input('cat_name', []));
+            // use total_ sent by your form
+            $total = (float) ($request->input('total_') ?? $request->input('amount') ?? 0);
+            $paid  = (float) ($request->input('pay', 0));
+            $status = ($paid >= $total && $total > 0) ? 'paid' : 'unpaid';
 
-            if ($patientId && !empty($selectedNames)) {
-                $patient = Patients::find($patientId);
+            if (!$patientId || empty($selectedNames) || $total <= 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Missing required fields (patient, tests, or amount).'
+                ], 400);
+            }
 
-                if ($patient) {
-                    $rawCategories = $patient->test_category ?? [];
-                    if (!is_array($rawCategories)) {
-                        $decoded = json_decode($rawCategories, true);
-                        if (json_last_error() === JSON_ERROR_NONE) {
-                            $rawCategories = $decoded;
-                        } else {
-                            $rawCategories = array_map('trim', explode(',', (string) $rawCategories));
-                        }
-                    }
+            $patient = \App\Models\Patients::find($patientId);
+            if (!$patient) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Patient not found.'
+                ], 404);
+            }
 
-                    $normalized = [];
-                    $idLookups = [];
-
-                    foreach ($rawCategories as $entry) {
-                        if (is_array($entry)) {
-                            if (!empty($entry['cat_name'])) {
-                                $normalized[] = $entry['cat_name'];
-                            } elseif (!empty($entry['id']) && is_numeric($entry['id'])) {
-                                $idLookups[] = (int) $entry['id'];
-                            }
-                        } elseif (is_numeric($entry)) {
-                            $idLookups[] = (int) $entry;
-                        } elseif (is_string($entry) && $entry !== '') {
-                            $normalized[] = $entry;
-                        }
-                    }
-
-                    if (!empty($idLookups)) {
-                        $fetched = LabTestCat::whereIn('id', array_unique($idLookups))
-                            ->pluck('cat_name')
-                            ->filter()
-                            ->all();
-                        $normalized = array_merge($normalized, $fetched);
-                    }
-
-                    $merged = array_values(array_unique(array_merge($normalized, $selectedNames)));
-                    $patient->test_category = json_encode($merged);
-                    $patient->save();
+            // Update patient's test_category (your existing logic)
+            $rawCategories = $patient->test_category ?? [];
+            if (!is_array($rawCategories)) {
+                $decoded = json_decode($rawCategories, true);
+                if (json_last_error() === JSON_ERROR_NONE) {
+                    $rawCategories = $decoded;
+                } else {
+                    $rawCategories = array_map('trim', explode(',', (string)$rawCategories));
                 }
             }
+            $merged = array_values(array_unique(array_merge($rawCategories, $selectedNames)));
+            $patient->test_category = json_encode($merged);
+            $patient->save();
+
+            // Update or create the single bill row for the patient
+            \App\Models\Bills::updateOrCreate(
+                ['patient_id' => $patient->id],
+                [
+                    'amount' => $total,
+                    'status' => $status,
+                    'updated_at' => now(),
+                ]
+            );
 
             return response()->json([
                 'success' => true,
-                'message' => 'Bill saved successfully.',
+                'message' => 'Bill saved successfully.'
             ]);
         } catch (\Exception $e) {
             Log::error('BillsController@store failed: ' . $e->getMessage(), [
                 'trace' => $e->getTraceAsString(),
             ]);
-
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to save bill.',
+                'message' => 'Failed to save bill'
             ], 500);
         }
     }
+
 
     /**
      * Display the specified resource.
@@ -273,7 +273,7 @@ class BillsController extends Controller
             $patient = $bills->patient;
             $tests = LabTestCat::all();
             $companies = MainCompanys::all();
-            
+
             return view('Bill.edit_bill', compact('bills', 'patient', 'tests', 'companies'));
         } catch (\Exception $e) {
             Log::error('Error in BillsController@edit: ' . $e->getMessage());
@@ -296,10 +296,9 @@ class BillsController extends Controller
 
             return redirect()->route('billing.show', $bills->id)
                 ->with('success', 'Bill updated successfully');
-                
         } catch (\Exception $e) {
             Log::error('Error in BillsController@update: ' . $e->getMessage());
-            
+
             return redirect()->back()
                 ->with('error', 'Failed to update bill: ' . $e->getMessage())
                 ->withInput();
@@ -313,15 +312,14 @@ class BillsController extends Controller
     {
         try {
             $bills->delete();
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Bill deleted successfully'
             ]);
-            
         } catch (\Exception $e) {
             Log::error('Error in BillsController@destroy: ' . $e->getMessage());
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to delete bill: ' . $e->getMessage()
@@ -335,10 +333,10 @@ class BillsController extends Controller
             'patient_id' => 'required|exists:patients,id',
             'test_id' => 'required|exists:labtest,id',
         ]);
-        
+
         // Create pending test with accession
         $accession = 'ACC-' . str_pad(rand(1, 999999), 6, '0', STR_PAD_LEFT);
-        
+
         $testReport = TestReport::create([
             'patient_id' => $validated['patient_id'],
             'test_id' => $validated['test_id'],
@@ -349,7 +347,7 @@ class BillsController extends Controller
                 'created_at' => now()->toISOString(),
             ]),
         ]);
-        
+
         return response()->json([
             'accession' => $accession,
             'test_report_id' => $testReport->id,

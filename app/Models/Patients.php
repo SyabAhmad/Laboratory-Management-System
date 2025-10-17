@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
+use App\Models\Bills;
 
 class Patients extends Model
 {
@@ -49,7 +50,7 @@ class Patients extends Model
      */
     public function bills()
     {
-        return $this->hasMany(Bill::class, 'patient_id');
+        return $this->hasMany(Bills::class, 'patient_id');
     }
 
     /**

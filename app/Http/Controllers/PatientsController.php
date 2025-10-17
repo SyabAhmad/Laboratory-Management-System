@@ -150,34 +150,34 @@ class PatientsController extends Controller
     }
 
     // Fetch tests for a specific patient
-    // public function getPatientTests($id)
-    // {
-    //     $patient = \App\Models\Patients::with('tests')->find($id);
+    public function getPatientTests($id)
+    {
+        $patient = \App\Models\Patients::with('tests')->find($id);
 
-    //     if (!$patient) {
-    //         return response()->json(['error' => 'Patient not found'], 404);
-    //     }
+        if (!$patient) {
+            return response()->json(['error' => 'Patient not found'], 404);
+        }
 
-    //     // Assuming you have a relationship: Patient -> hasMany Tests through a pivot
-    //     $tests = $patient->tests->map(function ($test) {
-    //         return [
-    //             'id' => $test->id,
-    //             'name' => $test->name,
-    //             'price' => $test->price,
-    //         ];
-    //     });
+        // Assuming you have a relationship: Patient -> hasMany Tests through a pivot
+        $tests = $patient->tests->map(function ($test) {
+            return [
+                'id' => $test->id,
+                'name' => $test->name,
+                'price' => $test->price,
+            ];
+        });
 
-    //     return response()->json([
-    //         'patient' => [
-    //             'id' => $patient->id,
-    //             'name' => $patient->name,
-    //             'age' => $patient->age,
-    //             'gender' => $patient->gender,
-    //             'phone' => $patient->mobile_phone,
-    //         ],
-    //         'tests' => $tests,
-    //     ]);
-    // }
+        return response()->json([
+            'patient' => [
+                'id' => $patient->id,
+                'name' => $patient->name,
+                'age' => $patient->age,
+                'gender' => $patient->gender,
+                'phone' => $patient->mobile_phone,
+            ],
+            'tests' => $tests,
+        ]);
+    }
 
     // use Illuminate\Http\Request;
     // use Illuminate\Support\Facades\DB; // for fallback queries
@@ -428,13 +428,13 @@ class PatientsController extends Controller
     public function fetchCBCResults($patientId)
     {
         $patient = Patients::findOrFail($patientId);
-        
+
         // Get CBC results from test_report column
         $testReports = json_decode($patient->test_report ?? '[]', true) ?? [];
-        $cbcReports = array_filter($testReports, function($report) {
+        $cbcReports = array_filter($testReports, function ($report) {
             return isset($report['test']) && $report['test'] === 'CBC';
         });
-        
+
         if (!empty($cbcReports)) {
             return response()->json([
                 'success' => true,
@@ -442,7 +442,7 @@ class PatientsController extends Controller
                 'count' => count($cbcReports)
             ]);
         }
-        
+
         return response()->json([
             'success' => false,
             'message' => 'No CBC results available. Results are automatically synced from the analyzer.'

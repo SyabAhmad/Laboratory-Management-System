@@ -61,7 +61,8 @@
                     <!-- Invoice Number -->
                     <div class="col-md-6">
                         <label for="bill_display" class="form-label fw-semibold">Invoice Number</label>
-                        <input type="text" class="form-control" id="bill_display" value="{{ $nextInvoiceNumber }}" readonly>
+                        <input type="text" class="form-control" id="bill_display" value="{{ $nextInvoiceNumber }}"
+                            readonly>
                     </div>
 
                     <!-- Payment Type -->
@@ -75,48 +76,46 @@
                     </div>
 
                     <!-- Registered Tests Section -->
-                    @if(isset($registeredTests) && $registeredTests->count() > 0)
-                    <div class="col-12 mt-4">
-                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-                            <div>
-                                <h5 class="text-success fw-semibold mb-2">✅ Registered Tests for This Patient</h5>
-                                <p class="mb-0">The following tests have been registered for this patient and will be automatically added to the bill.</p>
+                    @if (isset($registeredTests) && $registeredTests->count() > 0)
+                        <div class="col-12 mt-4">
+                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                <div>
+                                    <h5 class="text-success fw-semibold mb-2">✅ Registered Tests for This Patient</h5>
+                                    <p class="mb-0">The following tests have been registered for this patient and will be
+                                        automatically added to the bill.</p>
+                                </div>
+                                <button type="button" id="refreshRegisteredTests" class="btn btn-outline-success btn-sm"
+                                    data-fetch-url="{{ route('billing.registeredTests', $patient->id) }}">
+                                    <i class="fas fa-sync-alt me-1"></i> Refresh registered tests
+                                </button>
                             </div>
-                            <button type="button"
-                                id="refreshRegisteredTests"
-                                class="btn btn-outline-success btn-sm"
-                                data-fetch-url="{{ route('billing.registeredTests', $patient->id) }}">
-                                <i class="fas fa-sync-alt me-1"></i> Refresh registered tests
-                            </button>
-                        </div>
-                        <div class="table-responsive">
-                            <table class="table table-striped table-hover align-middle">
-                                <thead class="table-success">
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Test Name</th>
-                                        <th>Department</th>
-                                        <th>Price (PKR)</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="registeredTestsList">
-                                    @foreach ($registeredTests as $test)
-                                        <tr data-test-id="{{ $test->id }}" 
-                                            data-test-name="{{ $test->cat_name }}"
-                                            data-test-price="{{ $test->price }}"
-                                            data-test-dept="{{ $test->department ?? 'N/A' }}">
-                                            <td>{{ $loop->iteration }}</td>
-                                            <td>{{ $test->cat_name }}</td>
-                                            <td>{{ $test->department ?? 'N/A' }}</td>
-                                            <td>{{ number_format($test->price, 2) }}</td>
-                                            <td><span class="badge bg-success">Registered</span></td>
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover align-middle">
+                                    <thead class="table-success">
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Test Name</th>
+                                            <th>Department</th>
+                                            <th>Price (PKR)</th>
+                                            <th>Status</th>
                                         </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody id="registeredTestsList">
+                                        @foreach ($registeredTests as $test)
+                                            <tr data-test-id="{{ $test->id }}" data-test-name="{{ $test->cat_name }}"
+                                                data-test-price="{{ $test->price }}"
+                                                data-test-dept="{{ $test->department ?? 'N/A' }}">
+                                                <td>{{ $loop->iteration }}</td>
+                                                <td>{{ $test->cat_name }}</td>
+                                                <td>{{ $test->department ?? 'N/A' }}</td>
+                                                <td>{{ number_format($test->price, 2) }}</td>
+                                                <td><span class="badge bg-success">Registered</span></td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-                    </div>
                     @endif
 
                     <!-- Additional Tests Section -->
@@ -142,10 +141,8 @@
                                             <td>{{ number_format($test->price, 2) }}</td>
                                             <td>
                                                 <button type="button" class="btn btn-sm btn-outline-primary add-test-btn"
-                                                    data-id="{{ $test->id }}" 
-                                                    data-name="{{ $test->cat_name }}"
-                                                    data-price="{{ $test->price }}" 
-                                                    data-dept="{{ $test->department }}">
+                                                    data-id="{{ $test->id }}" data-name="{{ $test->cat_name }}"
+                                                    data-price="{{ $test->price }}" data-dept="{{ $test->department }}">
                                                     <i class="fas fa-plus"></i> Add
                                                 </button>
                                             </td>
@@ -170,7 +167,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @if(!isset($registeredTests) || $registeredTests->count() === 0)
+                                    @if (!isset($registeredTests) || $registeredTests->count() === 0)
                                         <tr class="no-tests-row">
                                             <td colspan="4" class="text-center text-muted">No tests in bill yet</td>
                                         </tr>
@@ -185,27 +182,33 @@
                         <table class="table table-borderless">
                             <tr>
                                 <td><strong>Subtotal:</strong></td>
-                                <td><input type="text" class="form-control text-end" id="grandtotal" name="gtotal" value="0.00" readonly></td>
+                                <td><input type="text" class="form-control text-end" id="grandtotal" name="gtotal"
+                                        value="0.00" readonly></td>
                             </tr>
                             <tr>
                                 <td><strong>Discount:</strong></td>
-                                <td><input type="number" step="0.01" class="form-control text-end" id="discount" name="discount" value="0"></td>
+                                <td><input type="number" step="0.01" class="form-control text-end" id="discount"
+                                        name="discount" value="0"></td>
                             </tr>
                             <tr>
                                 <td><strong>Total:</strong></td>
-                                <td><input type="text" class="form-control text-end" id="total_" name="total_" value="0.00" readonly></td>
+                                <td><input type="text" class="form-control text-end" id="total_" name="total_"
+                                        value="0.00" readonly></td>
                             </tr>
                             <tr>
                                 <td><strong>Amount Paid:</strong></td>
-                                <td><input type="number" step="0.01" class="form-control text-end" id="pay_" name="pay" value="0"></td>
+                                <td><input type="number" step="0.01" class="form-control text-end" id="pay_"
+                                        name="pay" value="0"></td>
                             </tr>
                             <tr>
                                 <td><strong>Due / Return:</strong></td>
-                                <td><input type="text" class="form-control text-end" id="return" name="return" value="0.00" readonly></td>
+                                <td><input type="text" class="form-control text-end" id="return" name="return"
+                                        value="0.00" readonly></td>
                             </tr>
                             <tr>
                                 <td><strong>Approval Code:</strong></td>
-                                <td><input type="text" class="form-control" id="abbroval_code" name="abbroval_code" placeholder="Optional"></td>
+                                <td><input type="text" class="form-control" id="abbroval_code" name="abbroval_code"
+                                        placeholder="Optional"></td>
                             </tr>
                         </table>
                     </div>
@@ -236,7 +239,7 @@
                     subtotal += parseFloat(priceInput.val()) || 0;
                 }
             });
-            
+
             const discount = parseFloat($('#discount').val()) || 0;
             const total = subtotal - discount;
             const paid = parseFloat($('#pay_').val()) || 0;
@@ -249,19 +252,21 @@
 
         function renumberSelectedTests() {
             let counter = 1;
-            $('#selectedTests tbody tr').each(function () {
+            $('#selectedTests tbody tr').each(function() {
                 $(this).find('td:first').text(counter++);
             });
         }
 
         function ensureNoTestsMessage() {
             if ($('#selectedTests tbody tr').length === 0) {
-                $('#selectedTests tbody').html('<tr class="no-tests-row"><td colspan="4" class="text-center text-muted">No tests in bill yet</td></tr>');
+                $('#selectedTests tbody').html(
+                    '<tr class="no-tests-row"><td colspan="4" class="text-center text-muted">No tests in bill yet</td></tr>'
+                    );
             }
         }
 
         function syncAddButtons() {
-            $('.add-test-btn').each(function () {
+            $('.add-test-btn').each(function() {
                 const id = $(this).data('id');
                 const exists = $(`#selectedTests tbody tr[data-id="${id}"]`).length > 0;
                 $(this).prop('disabled', exists).html(exists ? 'Added' : '<i class="fas fa-plus"></i> Add');
@@ -295,14 +300,18 @@
             let testCounter = $('#selectedTests tbody tr').length + 1;
 
             // Automatically add registered tests to the bill on page load
-            @if(isset($registeredTests) && $registeredTests->count() > 0)
+            @if (isset($registeredTests) && $registeredTests->count() > 0)
                 $('#registeredTestsList tr').each(function() {
                     const id = $(this).data('test-id');
                     const name = $(this).data('test-name');
                     const price = parseFloat($(this).data('test-price')).toFixed(2);
-                    
+
                     if (id && name) {
-                        appendRegisteredTest({ id, name, price }, testCounter++);
+                        appendRegisteredTest({
+                            id,
+                            name,
+                            price
+                        }, testCounter++);
                     }
                 });
 
@@ -311,14 +320,15 @@
                 updateTotals();
             @endif
 
-            $('#refreshRegisteredTests').on('click', function () {
+            $('#refreshRegisteredTests').on('click', function() {
                 const url = $(this).data('fetch-url');
                 const button = $(this);
 
-                button.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span> Refreshing');
+                button.prop('disabled', true).html(
+                    '<span class="spinner-border spinner-border-sm me-1"></span> Refreshing');
 
                 $.get(url)
-                    .done(function (response) {
+                    .done(function(response) {
                         $('#registeredTestsList').empty();
                         $('#selectedTests tbody tr.registered-test').remove();
 
@@ -337,25 +347,29 @@
                                     </tr>
                                 `);
 
-                                appendRegisteredTest(test, $('#selectedTests tbody tr').length + 1);
+                                appendRegisteredTest(test, $('#selectedTests tbody tr').length +
+                                    1);
                             });
                         } else {
-                            $('#registeredTestsList').html('<tr><td colspan="5" class="text-center text-muted">No registered tests.</td></tr>');
+                            $('#registeredTestsList').html(
+                                '<tr><td colspan="5" class="text-center text-muted">No registered tests.</td></tr>'
+                                );
                         }
 
                         renumberSelectedTests();
                         syncAddButtons();
                         updateTotals();
                     })
-                    .fail(function () {
+                    .fail(function() {
                         Swal.fire({
                             icon: 'error',
                             title: 'Refresh failed',
                             text: 'Unable to refresh registered tests right now.'
                         });
                     })
-                    .always(function () {
-                        button.prop('disabled', false).html('<i class="fas fa-sync-alt me-1"></i> Refresh registered tests');
+                    .always(function() {
+                        button.prop('disabled', false).html(
+                            '<i class="fas fa-sync-alt me-1"></i> Refresh registered tests');
                         ensureNoTestsMessage();
                     });
             });
@@ -401,7 +415,7 @@
                 `);
 
                 updateTotals();
-                
+
                 // Disable the add button for this test
                 $(this).prop('disabled', true).text('Added');
             });
@@ -409,17 +423,20 @@
             // Remove test
             $(document).on('click', '.remove-test', function() {
                 const testId = $(this).closest('tr').data('id');
-                
+
                 // Re-enable the add button
-                $(`.add-test-btn[data-id="${testId}"]`).prop('disabled', false).html('<i class="fas fa-plus"></i> Add');
-                
+                $(`.add-test-btn[data-id="${testId}"]`).prop('disabled', false).html(
+                    '<i class="fas fa-plus"></i> Add');
+
                 $(this).closest('tr').remove();
-                
+
                 // Show "no tests" message if table is empty
                 if ($('#selectedTests tbody tr[data-id]').length === 0) {
-                    $('#selectedTests tbody').html('<tr class="no-tests-row"><td colspan="4" class="text-center text-muted">No tests in bill yet</td></tr>');
+                    $('#selectedTests tbody').html(
+                        '<tr class="no-tests-row"><td colspan="4" class="text-center text-muted">No tests in bill yet</td></tr>'
+                        );
                 }
-                
+
                 updateTotals();
                 renumberSelectedTests();
                 syncAddButtons();
@@ -431,19 +448,12 @@
             // AJAX submission
             $('#CustomerBillForm').on('submit', function(e) {
                 e.preventDefault();
-                
-                // Validate that at least one test is selected
-                if ($('#selectedTests tbody tr[data-id]').length === 0) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'No Tests Selected',
-                        text: 'Please select at least one test before saving the bill'
-                    });
-                    return;
-                }
-                
+                const $btn = $(this).find('button[type="submit"]');
+                $btn.prop('disabled', true);
+
+                // form validation here...
+
                 const formData = new FormData(this);
-                
                 $.ajax({
                     url: "{{ route('billing.add') }}",
                     type: "POST",
@@ -455,21 +465,19 @@
                         Swal.fire({
                             icon: 'success',
                             title: 'Success!',
-                            text: 'Bill created successfully!',
-                            timer: 2000
+                            text: response.message || 'Bill created successfully!',
+                            timer: 1500
                         }).then(() => {
                             window.location.href = "{{ route('patients.list') }}";
                         });
                     },
                     error: function(xhr) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: xhr.responseJSON?.message || 'Something went wrong. Please try again.'
-                        });
+                        Swal.fire('Error', xhr.responseJSON?.message || 'Something went wrong');
+                        $btn.prop('disabled', false);
                     }
                 });
             });
+
         });
     </script>
 @endsection

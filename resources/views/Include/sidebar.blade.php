@@ -46,12 +46,12 @@
                                 <span> Employee </span>
                             </a>
                         </li>-->
-                        <li>
+                        {{-- <li>
                             <a href="{{ route('activities') }}">
                                 <i class="fas fa-user-friends"></i>
                                 <span> Activities </span>
                             </a>
-                        </li>
+                        </li> --}}
 
                         <!-- <li>
                             <a href="{{ route('Attendance') }}">
@@ -113,13 +113,12 @@
                                 <span class="menu-arrow"></span>
                             </a>
                             <ul class="nav-second-level" aria-expanded="false">
-                                <li>
+                                {{-- <li>
                                     <a href="{{ route('billing') }}">Bill Create</a>
-                                </li>
+                                </li> --}}
                                 <li>
                                     <a href="{{ route('allbills') }}">All Bill</a>
                                 </li>
-
                             </ul>
                         </li>
 
@@ -151,12 +150,12 @@
                             </a>
                         </li> -->
 
-                        <li>
+                        {{-- <li>
                             <a href="{{ route('reportbooth') }}">
                                 <i class="dripicons-meter"></i>
                                 <span> Report Booth </span>
                             </a>
-                        </li>
+                        </li> --}}
 
                         <li>
                             <a href="javascript: void(0);">
@@ -251,21 +250,21 @@
                             </li>
                         @endif
                         @if (Auth::user()->inventory == 1)
-                        <li>
-                            <a href="javascript: void(0);">
-                                <i class="fas fa-boxes"></i>
-                                <span> Inventory Managemen </span>
-                                <span class="menu-arrow"></span>
-                            </a>
-                            <ul class="nav-second-level" aria-expanded="false">
-                                <li>
-                                    <a href="{{ route('inventories') }}">Inventories</a>
-                                </li>
-                                <li>
-                                    <a href="{{ route('inventories.history') }}">Purchase History</a>
-                                </li>
-                            </ul>
-                        </li>
+                            <li>
+                                <a href="javascript: void(0);">
+                                    <i class="fas fa-boxes"></i>
+                                    <span> Inventory Managemen </span>
+                                    <span class="menu-arrow"></span>
+                                </a>
+                                <ul class="nav-second-level" aria-expanded="false">
+                                    <li>
+                                        <a href="{{ route('inventories') }}">Inventories</a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ route('inventories.history') }}">Purchase History</a>
+                                    </li>
+                                </ul>
+                            </li>
                         @endif
                         @if (Auth::user()->billing == 1)
                             <li>

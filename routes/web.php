@@ -68,7 +68,7 @@ Route::middleware(['auth:sanctum', 'verified'])
         Route::get('/patients/details/{id}', 'App\Http\Controllers\PatientsController@show')->name('patients.profile');
         Route::delete('/patients/{id}', 'App\Http\Controllers\PatientsController@destroy')->name('patients.destroy');
         Route::get('/patients/{id}/registered-tests', 'App\Http\Controllers\PatientsController@registeredTests')->name('patients.registered_tests');
-        Route::get('/patients/{id}/fetch-cbc-results', [PatientController::class, 'fetchCBCResults'])->name('patients.fetchCBCResults');
+        Route::get('/patients/{id}/fetch-cbc-results', [App\Http\Controllers\PatientsController::class, 'fetchCBCResults'])->name('patients.fetchCBCResults');
 
         // Referrals Route
         Route::get('/referrals', 'App\Http\Controllers\ReferralController@index')->name('referrels.list');
@@ -93,7 +93,7 @@ Route::middleware(['auth:sanctum', 'verified'])
         Route::get('/all/billing', 'App\Http\Controllers\BillsController@allbills')->name('all.bills');
         Route::get('/billing', 'App\Http\Controllers\BillsController@index')->name('billing');
         Route::get('/billing/{patient}/registered-tests', [App\Http\Controllers\BillsController::class, 'getRegisteredTests'])
-        ->name('billing.registeredTests');
+            ->name('billing.registeredTests');
 
         // Payments Route
         Route::get('/transection/record', 'App\Http\Controllers\PaymentsController@index')->name('transection.record');
