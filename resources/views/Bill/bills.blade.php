@@ -451,9 +451,18 @@
                 const $btn = $(this).find('button[type="submit"]');
                 $btn.prop('disabled', true);
 
-                // form validation here...
+                // Validate that at least one test is selected
+                const testCount = $('#selectedTests tbody tr[data-id]').length;
+                if (testCount === 0) {
+                    Swal.fire('Error', 'Please select at least one test');
+                    $btn.prop('disabled', false);
+                    return;
+                }
 
                 const formData = new FormData(this);
+                console.log('Form Data:', formData);
+                console.log('Tests selected:', testCount);
+                
                 $.ajax({
                     url: "{{ route('billing.add') }}",
                     type: "POST",
@@ -472,7 +481,9 @@
                         });
                     },
                     error: function(xhr) {
-                        Swal.fire('Error', xhr.responseJSON?.message || 'Something went wrong');
+                        console.error('Error Response:', xhr);
+                        const errorMsg = xhr.responseJSON?.message || xhr.responseText || 'Something went wrong';
+                        Swal.fire('Error', errorMsg);
                         $btn.prop('disabled', false);
                     }
                 });

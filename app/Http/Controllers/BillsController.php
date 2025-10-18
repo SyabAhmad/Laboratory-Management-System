@@ -22,8 +22,7 @@ class BillsController extends Controller
      */
     public function index()
     {
-        $tests = LabTestCat::all();
-        return view('Bill.bills', compact('tests'));
+    return response()->view('Bill.allbills');
     }
 
     public function allbills(Request $request)
@@ -187,17 +186,27 @@ class BillsController extends Controller
     public function store(Request $request)
     {
         try {
+            // Debug: log the incoming request
+            Log::info('Bill store request received', [
+                'patient_id' => $request->input('patient_id'),
+                'test_ids' => $request->input('id'),
+                'test_names' => $request->input('cat_name'),
+                'total' => $request->input('total_'),
+                'all_inputs' => $request->all(),
+            ]);
+
             $patientId = $request->input('patient_id');
+            $testIds = array_filter((array) $request->input('id', []));
             $selectedNames = array_filter((array) $request->input('cat_name', []));
             // use total_ sent by your form
             $total = (float) ($request->input('total_') ?? $request->input('amount') ?? 0);
             $paid  = (float) ($request->input('pay', 0));
             $status = ($paid >= $total && $total > 0) ? 'paid' : 'unpaid';
 
-            if (!$patientId || empty($selectedNames) || $total <= 0) {
+            if (!$patientId || (empty($testIds) && empty($selectedNames)) || $total <= 0) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Missing required fields (patient, tests, or amount).'
+                    'message' => 'Missing required fields (patient, tests, or amount). PatientID: ' . $patientId . ', TestIds: ' . count($testIds) . ', TestNames: ' . count($selectedNames) . ', Total: ' . $total
                 ], 400);
             }
 
@@ -209,7 +218,35 @@ class BillsController extends Controller
                 ], 404);
             }
 
-            // Update patient's test_category (your existing logic)
+            // Fetch selected test details for all_test JSON using IDs
+            $tests = [];
+            if (!empty($testIds)) {
+                $tests = \App\Models\LabTestCat::whereIn('id', $testIds)->get();
+            } elseif (!empty($selectedNames)) {
+                // Fallback: fetch by names if IDs are missing
+                $tests = \App\Models\LabTestCat::whereIn('cat_name', $selectedNames)->get();
+            }
+
+            if ($tests->isEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No tests found for the selected items.'
+                ], 404);
+            }
+
+            // Prepare all_test JSON array
+            $allTestArr = [];
+            $testNames = [];
+            foreach ($tests as $test) {
+                $allTestArr[] = [
+                    'id' => $test->id,
+                    'test_name' => $test->cat_name,
+                    'test_price' => $test->price,
+                ];
+                $testNames[] = $test->cat_name;
+            }
+
+            // Update patient's test_category with test names
             $rawCategories = $patient->test_category ?? [];
             if (!is_array($rawCategories)) {
                 $decoded = json_decode($rawCategories, true);
@@ -219,7 +256,7 @@ class BillsController extends Controller
                     $rawCategories = array_map('trim', explode(',', (string)$rawCategories));
                 }
             }
-            $merged = array_values(array_unique(array_merge($rawCategories, $selectedNames)));
+            $merged = array_values(array_unique(array_merge($rawCategories, $testNames)));
             $patient->test_category = json_encode($merged);
             $patient->save();
 
@@ -229,6 +266,7 @@ class BillsController extends Controller
                 [
                     'amount' => $total,
                     'status' => $status,
+                    'all_test' => json_encode($allTestArr),
                     'updated_at' => now(),
                 ]
             );
@@ -240,10 +278,11 @@ class BillsController extends Controller
         } catch (\Exception $e) {
             Log::error('BillsController@store failed: ' . $e->getMessage(), [
                 'trace' => $e->getTraceAsString(),
+                'input' => $request->all(),
             ]);
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to save bill'
+                'message' => 'Failed to save bill: ' . $e->getMessage()
             ], 500);
         }
     }
@@ -255,11 +294,25 @@ class BillsController extends Controller
     public function show($id)
     {
         try {
-            $bill = Bills::with('patient')->findOrFail($id);
-            return view('Bill.show_bill', compact('bill'));
+            $bills = Bills::with('patient')->findOrFail($id);
+            // Get test IDs from all_test JSON (array of objects with id or test_name)
+            $testIds = [];
+            $all_test = json_decode($bills->all_test, true);
+            if (is_array($all_test)) {
+                foreach ($all_test as $test) {
+                    if (isset($test['id'])) {
+                        $testIds[] = $test['id'];
+                    }
+                }
+            }
+            $tests = [];
+            if (!empty($testIds)) {
+                $tests = \App\Models\LabTestCat::whereIn('id', $testIds)->get();
+            }
+            return view('Bill.billdetails', compact('bills', 'tests'));
         } catch (\Exception $e) {
             Log::error('Error in BillsController@show: ' . $e->getMessage());
-            return redirect()->route('billing.index')
+            return redirect()->route('billing')
                 ->with('error', 'Bill not found');
         }
     }
@@ -277,7 +330,7 @@ class BillsController extends Controller
             return view('Bill.edit_bill', compact('bills', 'patient', 'tests', 'companies'));
         } catch (\Exception $e) {
             Log::error('Error in BillsController@edit: ' . $e->getMessage());
-            return redirect()->route('billing.index')
+            return redirect()->route('billing')
                 ->with('error', 'Failed to load bill for editing');
         }
     }
@@ -288,17 +341,61 @@ class BillsController extends Controller
     public function update(Request $request, Bills $bills)
     {
         try {
-            $validated = $request->validate([
-                'total_amount' => 'required|numeric',
+            Log::info('Update request received', [
+                'bill_id' => $bills->id,
+                'request_data' => $request->all(),
             ]);
 
+            $validated = $request->validate([
+                'discount' => 'required|numeric|min:0',
+                'total_price' => 'required|numeric|min:0',
+                'payment_type' => 'required|string',
+                'paid_amount' => 'required|numeric|min:0',
+                'due_amount' => 'required|numeric',
+            ]);
+
+            Log::info('Validation passed', ['validated_data' => $validated]);
+
+            // Update bill with validated data
             $bills->update($validated);
 
-            return redirect()->route('billing.show', $bills->id)
+            // Refresh to get updated data
+            $bills->refresh();
+
+            Log::info('Bill updated successfully', [
+                'bill_id' => $bills->id,
+                'updated_discount' => $bills->discount,
+                'updated_total_price' => $bills->total_price,
+                'updated_payment_type' => $bills->payment_type,
+            ]);
+
+            // If AJAX request, return JSON response
+            if ($request->ajax() || $request->expectsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Bill details updated successfully',
+                    'bill' => $bills
+                ]);
+            }
+
+            // Otherwise redirect with success message
+            return redirect()->route('bills.show', $bills->id)
                 ->with('success', 'Bill updated successfully');
         } catch (\Exception $e) {
-            Log::error('Error in BillsController@update: ' . $e->getMessage());
+            Log::error('Error in BillsController@update: ' . $e->getMessage(), [
+                'bill_id' => $bills->id ?? null,
+                'trace' => $e->getTraceAsString()
+            ]);
 
+            // If AJAX request, return JSON error
+            if ($request->ajax() || $request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to update bill: ' . $e->getMessage()
+                ], 500);
+            }
+
+            // Otherwise redirect with error message
             return redirect()->back()
                 ->with('error', 'Failed to update bill: ' . $e->getMessage())
                 ->withInput();

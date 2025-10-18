@@ -50,39 +50,14 @@
                 ajax: {
                     url: "{{ route('allbills') }}",
                 },
-                columns: [{
-                    data: 'DT_RowIndex',
-                    name: 'DT_RowIndex'
-                }, {
-                    data: 'bill_no',
-                    name: 'bill_no'
-                }, {
-                    data: 'patient_id',
-                    name: 'patient_id'
-                }, {
-                    data: 'patient_name',
-                    name: 'patient_name'
-                }, {
-                    data: 'all_test',
-                    name: 'all_test'
-                }, {
-                    data: 'billing_date',
-                    name: 'billing_date'
-                }, {
-                    data: 'net_price',
-                    name: 'net_price'
-                }, {
-                    data: 'discount',
-                    name: 'discount'
-                }, {
-                    data: 'total_price',
-                    name: 'total_price'
-                }, {
-                    data: 'action',
-                    name: 'action',
-                    orderable: true,
-                    searchable: true
-                }],
+                columns: [
+                    { data: 'DT_RowIndex', name: 'DT_RowIndex' },
+                    { data: 'patient_id', name: 'patient_id' },
+                    { data: 'patient_name', name: 'patient_name' },
+                    { data: 'all_test', name: 'all_test' },
+                    { data: 'billing_date', name: 'billing_date' },
+                    { data: 'action', name: 'action', orderable: true, searchable: true }
+                ],
             });
         });
     </script>

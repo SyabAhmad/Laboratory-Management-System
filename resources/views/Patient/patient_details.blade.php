@@ -108,41 +108,85 @@
                     </div>
                 </div>
 
-                <!-- Test Results Section -->
-                <div class="test-results mb-4">
-                    <h5 class="section-title mb-3" style="color: #2c3e50; border-bottom: 2px solid #da920dff; padding-bottom: 5px;">
-                        TEST RESULTS & CLINICAL DATA
-                    </h5>
-                    <table class="table table-bordered">
-                        <thead style="background-color: #ecf0f1;">
-                            <tr>
-                                <th>Parameter</th>
-                                <th>Value</th>
-                                <th>Unit</th>
-                                <th>Reference Range</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Blood Pressure</td>
-                                <td>{{ $patient->bp ?? 'N/A' }}</td>
-                                <td>mmHg</td>
-                                <td>120/80</td>
-                            </tr>
-                            <tr>
-                                <td>Height</td>
-                                <td>{{ $patient->height ?? 'N/A' }}</td>
-                                <td>cm</td>
-                                <td>-</td>
-                            </tr>
-                            <tr>
-                                <td>Weight</td>
-                                <td>{{ $patient->weight ?? 'N/A' }}</td>
-                                <td>kg</td>
-                                <td>-</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <!-- Test Results Section - Dynamic from Database -->
+                @if(!empty($testsWithData))
+                    <div class="test-results mb-4">
+                        <h5 class="section-title mb-3" style="color: #2c3e50; border-bottom: 2px solid #da920dff; padding-bottom: 5px;">
+                            <i class="fas fa-flask"></i> REGISTERED TESTS & RESULTS
+                        </h5>
+
+                        @forelse($testsWithData as $test)
+                            @php
+                                $testName = $test['name'];
+                                $template = $test['template'];
+                                $savedData = $test['saved_data'];
+                                $hasData = $test['has_data'];
+                                $isMllpData = $test['is_mllp_data'] ?? false;
+                                $borderColor = $hasData ? '#28a745' : '#ffc107';
+                            @endphp
+
+                            <div class="test-card mb-4 p-3" style="background-color: #f8f9fa; border-left: 4px solid {{ $borderColor }}; border-radius: 4px;">
+                                <div class="d-flex align-items-center mb-3">
+                                    <i class="fas fa-{{ $isMllpData ? 'microchip' : 'vial' }}" style="color: #da920dff; font-size: 24px; margin-right: 12px;"></i>
+                                    <div>
+                                        <h6 class="mb-0" style="color: #2c3e50; font-weight: 600;">{{ $testName }}</h6>
+                                        <small class="text-muted">
+                                            @if($hasData)
+                                                <span class="badge badge-success"><i class="fas fa-check-circle"></i> Completed</span>
+                                                @if($isMllpData)
+                                                    <span class="badge badge-info ml-2"><i class="fas fa-microchip"></i> From Analyzer</span>
+                                                @endif
+                                                @if(!empty($savedData['test_date']))
+                                                    <span class="ml-2">Date: {{ $savedData['test_date'] }}</span>
+                                                @elseif(!empty($savedData['reported_at']))
+                                                    <span class="ml-2">Reported: {{ $savedData['reported_at'] }}</span>
+                                                @endif
+                                            @else
+                                                <span class="badge badge-warning"><i class="fas fa-clock"></i> Pending</span>
+                                            @endif
+                                        </small>
+                                    </div>
+                                </div>
+
+                                @if($hasData && !empty($template['fields']))
+                                    <table class="table table-sm table-borderless mb-0">
+                                        <tbody>
+                                            @foreach($template['fields'] as $field)
+                                                @php
+                                                    $fieldValue = $savedData[$field['name']] ?? '';
+                                                @endphp
+                                                @if(!empty($fieldValue) || $isMllpData)
+                                                    <tr>
+                                                        <td style="width: 35%; font-weight: 500; color: #2c3e50;">
+                                                            {{ $field['label'] }}:
+                                                        </td>
+                                                        <td style="color: #34495e;">
+                                                            @if(!empty($fieldValue))
+                                                                {{ $fieldValue }}
+                                                            @elseif($isMllpData && in_array($field['name'], ['reported_at', 'instrument', 'accession_no']))
+                                                                {{ $savedData[$field['name']] ?? '-' }}
+                                                            @else
+                                                                -
+                                                            @endif
+                                                        </td>
+                                                    </tr>
+                                                @endif
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                @else
+                                    <div class="alert alert-info mb-0 py-2">
+                                        <i class="fas fa-info-circle"></i> No test data recorded yet.
+                                    </div>
+                                @endif
+                            </div>
+                        @empty
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle"></i> No tests registered for this patient.
+                            </div>
+                        @endforelse
+                    </div>
+                @endif
 
                     @if($patient->note)
                     <div class="clinical-notes mt-3 p-3" style="background-color: #f8f9fa; border-left: 4px solid #3498db;">

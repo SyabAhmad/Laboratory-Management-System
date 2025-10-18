@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Yajra\DataTables\Facades\DataTables;
 use App\Models\LabTestCat;
+use App\Models\Tests\TestModelFactory;
+use App\Models\Tests\CBC;
+use App\Models\Tests\Urinal;
 use Illuminate\Support\Facades\DB;
 
 class PatientsController extends Controller
@@ -41,6 +44,264 @@ class PatientsController extends Controller
             'patient' => $patient,
             'tests' => $tests,
         ]);
+    }
+
+    /**
+     * Get registered tests for edit view with templates and saved data
+     * Now handles the new associative format: test_report = {"CBC": {...}, "Urinal": {...}}
+     *
+     * @param  int  $id
+     * @return array
+     */
+    public function getEditTestData($id)
+    {
+        $patient = Patients::findOrFail($id);
+        $testTemplates = config('test_templates', []);
+        
+        // Parse registered tests from test_category
+        $selectedTests = [];
+        if (!empty($patient->test_category)) {
+            $decoded = json_decode($patient->test_category, true);
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                $selectedTests = $decoded;
+            } else {
+                $selectedTests = array_map('trim', explode(',', $patient->test_category));
+            }
+        }
+        
+        // Parse saved test reports - now expected to be associative: {"TestName": {...}, ...}
+        $existingTestReports = json_decode($patient->test_report ?? '{}', true) ?? [];
+        
+        // Build test data with templates
+        $testsWithData = [];
+        $processedTests = []; // Track which tests we've already added
+        
+        // First, add all registered tests from test_category
+        foreach ($selectedTests as $testName) {
+            $testName = trim($testName);
+            $processedTests[$testName] = true;
+
+            // Check if this test has saved data in test_report
+            $testData = $existingTestReports[$testName] ?? [];
+
+            // Use test-specific model if available
+            $modelClass = TestModelFactory::getModelClass($testName);
+            $template = null;
+            if ($modelClass && class_exists($modelClass)) {
+                // Use analytes from model for template
+                $defs = $modelClass::analytes();
+                $fields = [];
+                foreach ($defs as $analyteName => $meta) {
+                    $unitStr = $meta['units'] ? ' (' . $meta['units'] . ')' : '';
+                    $refRangeStr = $meta['ref_range'] ? ' - Ref: ' . $meta['ref_range'] : '';
+                    $fields[] = [
+                        'name' => $analyteName,
+                        'label' => $analyteName . $unitStr . $refRangeStr,
+                        'type' => 'text',
+                        'required' => false,
+                    ];
+                }
+                $template = [
+                    'fields' => array_merge([
+                        [
+                            'name' => 'reported_at',
+                            'label' => 'Reported At',
+                            'type' => 'text',
+                            'required' => false,
+                        ],
+                        [
+                            'name' => 'instrument',
+                            'label' => 'Instrument',
+                            'type' => 'text',
+                            'required' => false,
+                        ],
+                        [
+                            'name' => 'accession_no',
+                            'label' => 'Accession No',
+                            'type' => 'text',
+                            'required' => false,
+                        ],
+                    ], $fields)
+                ];
+            }
+
+            // Use configured template if exists and no test model was found
+            if ($template === null && isset($testTemplates[$testName])) {
+                $template = $testTemplates[$testName];
+            }
+
+            // Fall back to generic template
+            if ($template === null) {
+                $template = [
+                    'fields' => [
+                        [
+                            'name' => 'result',
+                            'label' => 'Test Result',
+                            'type' => 'textarea',
+                            'required' => true,
+                        ],
+                        [
+                            'name' => 'notes',
+                            'label' => 'Notes/Comments',
+                            'type' => 'textarea',
+                            'required' => false,
+                        ],
+                    ]
+                ];
+            }
+
+            $savedData = $this->flattenTestData($testData);
+
+            $isMllpData = isset($testData['instrument']) || isset($testData['analytes']);
+
+            $testsWithData[] = [
+                'name' => $testName,
+                'template' => $template,
+                'saved_data' => $savedData,
+                'has_data' => !empty($testData),
+                'has_template' => isset($testTemplates[$testName]),
+                'is_mllp_data' => $isMllpData,
+            ];
+        }
+        
+        // Second, add any tests in test_report that are NOT in test_category
+        // This handles MLLP-received data (like CBC from analyzer) that wasn't pre-registered
+        foreach ($existingTestReports as $testName => $testData) {
+            // Skip if we've already processed this test (it was in test_category)
+            if (isset($processedTests[$testName])) {
+                continue;
+            }
+            
+            // Mark as processed
+            $processedTests[$testName] = true;
+            
+            // Detect if this is MLLP data (has 'instrument' or 'analytes')
+            $isMllpData = isset($testData['instrument']) || isset($testData['analytes']);
+            
+            // Extract analytes if present
+            $analytes = [];
+            if (is_array($testData) && isset($testData['analytes'])) {
+                $analytes = $testData['analytes'];
+            }
+            
+            // Create a template from analytes or use default
+            $fields = [];
+            if (!empty($analytes) && is_array($analytes)) {
+                foreach ($analytes as $analyte) {
+                    if (is_array($analyte) && isset($analyte['name']) && isset($analyte['value'])) {
+                        // Create field name with units for display
+                        $unitStr = isset($analyte['units']) ? ' (' . $analyte['units'] . ')' : '';
+                        $refRangeStr = isset($analyte['ref_range']) ? ' - Ref: ' . $analyte['ref_range'] : '';
+                        
+                        $fields[] = [
+                            'name' => $analyte['name'],
+                            'label' => $analyte['name'] . $unitStr . $refRangeStr,
+                            'type' => 'text',
+                            'required' => false,
+                        ];
+                    }
+                }
+            }
+            
+            // Use template if exists, otherwise build from analytes or use generic
+            if (isset($testTemplates[$testName])) {
+                $template = $testTemplates[$testName];
+            } elseif (!empty($fields)) {
+                // Template from MLLP analytes with metadata fields
+                $template = [
+                    'fields' => array_merge(
+                        [
+                            [
+                                'name' => 'reported_at',
+                                'label' => 'Reported At',
+                                'type' => 'text',
+                                'required' => false,
+                            ],
+                            [
+                                'name' => 'instrument',
+                                'label' => 'Instrument',
+                                'type' => 'text',
+                                'required' => false,
+                            ],
+                            [
+                                'name' => 'accession_no',
+                                'label' => 'Accession No',
+                                'type' => 'text',
+                                'required' => false,
+                            ],
+                        ],
+                        $fields
+                    )
+                ];
+            } else {
+                $template = [
+                    'fields' => [
+                        [
+                            'name' => 'result',
+                            'label' => 'Test Result',
+                            'type' => 'textarea',
+                            'required' => true,
+                        ],
+                        [
+                            'name' => 'notes',
+                            'label' => 'Notes/Comments',
+                            'type' => 'textarea',
+                            'required' => false,
+                        ],
+                    ]
+                ];
+            }
+            
+            // Flatten test data for display
+            $savedData = $this->flattenTestData($testData);
+            
+            $testsWithData[] = [
+                'name' => $testName,
+                'template' => $template,
+                'saved_data' => $savedData,
+                'has_data' => !empty($testData),
+                'has_template' => isset($testTemplates[$testName]),
+                'is_mllp_data' => $isMllpData,
+            ];
+        }
+        
+        
+        return [
+            'selectedTests' => $selectedTests,
+            'testsWithData' => $testsWithData,
+            'existingTestReports' => $existingTestReports,
+            'testTemplates' => $testTemplates,
+        ];
+    }
+    
+    /**
+     * Helper function to flatten test data for display
+     * Converts analytes array to key-value pairs
+     *
+     * @param  array $testData
+     * @return array
+     */
+    private function flattenTestData($testData)
+    {
+        $savedData = [];
+        if (is_array($testData)) {
+            foreach ($testData as $k => $v) {
+                if ($k === 'analytes' && is_array($v)) {
+                    // Convert analytes array to key-value pairs
+                    foreach ($v as $analyte) {
+                        if (is_array($analyte) && isset($analyte['name']) && array_key_exists('value', $analyte)) {
+                            $savedData[$analyte['name']] = $analyte['value'];
+                        }
+                    }
+                } else {
+                    $savedData[$k] = $v;
+                }
+            }
+        } else {
+            $savedData = $testData;
+        }
+        
+        return $savedData;
     }
 
 
@@ -262,7 +523,14 @@ class PatientsController extends Controller
     public function show($id)
     {
         $patient = Patients::with(['user', 'bills'])->findOrFail($id);
-        return view('Patient.patient_details', compact('patient'));
+        
+        // Get test data with templates (same as edit view)
+        $testData = $this->getEditTestData($id);
+        
+        return view('Patient.patient_details', array_merge(
+            compact('patient'),
+            $testData
+        ));
     }
 
     /**
@@ -275,18 +543,13 @@ class PatientsController extends Controller
     {
         $patient = Patients::findOrFail($id);
 
-        // Decode test_category if it's JSON
-        if (!empty($patient->test_category)) {
-            $patient->test_category_array = json_decode($patient->test_category, true);
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                // If it's not valid JSON, try to split by comma
-                $patient->test_category_array = array_map('trim', explode(',', $patient->test_category));
-            }
-        } else {
-            $patient->test_category_array = [];
-        }
+        // Get test data with templates
+        $testData = $this->getEditTestData($id);
 
-        return view('Patient.patient_edit', compact('patient'));
+        return view('Patient.patient_edit', array_merge(
+            compact('patient'),
+            $testData
+        ));
     }
 
     /**

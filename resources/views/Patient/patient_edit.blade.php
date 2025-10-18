@@ -122,7 +122,261 @@
             </div>
         </div>
 
-        {{-- CBC Results Section --}}
+        {{-- Test Data Edit Section --}}
+        @php
+            // Debug: Show if variables exist
+            // dd([
+            //     'selectedTests' => $selectedTests ?? [],
+            //     'testsWithData' => $testsWithData ?? [],
+            //     'patient_test_category' => $patient->test_category ?? 'null'
+            // ]);
+        @endphp
+        @if(!empty($testsWithData))
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="header-title mb-3">
+                                <i class="fas fa-flask"></i> Edit Test Data
+                            </h4>
+
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th>Test Name</th>
+                                            <th>Status</th>
+                                            <th>Last Updated</th>
+                                            <th>Preview</th>
+                                            <th width="120">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($testsWithData as $test)
+                                            @php
+                                                $testSlug = \Str::slug($test['name']);
+                                                $hasData = $test['has_data'];
+                                                $savedData = $test['saved_data'];
+                                                $template = $test['template'];
+                                                $hasTemplate = $test['has_template'] ?? false;
+                                                $isMllpData = $test['is_mllp_data'] ?? false;
+                                            @endphp
+
+                                            <tr>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="fas fa-{{ $isMllpData ? 'microchip' : 'vial' }} text-primary mr-2" style="font-size: 16px;"></i>
+                                                        <div>
+                                                            <strong>{{ $test['name'] }}</strong>
+                                                            @if($isMllpData)
+                                                                <br><small class="badge badge-info"><i class="fas fa-microchip"></i> From Analyzer</small>
+                                                            @elseif(!$hasTemplate)
+                                                                <br><small class="badge badge-info">Generic Template</small>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    @if($hasData)
+                                                        <span class="badge badge-success">
+                                                            <i class="fas fa-check-circle"></i> Completed
+                                                        </span>
+                                                    @else
+                                                        <span class="badge badge-warning">
+                                                            <i class="fas fa-clock"></i> Pending
+                                                        </span>
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    @if($hasData)
+                                                        <small class="text-muted">
+                                                            {{ $savedData['test_date'] ?? $savedData['reported_at'] ?? 'Unknown' }}
+                                                        </small>
+                                                    @else
+                                                        <small class="text-muted text-danger">-</small>
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    @if($hasData)
+                                                        <small class="text-muted">
+                                                            @php
+                                                                $preview = '';
+                                                                foreach($template['fields'] as $field) {
+                                                                    $value = $savedData[$field['name']] ?? '';
+                                                                    if (!empty($value)) {
+                                                                        $preview = substr($value, 0, 40);
+                                                                        break;
+                                                                    }
+                                                                }
+                                                            @endphp
+                                                            {{ $preview ?? '-' }}{{ strlen($preview ?? '') > 40 ? '...' : '' }}
+                                                        </small>
+                                                    @else
+                                                        <small class="text-muted">-</small>
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#testModal_{{ $testSlug }}" title="{{ $hasData ? 'Edit Test Data' : 'Add Test Data' }}">
+                                                        <i class="fas fa-{{ $hasData ? 'edit' : 'plus' }}"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @elseif(empty($selectedTests))
+            <div class="row">
+                <div class="col-12">
+                    <div class="alert alert-info alert-dismissible fade show" role="alert">
+                        <i class="fas fa-info-circle"></i> <strong>No tests registered</strong> - This patient has no tests registered. Please register tests during patient creation to edit test data.
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        @endif
+
+        {{-- Test Results Summary Section --}}
+        @php
+            $allReports = json_decode($patient->test_report ?? '[]', true) ?? [];
+            // Filter out CBC reports (they have their own section)
+            $testResults = array_filter($allReports, function($report) {
+                return !isset($report['test']) || $report['test'] !== 'CBC';
+            });
+        @endphp
+
+        @if(!empty($testResults))
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="header-title mb-3">
+                                <i class="fas fa-file-alt"></i> Test Results Summary
+                            </h4>
+
+                            <div class="accordion" id="testResultsAccordion">
+                                @foreach($testResults as $testName => $testData)
+                                    @php
+                                        $testSlug = \Str::slug($testName);
+                                        $collapseId = 'testResult_' . $testSlug;
+                                        $headingId = 'heading_' . $testSlug;
+                                    @endphp
+
+                                    <div class="card border-0 mb-2">
+                                        <div class="card-header p-0 bg-light" id="{{ $headingId }}">
+                                            <button class="btn btn-link btn-block text-left p-3" type="button" data-toggle="collapse" data-target="#{{ $collapseId }}" aria-expanded="false" aria-controls="{{ $collapseId }}">
+                                                <div class="d-flex justify-content-between align-items-center w-100">
+                                                    <div>
+                                                        <h6 class="mb-0">
+                                                            <i class="fas fa-chevron-right collapse-icon" style="transition: transform 0.3s;"></i>
+                                                            <strong>{{ $testName }}</strong>
+                                                        </h6>
+                                                        <small class="text-muted">
+                                                            Recorded: {{ $testData['test_date'] ?? 'Unknown date' }}
+                                                        </small>
+                                                    </div>
+                                                    <span class="badge badge-success">
+                                                        <i class="fas fa-check-circle"></i> Completed
+                                                    </span>
+                                                </div>
+                                            </button>
+                                        </div>
+
+                                        <div id="{{ $collapseId }}" class="collapse" aria-labelledby="{{ $headingId }}" data-parent="#testResultsAccordion">
+                                            <div class="card-body">
+                                                {{-- Try to find the template to display nicely --}}
+                                                @php
+                                                    $template = $testTemplates[$testName] ?? null;
+                                                @endphp
+
+                                                @if($template)
+                                                    {{-- Display with template fields --}}
+                                                    <div class="table-responsive">
+                                                        <table class="table table-sm table-bordered mb-0">
+                                                            <thead class="thead-light">
+                                                                <tr>
+                                                                    <th>Field</th>
+                                                                    <th>Value</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                @foreach($template['fields'] as $field)
+                                                                    @php
+                                                                        $value = $testData[$field['name']] ?? '';
+                                                                    @endphp
+                                                                    <tr>
+                                                                        <td><strong>{{ $field['label'] }}</strong></td>
+                                                                        <td>
+                                                                            @if(!empty($value))
+                                                                                <pre class="mb-0" style="background-color: #f8f9fa; padding: 8px; border-radius: 4px; white-space: pre-wrap; word-wrap: break-word;">{{ $value }}</pre>
+                                                                            @else
+                                                                                <span class="text-muted">-</span>
+                                                                            @endif
+                                                                        </td>
+                                                                    </tr>
+                                                                @endforeach
+                                                                <tr class="bg-light">
+                                                                    <td><strong>Test Date</strong></td>
+                                                                    <td>{{ $testData['test_date'] ?? 'Unknown' }}</td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                @else
+                                                    {{-- Display generic test data --}}
+                                                    <div class="table-responsive">
+                                                        <table class="table table-sm table-bordered mb-0">
+                                                            <thead class="thead-light">
+                                                                <tr>
+                                                                    <th>Field</th>
+                                                                    <th>Value</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                @foreach($testData as $key => $value)
+                                                                    @if($key !== 'test_date')
+                                                                        <tr>
+                                                                            <td><strong>{{ ucfirst(str_replace('_', ' ', $key)) }}</strong></td>
+                                                                            <td>
+                                                                                @if(!empty($value))
+                                                                                    <pre class="mb-0" style="background-color: #f8f9fa; padding: 8px; border-radius: 4px; white-space: pre-wrap; word-wrap: break-word;">{{ $value }}</pre>
+                                                                                @else
+                                                                                    <span class="text-muted">-</span>
+                                                                                @endif
+                                                                            </td>
+                                                                        </tr>
+                                                                    @endif
+                                                                @endforeach
+                                                                <tr class="bg-light">
+                                                                    <td><strong>Test Date</strong></td>
+                                                                    <td>{{ $testData['test_date'] ?? 'Unknown' }}</td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                @endif
+
+                                                <div class="mt-3">
+                                                    <button type="button" class="btn btn-sm btn-warning" data-toggle="modal" data-target="#testModal_{{ $testSlug }}">
+                                                        <i class="fas fa-edit"></i> Edit Test Data
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
         <div class="row">
             <div class="col-12">
                 <div class="card">
@@ -200,146 +454,89 @@
             </div>
         </div>
 
-        @php
-            $existingTestReports = json_decode($patient->test_report ?? '[]', true) ?? [];
-        @endphp
+    </div>
 
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-body">
-                        <h4 class="header-title mb-3">Test Results</h4>
+    @if(!empty($testsWithData))
+        @foreach($testsWithData as $test)
+            @php
+                $testSlug = \Str::slug($test['name']);
+                $template = $test['template'];
+                $saved = $test['saved_data'];
+            @endphp
 
-                        @if(!empty($selectedTests))
-                            <div class="table-responsive">
-                                <table class="table table-bordered table-hover">
-                                    <thead class="thead-light">
-                                        <tr>
-                                            <th>Test Name</th>
-                                            <th>Status</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach($selectedTests as $test)
-                                            <tr>
-                                                <td><strong>{{ $test }}</strong></td>
-                                                <td>
-                                                    @if(isset($existingTestReports[$test]))
-                                                        <span class="badge badge-success">Completed</span>
-                                                    @else
-                                                        <span class="badge badge-warning">Pending</span>
-                                                    @endif
-                                                </td>
-                                                <td>
-                                                    <button type="button"
-                                                            class="btn btn-sm btn-info"
-                                                            data-toggle="modal"
-                                                            data-target="#testModal_{{ \Str::slug($test) }}">
-                                                        <i class="fas fa-edit"></i>
-                                                        {{ isset($existingTestReports[$test]) ? 'Edit' : 'Add' }} Data
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
+            <div class="modal fade" id="testModal_{{ $testSlug }}" tabindex="-1" role="dialog" aria-labelledby="testModalLabel_{{ $testSlug }}" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header bg-primary text-white">
+                            <h5 class="modal-title" id="testModalLabel_{{ $testSlug }}">
+                                <i class="fas fa-flask"></i> {{ $test['name'] }} - Test Results
+                            </h5>
+                            <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <form class="test-data-form" data-test-name="{{ $test['name'] }}" data-patient-id="{{ $patient->id }}">
+                            <div class="modal-body">
+                                @foreach($template['fields'] as $field)
+                                    <div class="form-group">
+                                        <label for="{{ $testSlug }}_{{ $field['name'] }}">
+                                            {{ $field['label'] }}
+                                            @if($field['required'] ?? false)
+                                                <span class="text-danger">*</span>
+                                            @endif
+                                        </label>
+
+                                        @switch($field['type'] ?? 'text')
+                                            @case('textarea')
+                                                <textarea id="{{ $testSlug }}_{{ $field['name'] }}"
+                                                          name="{{ $field['name'] }}"
+                                                          class="form-control"
+                                                          rows="4"
+                                                          {{ ($field['required'] ?? false) ? 'required' : '' }}>{{ $saved[$field['name']] ?? '' }}</textarea>
+                                                @break
+
+                                            @case('number')
+                                                <input type="number"
+                                                       id="{{ $testSlug }}_{{ $field['name'] }}"
+                                                       name="{{ $field['name'] }}"
+                                                       class="form-control"
+                                                       value="{{ $saved[$field['name']] ?? '' }}"
+                                                       step="{{ $field['step'] ?? '1' }}"
+                                                       {{ ($field['required'] ?? false) ? 'required' : '' }}>
+                                                @break
+
+                                            @default
+                                                <input type="text"
+                                                       id="{{ $testSlug }}_{{ $field['name'] }}"
+                                                       name="{{ $field['name'] }}"
+                                                       class="form-control"
+                                                       value="{{ $saved[$field['name']] ?? '' }}"
+                                                       {{ ($field['required'] ?? false) ? 'required' : '' }}>
+                                        @endswitch
+                                    </div>
+                                @endforeach
+
+                                <div class="form-group">
+                                    <label for="{{ $testSlug }}_test_date">Test Date <span class="text-danger">*</span></label>
+                                    <input type="date"
+                                           id="{{ $testSlug }}_test_date"
+                                           name="test_date"
+                                           class="form-control"
+                                           value="{{ $saved['test_date'] ?? now()->format('Y-m-d') }}"
+                                           required>
+                                </div>
                             </div>
-                        @else
-                            <div class="alert alert-info">
-                                <i class="fas fa-info-circle"></i> No tests selected for this patient.
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Save Test Data
+                                </button>
                             </div>
-                        @endif
+                        </form>
                     </div>
                 </div>
             </div>
-        </div>
-
-    </div>
-
-    @if(!empty($selectedTests))
-        @foreach($selectedTests as $test)
-            @php
-                $testSlug = \Str::slug($test);
-                $template = $testTemplates[$test] ?? null;
-                $saved = $existingTestReports[$test] ?? [];
-            @endphp
-
-            @if($template)
-                <div class="modal fade" id="testModal_{{ $testSlug }}" tabindex="-1" role="dialog" aria-labelledby="testModalLabel_{{ $testSlug }}" aria-hidden="true">
-                    <div class="modal-dialog modal-lg" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header bg-primary text-white">
-                                <h5 class="modal-title" id="testModalLabel_{{ $testSlug }}">
-                                    <i class="fas fa-flask"></i> {{ $test }} - Test Results
-                                </h5>
-                                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <form class="test-data-form" data-test-name="{{ $test }}" data-patient-id="{{ $patient->id }}">
-                                <div class="modal-body">
-                                    @foreach($template['fields'] as $field)
-                                        <div class="form-group">
-                                            <label for="{{ $testSlug }}_{{ $field['name'] }}">
-                                                {{ $field['label'] }}
-                                                @if($field['required'])
-                                                    <span class="text-danger">*</span>
-                                                @endif
-                                            </label>
-
-                                            @switch($field['type'])
-                                                @case('textarea')
-                                                    <textarea id="{{ $testSlug }}_{{ $field['name'] }}"
-                                                              name="{{ $field['name'] }}"
-                                                              class="form-control"
-                                                              rows="4"
-                                                              {{ $field['required'] ? 'required' : '' }}>{{ $saved[$field['name']] ?? '' }}</textarea>
-                                                    @break
-
-                                                @case('number')
-                                                    <input type="number"
-                                                           id="{{ $testSlug }}_{{ $field['name'] }}"
-                                                           name="{{ $field['name'] }}"
-                                                           class="form-control"
-                                                           value="{{ $saved[$field['name']] ?? '' }}"
-                                                           step="{{ $field['step'] ?? '1' }}"
-                                                           {{ $field['required'] ? 'required' : '' }}>
-                                                    @break
-
-                                                @default
-                                                    <input type="text"
-                                                           id="{{ $testSlug }}_{{ $field['name'] }}"
-                                                           name="{{ $field['name'] }}"
-                                                           class="form-control"
-                                                           value="{{ $saved[$field['name']] ?? '' }}"
-                                                           {{ $field['required'] ? 'required' : '' }}>
-                                            @endswitch
-                                        </div>
-                                    @endforeach
-
-                                    <div class="form-group">
-                                        <label for="{{ $testSlug }}_test_date">Test Date <span class="text-danger">*</span></label>
-                                        <input type="date"
-                                               id="{{ $testSlug }}_test_date }}"
-                                               name="test_date"
-                                               class="form-control"
-                                               value="{{ $saved['test_date'] ?? now()->format('Y-m-d') }}"
-                                               required>
-                                    </div>
-                                </div>
-
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="fas fa-save"></i> Save Test Data
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            @endif
         @endforeach
     @endif
 
@@ -348,6 +545,17 @@
 @section('scripts')
     <script>
         $(document).ready(function () {
+            // Chevron icon animation for test results accordion
+            $('[data-toggle="collapse"]').on('click', function() {
+                $(this).find('.collapse-icon').toggleClass('fa-chevron-right fa-chevron-down');
+            });
+
+            // Auto-rotate chevrons on load for already expanded items
+            $('.collapse.show').each(function() {
+                var target = $(this).attr('id');
+                $('[data-target="#' + target + '"] .collapse-icon').addClass('fa-chevron-down').removeClass('fa-chevron-right');
+            });
+
             // Fetch CBC Results
             $('#fetchCBCResults').on('click', function () {
                 const btn = $(this);
@@ -387,7 +595,7 @@
                 submitBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Saving…');
 
                 $.ajax({
-                    url: '{{ route('patients.storeTestData') }}',
+                    url: "{{ route('patients.storeTestData') }}",
                     method: 'POST',
                     data: formData,
                     processData: false,

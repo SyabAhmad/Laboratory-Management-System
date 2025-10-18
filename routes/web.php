@@ -89,6 +89,7 @@ Route::middleware(['auth:sanctum', 'verified'])
         Route::get('/billing/registered-tests/{id}', 'App\Http\Controllers\BillsController@getRegisteredTests')->name('billing.get-registered-tests');
         Route::post('/billing/add', 'App\Http\Controllers\BillsController@store')->name('billing.add');
         Route::get('/billing/details/{id}', 'App\Http\Controllers\BillsController@show')->name('billing.details');
+        Route::put('/billing/{bill}', 'App\Http\Controllers\BillsController@update')->name('bills.update');
         Route::get('/allbilling', 'App\Http\Controllers\BillsController@allbills')->name('allbills');
         Route::get('/all/billing', 'App\Http\Controllers\BillsController@allbills')->name('all.bills');
         Route::get('/billing', 'App\Http\Controllers\BillsController@index')->name('billing');
