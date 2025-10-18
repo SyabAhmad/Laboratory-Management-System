@@ -146,17 +146,18 @@ def update_patient_test_report(conn, patient_id, new_result_json):
         cur.execute("SELECT test_report FROM patients WHERE id=%s", (patient_id,))
         row = cur.fetchone()
         
-        existing_reports = []
+        existing_reports = {}
         if row and row['test_report']:
             try:
                 existing_reports = json.loads(row['test_report'])
-                if not isinstance(existing_reports, list):
-                    existing_reports = []
+                if not isinstance(existing_reports, dict):
+                    existing_reports = {}
             except Exception:
-                existing_reports = []
+                existing_reports = {}
         
-        # Append new CBC result
-        existing_reports.append(new_result_json)
+        # Update CBC result using test name as key
+        test_name = new_result_json.get('test', 'CBC')
+        existing_reports[test_name] = new_result_json
         
         # Update patient record
         cur.execute("""
@@ -165,7 +166,7 @@ def update_patient_test_report(conn, patient_id, new_result_json):
             WHERE id = %s
         """, (json.dumps(existing_reports, ensure_ascii=False), patient_id))
         
-    print(f"✓ Updated patient test_report: patient_id={patient_id}, analytes={len(analytes)}")
+    print(f"✓ Updated patient test_report: patient_id={patient_id}, test={test_name}, analytes={len(analytes)}")
 
 def make_ack():
     return SB + b"MSH|^~\\&|||||||ACK^R01|1|P|2.3\rMSA|AA|1\r" + EB + CR
