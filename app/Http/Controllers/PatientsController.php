@@ -736,4 +736,37 @@ class PatientsController extends Controller
             'message' => 'No CBC results available. Results are automatically synced from the analyzer.'
         ]);
     }
+
+    /**
+     * Render a print-friendly view of a single test report for a patient
+     */
+    public function printTestReport($patientId, $testName)
+    {
+        $patient = Patients::findOrFail($patientId);
+
+        // Use the same helper to build templates/data
+        $data = $this->getEditTestData($patientId);
+
+    // Decode the test name in case it was URL-encoded
+    $testName = rawurldecode($testName);
+
+    // Find the matching test in testsWithData
+        $testEntry = null;
+        foreach ($data['testsWithData'] as $t) {
+            if ($t['name'] === $testName) {
+                $testEntry = $t;
+                break;
+            }
+        }
+
+        if (!$testEntry) {
+            abort(404, 'Test report not found for this patient');
+        }
+
+        return view('Patient.patient_test_print', array_merge(
+            compact('patient'),
+            $data,
+            ['testEntry' => $testEntry]
+        ));
+    }
 }

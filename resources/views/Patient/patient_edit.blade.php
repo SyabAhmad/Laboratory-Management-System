@@ -198,19 +198,24 @@
                                                 </td>
                                                 <td>
                                                     @if($hasData)
-                                                        <small class="text-muted">
-                                                            @php
-                                                                $preview = '';
-                                                                foreach($template['fields'] as $field) {
-                                                                    $value = $savedData[$field['name']] ?? '';
-                                                                    if (!empty($value)) {
-                                                                        $preview = substr($value, 0, 40);
-                                                                        break;
+                                                        <div class="d-flex align-items-center">
+                                                            <small class="text-muted mr-2">
+                                                                @php
+                                                                    $preview = '';
+                                                                    foreach($template['fields'] as $field) {
+                                                                        $value = $savedData[$field['name']] ?? '';
+                                                                        if (!empty($value)) {
+                                                                            $preview = substr($value, 0, 40);
+                                                                            break;
+                                                                        }
                                                                     }
-                                                                }
-                                                            @endphp
-                                                            {{ $preview ?? '-' }}{{ strlen($preview ?? '') > 40 ? '...' : '' }}
-                                                        </small>
+                                                                @endphp
+                                                                {{ $preview ?? '-' }}{{ strlen($preview ?? '') > 40 ? '...' : '' }}
+                                                            </small>
+                                                            <a href="{{ route('patients.printTest', ['patient' => $patient->id, 'testName' => $test['name']]) }}" target="_blank" class="btn btn-sm btn-outline-secondary" title="Print Test Report">
+                                                                <i class="fas fa-file-pdf"></i>
+                                                            </a>
+                                                        </div>
                                                     @else
                                                         <small class="text-muted">-</small>
                                                     @endif
@@ -219,6 +224,7 @@
                                                     <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#testModal_{{ $testSlug }}" title="{{ $hasData ? 'Edit Test Data' : 'Add Test Data' }}">
                                                         <i class="fas fa-{{ $hasData ? 'edit' : 'plus' }}"></i>
                                                     </button>
+                                                    <!-- PDF button moved to the Preview column -->
                                                 </td>
                                             </tr>
                                         @endforeach
