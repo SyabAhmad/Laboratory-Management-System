@@ -30,44 +30,40 @@ class ReportGenarationController extends Controller
         $data1 = $request->input('from');
         $data2 = $request->input('to');
 
-        $data3 = Payments::whereBetween('date', [$data1, $data2])
-            ->orderBy('date')->get();
+        // All payments in date range
+        $data3 = Payments::whereBetween('created_at', [$data1, $data2])
+            ->orderBy('created_at')
+            ->get();
 
-        $data4 = Payments::where('type', 'Income')
-            ->whereBetween('date', [$data1, $data2])
-            ->orderBy('date')
-            ->get()
+        // Total income (sum of all payments)
+        $data4 = Payments::whereBetween('created_at', [$data1, $data2])
             ->sum('amount');
 
-        $data5 = Payments::where('type', 'Expense')
-            ->whereBetween('date', [$data1, $data2])
-            ->orderBy('date')
-            ->get()
-            ->sum('amount');
+        // No expense data, so set to 0
+        $data5 = 0;
 
+        // Previous balance (sum of payments before start date)
         $previousdate = Carbon::createFromDate($request->input('from'))->subDays();
-        $data6 = Payments::where('type','Income')
-        ->whereBetween('date',['2000-01-01',$previousdate])
-        ->get()
-        ->sum('amount');
 
-        $data7 = Payments::where('type','Expense')
-        ->whereBetween('date',['2000-01-01',$previousdate])
-        ->orderBy('date')
-        ->get()
-        ->sum('amount');
+        $data6 = Payments::whereBetween('created_at', ['2000-01-01', $previousdate])
+            ->sum('amount');
 
-        $data8 = $data6 - $data7;
+        $data7 = 0; // No expenses
+        $data8 = $data6 - $data7; // Previous balance
 
-        return view('allreport.ledgerdetails', compact('data1','data3','data8','data4','data5' ));
+        return view('allreport.ledgerdetails', compact('data1', 'data3', 'data8', 'data4', 'data5'));
     }
-    public function referrallist(){
+
+
+    public function referrallist()
+    {
         $referr = Referrals::all();
         return view('allreport.referrallist', compact('referr'));
     }
 
-    public function reportbooth(){
-        $testreport =TestReport::where('status','=','Test Complete')->orderBy('updated_at', 'DESC')->get();
+    public function reportbooth()
+    {
+        $testreport = TestReport::where('status', '=', 'Test Complete')->orderBy('updated_at', 'DESC')->get();
         return view('XrayReport.reportbooth', compact('testreport'));
     }
     public function report_statuschange($id, $status)

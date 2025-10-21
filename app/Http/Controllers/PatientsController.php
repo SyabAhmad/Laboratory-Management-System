@@ -57,7 +57,7 @@ class PatientsController extends Controller
     {
         $patient = Patients::findOrFail($id);
         $testTemplates = config('test_templates', []);
-        
+
         // Parse registered tests from test_category
         $selectedTests = [];
         if (!empty($patient->test_category)) {
@@ -68,14 +68,14 @@ class PatientsController extends Controller
                 $selectedTests = array_map('trim', explode(',', $patient->test_category));
             }
         }
-        
+
         // Parse saved test reports - now expected to be associative: {"TestName": {...}, ...}
         $existingTestReports = json_decode($patient->test_report ?? '{}', true) ?? [];
-        
+
         // Build test data with templates
         $testsWithData = [];
         $processedTests = []; // Track which tests we've already added
-        
+
         // First, add all registered tests from test_category
         foreach ($selectedTests as $testName) {
             $testName = trim($testName);
@@ -163,7 +163,7 @@ class PatientsController extends Controller
                 'is_mllp_data' => $isMllpData,
             ];
         }
-        
+
         // Second, add any tests in test_report that are NOT in test_category
         // This handles MLLP-received data (like CBC from analyzer) that wasn't pre-registered
         foreach ($existingTestReports as $testName => $testData) {
@@ -171,19 +171,19 @@ class PatientsController extends Controller
             if (isset($processedTests[$testName])) {
                 continue;
             }
-            
+
             // Mark as processed
             $processedTests[$testName] = true;
-            
+
             // Detect if this is MLLP data (has 'instrument' or 'analytes')
             $isMllpData = isset($testData['instrument']) || isset($testData['analytes']);
-            
+
             // Extract analytes if present
             $analytes = [];
             if (is_array($testData) && isset($testData['analytes'])) {
                 $analytes = $testData['analytes'];
             }
-            
+
             // Create a template from analytes or use default
             $fields = [];
             if (!empty($analytes) && is_array($analytes)) {
@@ -192,7 +192,7 @@ class PatientsController extends Controller
                         // Create field name with units for display
                         $unitStr = isset($analyte['units']) ? ' (' . $analyte['units'] . ')' : '';
                         $refRangeStr = isset($analyte['ref_range']) ? ' - Ref: ' . $analyte['ref_range'] : '';
-                        
+
                         $fields[] = [
                             'name' => $analyte['name'],
                             'label' => $analyte['name'] . $unitStr . $refRangeStr,
@@ -202,7 +202,7 @@ class PatientsController extends Controller
                     }
                 }
             }
-            
+
             // Use template if exists, otherwise build from analytes or use generic
             if (isset($testTemplates[$testName])) {
                 $template = $testTemplates[$testName];
@@ -251,10 +251,10 @@ class PatientsController extends Controller
                     ]
                 ];
             }
-            
+
             // Flatten test data for display
             $savedData = $this->flattenTestData($testData);
-            
+
             $testsWithData[] = [
                 'name' => $testName,
                 'template' => $template,
@@ -264,8 +264,8 @@ class PatientsController extends Controller
                 'is_mllp_data' => $isMllpData,
             ];
         }
-        
-        
+
+
         return [
             'selectedTests' => $selectedTests,
             'testsWithData' => $testsWithData,
@@ -273,7 +273,7 @@ class PatientsController extends Controller
             'testTemplates' => $testTemplates,
         ];
     }
-    
+
     /**
      * Helper function to flatten test data for display
      * Converts analytes array to key-value pairs
@@ -300,7 +300,7 @@ class PatientsController extends Controller
         } else {
             $savedData = $testData;
         }
-        
+
         return $savedData;
     }
 
@@ -505,6 +505,31 @@ class PatientsController extends Controller
     // }
 
 
+    public function list(Request $request)
+    {
+        $query = Patients::query();
+
+        if ($request->gender) {
+            $query->where('gender', $request->gender);
+        }
+
+        if ($request->referral) {
+            $query->where('referred_by', $request->referral);
+        }
+
+        if ($request->min && $request->max) {
+            $query->whereBetween('created_at', [$request->min, $request->max]);
+        }
+
+        $data = $query->orderBy('id', 'desc')->get();
+
+        return DataTables::of($data)
+            ->addIndexColumn()
+            ->make(true);
+    }
+
+
+
 
     public function statuschange($id, Request $request)
     {
@@ -523,10 +548,10 @@ class PatientsController extends Controller
     public function show($id)
     {
         $patient = Patients::with(['user', 'bills'])->findOrFail($id);
-        
+
         // Get test data with templates (same as edit view)
         $testData = $this->getEditTestData($id);
-        
+
         return view('Patient.patient_details', array_merge(
             compact('patient'),
             $testData
