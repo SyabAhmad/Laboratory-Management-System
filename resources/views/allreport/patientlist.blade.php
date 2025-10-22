@@ -23,45 +23,34 @@
                 <h4 class="text-center mt-3 mb-3"><u>Filter</u></h4>
 
                 <div class="row">
+
+                    <!-- From Date -->
                     <div class="col-sm-6">
                         <div class="form-group row">
-                            <label for="staticEmail" class="col-sm-4 col-form-label text-dark">Gender</label>
+                            <label class="col-sm-4 col-form-label text-dark">From</label>
                             <div class="col-sm-8">
-                                <div id="gender"></div>
+                                <input type="date" class="form-control" id="min" name="min">
                             </div>
                         </div>
                     </div>
 
+                    <!-- To Date -->
                     <div class="col-sm-6">
                         <div class="form-group row">
-                            <label for="staticEmail" class="col-sm-4 col-form-label text-dark">Referral By</label>
+                            <label class="col-sm-4 col-form-label text-dark">To</label>
                             <div class="col-sm-8">
-                                <div id="referr"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-sm-6">
-                        <div class="form-group row">
-                            <label for="staticEmail" class="col-sm-4 col-form-label text-dark">From</label>
-                            <div class="col-sm-8">
-                                <input type="text" class="form-control" id="min" name="min"
-                                    placeholder="mm/dd/yyyy">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-6">
-                        <div class="form-group row">
-                            <label for="staticEmail" class="col-sm-4 col-form-label text-dark">To</label>
-                            <div class="col-sm-8">
-                                <input type="text" class="form-control" id="max" name="max"
-                                    placeholder="mm/dd/yyyy">
+                                <input type="date" class="form-control" id="max" name="max">
                             </div>
                         </div>
                     </div>
                 </div>
+
+                <div class="text-center mt-3">
+                    <button id="clearFilters" class="btn btn-secondary">Clear Filters</button>
+                </div>
             </div>
         </div>
+
 
         <div class="card">
             <div class="card-body">
@@ -104,8 +93,9 @@
                                         @if ($item->referred_by == 'none')
                                             None
                                         @else
-                                            {{ $item->referral->name }}
+                                            {{ optional($item->referral)->name ?? 'N/A' }}
                                         @endif
+
                                     </td>
                                     <td>{{ $item->created_at->format('Y-m-d') }}</td>
                                 </tr>
@@ -240,6 +230,61 @@
             //Date Filter
             $('#min, #max').on('change', function() {
                 table.draw();
+            });
+        });
+
+        $(document).ready(function() {
+            var table = $('.patient_datatable').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: "{{ route('patients.list') }}",
+                    data: function(d) {
+                        d.gender = $('#gender').val();
+                        d.referral = $('#referr').val();
+                        d.min = $('#min').val();
+                        d.max = $('#max').val();
+                    }
+                },
+                columns: [{
+                        data: 'DT_RowIndex',
+                        name: 'DT_RowIndex'
+                    },
+                    {
+                        data: 'patient_id',
+                        name: 'patient_id'
+                    },
+                    {
+                        data: 'name',
+                        name: 'name'
+                    },
+                    {
+                        data: 'gender',
+                        name: 'gender'
+                    },
+                    {
+                        data: 'referral',
+                        name: 'referral'
+                    },
+                    {
+                        data: 'created_at',
+                        name: 'created_at'
+                    }
+                ]
+            });
+
+            // Apply filters
+            $('#gender, #referr, #min, #max').on('change', function() {
+                table.ajax.reload();
+            });
+
+            // Clear filters
+            $('#clearFilters').on('click', function() {
+                $('#gender').val('');
+                $('#referr').val('');
+                $('#min').val('');
+                $('#max').val('');
+                table.ajax.reload();
             });
         });
     </script>

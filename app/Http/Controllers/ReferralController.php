@@ -107,6 +107,13 @@ class ReferralController extends Controller
         return response()->json($referral);
     }
 
+    public function patientReport()
+    {
+        $referrals = Referrals::all();
+        return view('Reports.patientlist', compact('referrals'));
+    }
+
+
     /**
      * Remove the specified resource from storage.
      *
