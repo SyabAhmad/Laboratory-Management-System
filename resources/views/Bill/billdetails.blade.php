@@ -25,7 +25,7 @@
                     <div class="text-center mt-3">
                         @foreach (App\Models\MainCompanys::where('id', 1)->get() as $item)
                             <img src="{{ asset('/assets/HMS/lablogo/' . $item->lab_image) }}" alt="Lab Logo"
-                                style="width: 80px; height: 80px" class="img-fluid"> <br />
+                                style="width: 120px; height: 120px" class="img-fluid"> <br />
                         @endforeach
                     </div>
                     <div class="container-fluid">

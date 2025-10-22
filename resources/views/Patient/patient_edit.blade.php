@@ -210,7 +210,7 @@
                                                                         }
                                                                     }
                                                                 @endphp
-                                                                {{ $preview ?? '-' }}{{ strlen($preview ?? '') > 40 ? '...' : '' }}
+                                                                <!-- {{ $preview ?? '-' }}{{ strlen($preview ?? '') > 40 ? '...' : '' }} -->
                                                             </small>
                                                             <a href="{{ route('patients.printTest', ['patient' => $patient->id, 'testName' => $test['name']]) }}" target="_blank" class="btn btn-sm btn-outline-secondary" title="Print Test Report">
                                                                 <i class="fas fa-file-pdf"></i>
