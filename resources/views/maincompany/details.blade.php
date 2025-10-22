@@ -49,8 +49,15 @@
                         <div class="col-md-4">
                             <div class="text-right"><a href="javascript:void(0);" class="btn btn-info btn-sm editbtn"
                                     data-id={{ $lab->id }}><i class="fas fa-edit"></i></a></div>
-                            <img src="{{ asset('/assets/HMS/lablogo/' . $lab->lab_image) }}" alt="{{ $lab->lab_name }}"
-                                class="img-fluid" />
+                            <!-- <img src="{{ asset('/assets/HMS/lablogo/' . $lab->lab_image) }}" alt="{{ $lab->lab_name }}"
+                                class="img-fluid" /> -->
+                                <span class="logo-lg" style="display: flex; align-items: center; gap: 12px;">
+                    <img src="{{ asset('/assets/HMS/lablogo/' . $lab->lab_image) }}" alt="Bacha Lab Logo" height="150" style="border-radius: 50%; background: white; padding: 2px;">
+                    <div style="display: flex; flex-direction: column; justify-content: center;">
+                        
+                    </div>
+                </span>
+
                         </div>
                     @endforeach
 

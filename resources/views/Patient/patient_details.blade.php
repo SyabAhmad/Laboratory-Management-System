@@ -21,210 +21,168 @@
 
         <div class="card print-card">
             <div class="card-body p-4">
-                <!-- Header Section with Logo and Title -->
-                <div class="report-header mb-1">
-                    <div class="d-flex align-items-center mb-1">
-                        <img src="{{ asset('assets/images/billlogo.png') }}" alt="Logo" class="report-logo" style="width: 100px; height: auto; margin-right: 20px;">
-                        <div class="text-center flex-grow-1">
-                            <h2 class="lab-name mb-1" style="color: #da920dff; font-weight: bold; font-size: 28px;">NEW MODERN CLINICAL LABORATORY</h2>
-                            <p class="lab-subtitle mb-0" style="color: #7f8c8d; font-size: 14px;">
-                                <strong>Bacha Khan</strong> - Lab Technologist
-                            </p>
-                            
-                        </div>
-                    </div>
-                    <hr style="border-top: 3px solid #da920dff; margin: 20px 0;">
-                </div>
+                <!-- Header Section with Logo and Lab Name -->
+                <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 15px;">
+                    <tr>
+                        <!-- Left: Logo -->
+                        <td width="15%" valign="top" align="center" style="padding-right: 15px;">
+                            <img src="{{ asset('assets/images/logo.png') }}" alt="Logo" style="width: 75px; height: 75px; border-radius: 50%; border: 2px solid #da920d; display: block;">
+                        </td>
+                        <!-- Center: Lab Name & Info -->
+                        <td>
+                            <div style="color: #da920d; font-weight: bold; font-size: 18px; margin: 0; line-height: 1.1;">NEW MODERN CLINICAL<br>LABORATORY</div>
+                            <div style="font-size: 10px; color: #da920d; margin: 4px 0 0 0; font-weight: 600;">(KP HCC) REG: 03663 SWAT</div>
+                            <div style="font-size: 9px; color: #333; margin: 3px 0 0 0; line-height: 1.3;">
+                                Bacha Khan <br>
+                    BS Pathology (KMU)<br>
+                    DMLT KPK Peshawar<br>
+                    
+                            </div>
+                        </td>
+                        <!-- Right: Contact Info -->
+                        <td width="30%" valign="top" align="right" style="font-size: 9px; color: #333; line-height: 1.4; padding-left: 10px; border-left: 2px solid #da920d;">
+                            <strong style="color: #da920d;">Tel:</strong><br>
+                            0302-8080191<br>
+                            0313-9797790<br><br>
+                            <strong style="color: #da920d;">Address:</strong><br>
+                            Kabal Road, Near Township Chowk Kanju Swat
+                        </td>
+                    </tr>
+                </table>
+
+                <div style="border-top: 2px solid #da920d; margin-bottom: 12px;"></div>
 
                 <!-- Patient Information Section -->
-                <div class="patient-info mb-4">
-                    <h5 class="section-title mb-3" style="color: #2c3e50; border-bottom: 2px solid #da920dff; padding-bottom: 5px;">
-                        PATIENT INFORMATION
-                    </h5>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <table class="table table-sm table-borderless">
-                                <tbody>
-                                    <tr>
-                                        <td style="width: 40%; font-weight: 600;">Patient Name:</td>
-                                        <td>{{ $patient->name }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="font-weight: 600;">Patient ID:</td>
-                                        <td>{{ $patient->patient_id }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="font-weight: 600;">Age / Gender:</td>
-                                        <td>{{ $patient->age }} Years / {{ $patient->gender }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="font-weight: 600;">Blood Group:</td>
-                                        <td>{{ $patient->blood_group ?? 'N/A' }}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="col-md-6">
-                            <table class="table table-sm table-borderless">
-                                <tbody>
-                                    <tr>
-                                        <td style="width: 40%; font-weight: 600;">Mobile Phone:</td>
-                                        <td>{{ $patient->mobile_phone }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="font-weight: 600;">Receiving Date:</td>
-                                        <td>{{ $patient->receiving_date ? \Carbon\Carbon::parse($patient->receiving_date)->format('d-m-Y') : 'N/A' }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="font-weight: 600;">Reporting Date:</td>
-                                        <td>{{ $patient->reporting_date ? \Carbon\Carbon::parse($patient->reporting_date)->format('d-m-Y') : 'N/A' }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="font-weight: 600;">Referred By:</td>
-                                        <td>
-                                            @php $refName = optional($patient->referral)->name; @endphp
-                                            @if (empty($patient->referred_by) || $patient->referred_by === 'none' || $refName === null)
-                                                None
-                                            @else
-                                                {{ $refName }}
-                                            @endif
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-12">
-                            <table class="table table-sm table-borderless">
-                                <tbody>
-                                    <tr>
-                                        <td style="width: 12%; font-weight: 600;">Address:</td>
-                                        <td>{{ $patient->address }}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
+                <table width="100%" cellpadding="4" cellspacing="0" style="border: 1px solid #ccc; margin-bottom: 15px; font-size: 10px;">
+                    <tr>
+                        <td width="20%"><strong>Name:</strong></td>
+                        <td width="30%">{{ $patient->name }}</td>
+                        <td width="20%"><strong>Age / Gender:</strong></td>
+                        <td width="30%">{{ $patient->age }} yr(s) / {{ $patient->gender }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Patient ID:</strong></td>
+                        <td>{{ $patient->patient_id }}</td>
+                        <td><strong>Blood Group:</strong></td>
+                        <td>{{ $patient->blood_group ?? 'N/A' }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Referred By:</strong></td>
+                        <td>
+                            @php $refName = optional($patient->referral)->name; @endphp
+                            {{ (empty($patient->referred_by) || $patient->referred_by === 'none' || $refName === null) ? 'Self' : $refName }}
+                        </td>
+                        <td><strong>Mobile:</strong></td>
+                        <td>{{ $patient->mobile_phone }}</td>
+                    </tr>
+                </table>
 
-                <!-- Test Results Section - Dynamic from Database -->
+                <!-- Test Results Section -->
                 @if(!empty($testsWithData))
-                    <div class="test-results mb-4">
-                        <h5 class="section-title mb-3" style="color: #2c3e50; border-bottom: 2px solid #da920dff; padding-bottom: 5px;">
-                            <i class="fas fa-flask"></i> REGISTERED TESTS & RESULTS
-                        </h5>
+                    @forelse($testsWithData as $test)
+                        @php
+                            $testName = $test['name'];
+                            $template = $test['template'];
+                            $savedData = $test['saved_data'];
+                            $hasData = $test['has_data'];
+                            $isMllpData = $test['is_mllp_data'] ?? false;
+                            $analytes = $savedData['analytes'] ?? [];
+                            $hasHL7Data = !empty($analytes) && is_array($analytes);
+                        @endphp
 
-                        @forelse($testsWithData as $test)
-                            @php
-                                $testName = $test['name'];
-                                $template = $test['template'];
-                                $savedData = $test['saved_data'];
-                                $hasData = $test['has_data'];
-                                $isMllpData = $test['is_mllp_data'] ?? false;
-                                $borderColor = $hasData ? '#28a745' : '#ffc107';
-                            @endphp
+                        <!-- Test Title -->
+                        <div style="margin: 20px 0 10px 0; padding: 8px 0; border-bottom: 2px solid #da920d; font-weight: bold; color: #da920d; font-size: 14px;">
+                            {{ $testName }}
+                        </div>
 
-                            <div class="test-card mb-4 p-3" style="background-color: #f8f9fa; border-left: 4px solid {{ $borderColor }}; border-radius: 4px;">
-                                <div class="d-flex align-items-center mb-3">
-                                    <i class="fas fa-{{ $isMllpData ? 'microchip' : 'vial' }}" style="color: #da920dff; font-size: 24px; margin-right: 12px;"></i>
-                                    <div>
-                                        <h6 class="mb-0" style="color: #2c3e50; font-weight: 600;">{{ $testName }}</h6>
-                                        <small class="text-muted">
-                                            @if($hasData)
-                                                <span class="badge badge-success"><i class="fas fa-check-circle"></i> Completed</span>
-                                                @if($isMllpData)
-                                                    <span class="badge badge-info ml-2"><i class="fas fa-microchip"></i> From Analyzer</span>
-                                                @endif
-                                                @if(!empty($savedData['test_date']))
-                                                    <span class="ml-2">Date: {{ $savedData['test_date'] }}</span>
-                                                @elseif(!empty($savedData['reported_at']))
-                                                    <span class="ml-2">Reported: {{ $savedData['reported_at'] }}</span>
-                                                @endif
-                                            @else
-                                                <span class="badge badge-warning"><i class="fas fa-clock"></i> Pending</span>
-                                            @endif
-                                        </small>
-                                    </div>
-                                </div>
-
-                                @if($hasData && !empty($template['fields']))
-                                    <table class="table table-sm table-borderless mb-0">
-                                        <tbody>
-                                            @foreach($template['fields'] as $field)
-                                                @php
-                                                    $fieldValue = $savedData[$field['name']] ?? '';
-                                                @endphp
-                                                @if(!empty($fieldValue) || $isMllpData)
-                                                    <tr>
-                                                        <td style="width: 35%; font-weight: 500; color: #2c3e50;">
-                                                            {{ $field['label'] }}:
-                                                        </td>
-                                                        <td style="color: #34495e;">
-                                                            @if(!empty($fieldValue))
-                                                                {{ $fieldValue }}
-                                                            @elseif($isMllpData && in_array($field['name'], ['reported_at', 'instrument', 'accession_no']))
-                                                                {{ $savedData[$field['name']] ?? '-' }}
-                                                            @else
-                                                                -
-                                                            @endif
-                                                        </td>
-                                                    </tr>
-                                                @endif
-                                            @endforeach
-                                        </tbody>
-                                    </table>
+                        <!-- Test Results Table -->
+                        <table width="100%" cellpadding="5" cellspacing="0" style="border-collapse: collapse; font-size: 11px; margin-bottom: 20px;">
+                            <thead>
+                                <tr style="background-color: white; border-bottom: 2px solid #da920d;">
+                                    <th style="text-align: left; padding: 8px; font-weight: bold; width: 40%; color: #da920d;">Test Name</th>
+                                    <th style="text-align: left; padding: 8px; font-weight: bold; width: 20%; color: #da920d;">Results</th>
+                                    <th style="text-align: left; padding: 8px; font-weight: bold; width: 15%; color: #da920d;">Unit</th>
+                                    <th style="text-align: left; padding: 8px; font-weight: bold; width: 25%; color: #da920d;">Reference Ranges</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if($hasHL7Data)
+                                    @foreach($analytes as $analyte)
+                                        <tr>
+                                            <td style="padding: 8px; border: 1px solid #ddd;">{{ $analyte['name'] ?? $analyte['code'] ?? 'Unknown' }}</td>
+                                            <td style="padding: 8px; border: 1px solid #ddd; font-weight: 600;">{{ $analyte['value'] ?? '' }}</td>
+                                            <td style="padding: 8px; border: 1px solid #ddd;">{{ $analyte['units'] ?? '' }}</td>
+                                            <td style="padding: 8px; border: 1px solid #ddd;">{{ $analyte['ref_range'] ?? '' }}</td>
+                                        </tr>
+                                    @endforeach
+                                @elseif($hasData && !empty($template['fields']))
+                                    @foreach($template['fields'] as $field)
+                                        @php
+                                            $value = $savedData[$field['name']] ?? '';
+                                            $label = $field['label'] ?? 'Unknown';
+                                            $unit = '';
+                                            $ref = '';
+                                            
+                                            if (preg_match('/\(([^)]+)\)/', $label, $matches)) {
+                                                $unit = trim($matches[1]);
+                                                $label = preg_replace('/\s*\([^)]+\)\s*/', '', $label);
+                                            }
+                                            
+                                            if (preg_match('/Ref:\s*([^\n]+)$/i', $label, $matches)) {
+                                                $ref = trim($matches[1]);
+                                                $label = preg_replace('/\s*[-–—]\s*Ref:\s*[^\n]+$/i', '', $label);
+                                            }
+                                            
+                                            $label = trim($label);
+                                        @endphp
+                                        @if(!empty($value))
+                                            <tr>
+                                                <td style="padding: 8px; border: 1px solid #ddd;">{{ $label }}</td>
+                                                <td style="padding: 8px; border: 1px solid #ddd; font-weight: 600;">{{ $value }}</td>
+                                                <td style="padding: 8px; border: 1px solid #ddd;">{{ $unit }}</td>
+                                                <td style="padding: 8px; border: 1px solid #ddd;">{{ $ref }}</td>
+                                            </tr>
+                                        @endif
+                                    @endforeach
                                 @else
-                                    <div class="alert alert-info mb-0 py-2">
-                                        <i class="fas fa-info-circle"></i> No test data recorded yet.
-                                    </div>
+                                    <tr>
+                                        <td colspan="4" style="padding: 12px; text-align: center; color: #7f8c8d;">No test data recorded</td>
+                                    </tr>
                                 @endif
-                            </div>
-                        @empty
-                            <div class="alert alert-info">
-                                <i class="fas fa-info-circle"></i> No tests registered for this patient.
-                            </div>
-                        @endforelse
-                    </div>
-                @endif
+                            </tbody>
+                        </table>
 
-                    @if($patient->note)
-                    <div class="clinical-notes mt-3 p-3" style="background-color: #f8f9fa; border-left: 4px solid #3498db;">
-                        <strong>Clinical Notes:</strong>
-                        <p class="mt-2 mb-0">{{ $patient->note }}</p>
-                    </div>
-                    @endif
+                        <!-- Individual Test PDF Button -->
+                        <div class="no-print" style="margin-bottom: 15px; text-align: right;">
+                            <a href="{{ route('patients.printTest', ['patient' => $patient->id, 'testName' => $testName]) }}" target="_blank" class="btn btn-sm btn-outline-secondary">
+                                <i class="mdi mdi-file-pdf"></i> Download Test PDF
+                            </a>
+                        </div>
+                    @empty
+                    @endforelse
+                @endif
                 </div>
 
                 <!-- Doctor Signature Section -->
-                <div class="signature-section mt-5 mb-4">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="text-left">
-                                <div style="border-top: 2px solid #000; width: 200px; margin-bottom: 10px;"></div>
-                                <p class="mb-0" style="font-weight: 600;">Dr. Bacha Khan</p>
-                                <p style="font-size: 12px; color: #7f8c8d;">Lab Technologist</p>
-                                <p style="font-size: 11px; color: #95a5a6;">Signature & Stamp</p>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="text-center">
-                                <p class="mb-1" style="font-size: 12px; color: #7f8c8d;">Report is System Generated</p>
-                                <p style="font-size: 11px; color: #95a5a6;">{{ $patient->created_at ? $patient->created_at->format('d-m-Y H:i') : '' }}</p>
-                            </div>
+                <div style="margin-top: 25px; padding-top: 10px; border-top: 1px solid #aaa; display: flex; justify-content: space-between; align-items: center; font-size: 9px; color: #333;">
+                    <div style="flex: 1; text-align: left;">
+                        <strong>Please Note:</strong><br>
+                        Test(s) are performed on the state-of-the-art ARCHITECT MODULAR Ci4100 from Abbott Diagnostics, U.S.A.<br>
+                        This is a digitally signed report and does not require manual signature.
+                    </div>
+                    <div style="text-align: right; white-space: nowrap;">
+                        <div style="font-weight: bold; color: #da920d; margin-bottom: 5px;">
+                            This is a digitally signed report by<br>
+                            <strong>Bacha Khan</strong>
                         </div>
                     </div>
                 </div>
 
                 <!-- Footer Section -->
-                <div class="report-footer" style="background-color: #da920dff; color: white; padding: 10px 15px; margin: 0 -1.5rem -1.5rem -1.5rem; font-size: 11px;">
-                    <div class="text-center">
-                        <strong>🗺</strong> Asad Abad Road, Near Township Chowk Kamla Swat | 
-                        <strong>📞</strong> 0302-9050191 - 03139796050 | 
-                        <strong>📱</strong> +92 302 9050191 | 
-                        <strong>🌐</strong> www.newmoderncliniclab.com | 
-                        C17 Pariology Department Serial | BMT MRI Rastamua | Medical College SGRD Hoot
-                    </div>
+                <div style="background-color: #da920d; color: white; padding: 10px 15px; margin: 15px -1.5rem -1.5rem -1.5rem; font-size: 10px; text-align: center;">
+                    <strong>�</strong> Asad Abad Road, Near Township Chowk Kamla Swat | 
+                    <strong>📞</strong> 0302-9050191 - 03139796050 | 
+                    <!-- <strong>🌐</strong> www.newmoderncliniclab.com -->
                 </div>
             </div>
         </div>
@@ -235,11 +193,15 @@
                 <a href="{{ route('patients.list') }}" class="btn btn-primary">
                     <i class="mdi mdi-arrow-left"></i> Back to List
                 </a>
-                <button onclick="window.print()" class="btn btn-success float-right ml-2">
-                    <i class="mdi mdi-printer"></i> Print / Download PDF
+                <button onclick="window.print()" class="btn btn-info" style="margin-left: 5px;">
+                    <i class="mdi mdi-printer"></i> Print
                 </button>
+                <button onclick="downloadPDF()" class="btn btn-warning" style="margin-left: 5px;">
+                    <i class="mdi mdi-file-pdf"></i> Download PDF
+                </button>
+                
                 @php
-                    // Format phone number for WhatsApp (remove spaces, dashes, and add country code if needed)
+                    // Format phone number for WhatsApp
                     $phoneNumber = preg_replace('/[^0-9]/', '', $patient->mobile_phone);
                     if (!str_starts_with($phoneNumber, '92')) {
                         if (str_starts_with($phoneNumber, '0')) {
@@ -249,22 +211,19 @@
                         }
                     }
                     
-                    // Get the current URL for the report
-                    $reportUrl = url()->current();
-                    
                     $message = "Hello " . $patient->name . ",\n\n";
                     $message .= "Your medical test report from NEW MODERN CLINICAL LABORATORY is ready.\n\n";
                     $message .= "Patient ID: " . $patient->patient_id . "\n";
                     $message .= "Report Date: " . ($patient->reporting_date ? \Carbon\Carbon::parse($patient->reporting_date)->format('d-m-Y') : 'N/A') . "\n\n";
                     $message .= "Please visit our laboratory to collect your report.\n\n";
                     $message .= "For any queries, contact us:\n";
-                    $message .= "📞 +92 302 9050191\n";
-                    $message .= "🌐 www.newmoderncliniclab.com\n\n";
+                    $message .= "📞 +92 302 8080191\n";
                     $message .= "Thank you for choosing New Modern Clinical Laboratory.";
                     
                     $whatsappUrl = "https://wa.me/" . $phoneNumber . "?text=" . urlencode($message);
                 @endphp
-                <a href="{{ $whatsappUrl }}" target="_blank" class="btn btn-success float-right" style="background-color: #25D366; border-color: #25D366;">
+                
+                <a href="{{ $whatsappUrl }}" target="_blank" class="btn btn-success" style="background-color: #25D366; border-color: #25D366; margin-left: 5px;">
                     <i class="mdi mdi-whatsapp"></i> Send via WhatsApp
                 </a>
             </div>
@@ -335,4 +294,15 @@
         }
     </style>
 
-@endsection
+            <script>
+                function downloadPDF() {
+                    // Get patient name and date for filename
+                    const patientName = @json($patient->name ?? '');
+                    const reportDate = @json($patient->reporting_date ? \Carbon\Carbon::parse($patient->reporting_date)->format('d-m-Y') : '');
+                    const safeName = (patientName || 'patient').toString().replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_\-]/g, '');
+                    const fileName = safeName + (reportDate ? '_' + reportDate : '') + '.pdf';
+                    // Use the browser print dialog to save as PDF; advanced server-side PDF generation can be added if needed
+                    window.print();
+                }
+            </script>
+        @endsection

@@ -27,11 +27,6 @@
                             <th>Bill No</th>
                             <th>Patient ID</th>
                             <th>Patient Name</th>
-                            <th>All Test</th>
-                            <th>Bill Date</th>
-                            <th>Net Amount</th>
-                            <th>Discount</th>
-                            <th>Total</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -54,7 +49,6 @@
                     { data: 'DT_RowIndex', name: 'DT_RowIndex' },
                     { data: 'patient_id', name: 'patient_id' },
                     { data: 'patient_name', name: 'patient_name' },
-                    { data: 'all_test', name: 'all_test' },
                     { data: 'billing_date', name: 'billing_date' },
                     { data: 'action', name: 'action', orderable: true, searchable: true }
                 ],

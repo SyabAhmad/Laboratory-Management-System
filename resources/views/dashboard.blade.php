@@ -112,13 +112,8 @@
                                         <div class="col-sm-9">
                                             <h4 class="card-title  text-center">Company Total Balance </h4>
                                             <div>
-                                                @php
-                                                    $balance = App\Models\MainCompanys::where('id', 1)->get();
-                                                @endphp
                                                 <p class="text-center dashboard-card-text">
-                                                    @foreach ($balance as $item)
-                                                        {{ $item->balance }}
-                                                    @endforeach
+                                                    {{ isset($totalBalance) ? number_format($totalBalance, 2) : '0.00' }}
                                                 </p>
                                             </div>
                                         </div>

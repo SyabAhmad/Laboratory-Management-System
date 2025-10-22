@@ -14,13 +14,19 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        // return view('dashboard');
-        if (MainCompanys::get()->count() == 0) {
+        $company = MainCompanys::first();
+        
+        if (!$company) {
             return view('maincompany.maincompany');
         }
-        else{
-            return view('dashboard');
-        }
+        
+        // Calculate total balance from bills
+        $totalBilled = \App\Models\Bills::sum('amount') ?? 0;
+        
+        return view('dashboard', [
+            'company' => $company,
+            'totalBalance' => $totalBilled
+        ]);
     }
 
     /**

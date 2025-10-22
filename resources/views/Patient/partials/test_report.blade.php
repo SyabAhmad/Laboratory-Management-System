@@ -147,15 +147,15 @@
         <div style="text-align: right; white-space: nowrap;">
             <div style="font-weight: bold; color: #da920d; margin-bottom: 5px;">
                 This is a digitally signed report by<br>
-                <strong>Dr. Shafaq Hammad</strong>
+                <strong>Bacha Khan</strong>
             </div>
-            <div style="display: inline-flex; gap: 8px; align-items: center; margin-top: 5px;">
+            <!-- <div style="display: inline-flex; gap: 8px; align-items: center; margin-top: 5px;">
                 <img src="{{ asset('assets/images/neoapp.png') }}" alt="NEQAPP" style="height: 20px; opacity: 0.8;">
                 <img src="{{ asset('assets/images/riqas.png') }}" alt="RIQAS" style="height: 20px; opacity: 0.8;">
                 <img src="{{ asset('assets/images/pnac.png') }}" alt="PNAC" style="height: 20px; opacity: 0.8;">
                 <img src="{{ asset('assets/images/synlab.png') }}" alt="SynLab" style="height: 20px; opacity: 0.8;">
                 <img src="{{ asset('assets/images/iso.png') }}" alt="ISO" style="height: 20px; opacity: 0.8;">
-            </div>
+            </div> -->
         </div>
     </div>
 
