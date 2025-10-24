@@ -56,7 +56,6 @@ class PatientsController extends Controller
     public function getEditTestData($id)
     {
         $patient = Patients::findOrFail($id);
-        $testTemplates = config('test_templates', []);
 
         // Parse registered tests from test_category
         $selectedTests = [];
@@ -69,38 +68,38 @@ class PatientsController extends Controller
             }
         }
 
-        // Parse saved test reports - now expected to be associative: {"TestName": {...}, ...}
+        // Parse saved test reports - expected associative: {"TestName": {...}, ...}
         $existingTestReports = json_decode($patient->test_report ?? '{}', true) ?? [];
 
-        // Build test data with templates
         $testsWithData = [];
-        $processedTests = []; // Track which tests we've already added
+        $processedTests = [];
 
-        // First, add all registered tests from test_category
+        // 🔹 Handle each registered test
         foreach ($selectedTests as $testName) {
             $testName = trim($testName);
             $processedTests[$testName] = true;
 
-            // Check if this test has saved data in test_report
             $testData = $existingTestReports[$testName] ?? [];
 
-            // Use test-specific model if available
-            $modelClass = TestModelFactory::getModelClass($testName);
-            $template = null;
-            if ($modelClass && class_exists($modelClass)) {
-                // Use analytes from model for template
-                $defs = $modelClass::analytes();
+            // 🔹 Load template dynamically from DB
+            $labTestCategory = \App\Models\LabTestCat::where('cat_name', $testName)->first();
+
+            if ($labTestCategory) {
+                $parameters = $labTestCategory->parameters()->get();
                 $fields = [];
-                foreach ($defs as $analyteName => $meta) {
-                    $unitStr = $meta['units'] ? ' (' . $meta['units'] . ')' : '';
-                    $refRangeStr = $meta['ref_range'] ? ' - Ref: ' . $meta['ref_range'] : '';
+
+                foreach ($parameters as $param) {
+                    $unitStr = $param->unit ? ' (' . $param->unit . ')' : '';
+                    $refRangeStr = $param->reference_range ? ' - Ref: ' . $param->reference_range : '';
+
                     $fields[] = [
-                        'name' => $analyteName,
-                        'label' => $analyteName . $unitStr . $refRangeStr,
+                        'name' => $param->parameter_name,
+                        'label' => $param->parameter_name . $unitStr . $refRangeStr,
                         'type' => 'text',
                         'required' => false,
                     ];
                 }
+
                 $template = [
                     'fields' => array_merge([
                         [
@@ -123,15 +122,8 @@ class PatientsController extends Controller
                         ],
                     ], $fields)
                 ];
-            }
-
-            // Use configured template if exists and no test model was found
-            if ($template === null && isset($testTemplates[$testName])) {
-                $template = $testTemplates[$testName];
-            }
-
-            // Fall back to generic template
-            if ($template === null) {
+            } else {
+                // fallback generic template
                 $template = [
                     'fields' => [
                         [
@@ -151,90 +143,66 @@ class PatientsController extends Controller
             }
 
             $savedData = $this->flattenTestData($testData);
-
             $isMllpData = isset($testData['instrument']) || isset($testData['analytes']);
 
             $testsWithData[] = [
                 'name' => $testName,
-                'template' => $template,
+                'template' => $template, // ✅ ensure included
                 'saved_data' => $savedData,
                 'has_data' => !empty($testData),
-                'has_template' => isset($testTemplates[$testName]),
+                'has_template' => $labTestCategory ? true : false,
                 'is_mllp_data' => $isMllpData,
             ];
         }
 
-        // Second, add any tests in test_report that are NOT in test_category
-        // This handles MLLP-received data (like CBC from analyzer) that wasn't pre-registered
+        // 🔹 Add any extra analyzer (MLLP) tests not in category
         foreach ($existingTestReports as $testName => $testData) {
-            // Skip if we've already processed this test (it was in test_category)
-            if (isset($processedTests[$testName])) {
-                continue;
-            }
+            if (isset($processedTests[$testName])) continue;
 
-            // Mark as processed
             $processedTests[$testName] = true;
-
-            // Detect if this is MLLP data (has 'instrument' or 'analytes')
             $isMllpData = isset($testData['instrument']) || isset($testData['analytes']);
 
-            // Extract analytes if present
-            $analytes = [];
-            if (is_array($testData) && isset($testData['analytes'])) {
-                $analytes = $testData['analytes'];
-            }
-
-            // Create a template from analytes or use default
+            $analytes = $testData['analytes'] ?? [];
             $fields = [];
-            if (!empty($analytes) && is_array($analytes)) {
-                foreach ($analytes as $analyte) {
-                    if (is_array($analyte) && isset($analyte['name']) && isset($analyte['value'])) {
-                        // Create field name with units for display
-                        $unitStr = isset($analyte['units']) ? ' (' . $analyte['units'] . ')' : '';
-                        $refRangeStr = isset($analyte['ref_range']) ? ' - Ref: ' . $analyte['ref_range'] : '';
 
-                        $fields[] = [
-                            'name' => $analyte['name'],
-                            'label' => $analyte['name'] . $unitStr . $refRangeStr,
-                            'type' => 'text',
-                            'required' => false,
-                        ];
-                    }
+            foreach ($analytes as $analyte) {
+                if (is_array($analyte) && isset($analyte['name'], $analyte['value'])) {
+                    $unitStr = isset($analyte['units']) ? ' (' . $analyte['units'] . ')' : '';
+                    $refRangeStr = isset($analyte['ref_range']) ? ' - Ref: ' . $analyte['ref_range'] : '';
+
+                    $fields[] = [
+                        'name' => $analyte['name'],
+                        'label' => $analyte['name'] . $unitStr . $refRangeStr,
+                        'type' => 'text',
+                        'required' => false,
+                    ];
                 }
             }
 
-            // Use template if exists, otherwise build from analytes or use generic
-            if (isset($testTemplates[$testName])) {
-                $template = $testTemplates[$testName];
-            } elseif (!empty($fields)) {
-                // Template from MLLP analytes with metadata fields
-                $template = [
-                    'fields' => array_merge(
+            $template = !empty($fields)
+                ? [
+                    'fields' => array_merge([
                         [
-                            [
-                                'name' => 'reported_at',
-                                'label' => 'Reported At',
-                                'type' => 'text',
-                                'required' => false,
-                            ],
-                            [
-                                'name' => 'instrument',
-                                'label' => 'Instrument',
-                                'type' => 'text',
-                                'required' => false,
-                            ],
-                            [
-                                'name' => 'accession_no',
-                                'label' => 'Accession No',
-                                'type' => 'text',
-                                'required' => false,
-                            ],
+                            'name' => 'reported_at',
+                            'label' => 'Reported At',
+                            'type' => 'text',
+                            'required' => false,
                         ],
-                        $fields
-                    )
-                ];
-            } else {
-                $template = [
+                        [
+                            'name' => 'instrument',
+                            'label' => 'Instrument',
+                            'type' => 'text',
+                            'required' => false,
+                        ],
+                        [
+                            'name' => 'accession_no',
+                            'label' => 'Accession No',
+                            'type' => 'text',
+                            'required' => false,
+                        ],
+                    ], $fields)
+                ]
+                : [
                     'fields' => [
                         [
                             'name' => 'result',
@@ -250,9 +218,7 @@ class PatientsController extends Controller
                         ],
                     ]
                 ];
-            }
 
-            // Flatten test data for display
             $savedData = $this->flattenTestData($testData);
 
             $testsWithData[] = [
@@ -260,19 +226,18 @@ class PatientsController extends Controller
                 'template' => $template,
                 'saved_data' => $savedData,
                 'has_data' => !empty($testData),
-                'has_template' => isset($testTemplates[$testName]),
+                'has_template' => false,
                 'is_mllp_data' => $isMllpData,
             ];
         }
-
 
         return [
             'selectedTests' => $selectedTests,
             'testsWithData' => $testsWithData,
             'existingTestReports' => $existingTestReports,
-            'testTemplates' => $testTemplates,
         ];
     }
+
 
     /**
      * Helper function to flatten test data for display
@@ -747,10 +712,10 @@ class PatientsController extends Controller
         // Use the same helper to build templates/data
         $data = $this->getEditTestData($patientId);
 
-    // Decode the test name in case it was URL-encoded
-    $testName = rawurldecode($testName);
+        // Decode the test name in case it was URL-encoded
+        $testName = rawurldecode($testName);
 
-    // Find the matching test in testsWithData
+        // Find the matching test in testsWithData
         $testEntry = null;
         foreach ($data['testsWithData'] as $t) {
             if ($t['name'] === $testName) {

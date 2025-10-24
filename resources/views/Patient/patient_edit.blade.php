@@ -20,7 +20,7 @@
             </div>
         </div>
 
-        @if(session('success'))
+        @if (session('success'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 {{ session('success') }}
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -43,39 +43,62 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="name">Full Name <span class="text-danger">*</span></label>
-                                        <input type="text" id="name" name="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name', $patient->name) }}" required>
-                                        @error('name')<span class="invalid-feedback">{{ $message }}</span>@enderror
+                                        <input type="text" id="name" name="name"
+                                            class="form-control @error('name') is-invalid @enderror"
+                                            value="{{ old('name', $patient->name) }}" required>
+                                        @error('name')
+                                            <span class="invalid-feedback">{{ $message }}</span>
+                                        @enderror
                                     </div>
 
                                     <div class="form-group">
                                         <label for="mobile_phone">Mobile Number <span class="text-danger">*</span></label>
-                                        <input type="text" id="mobile_phone" name="mobile_phone" class="form-control @error('mobile_phone') is-invalid @enderror" value="{{ old('mobile_phone', $patient->mobile_phone) }}" required>
-                                        @error('mobile_phone')<span class="invalid-feedback">{{ $message }}</span>@enderror
+                                        <input type="text" id="mobile_phone" name="mobile_phone"
+                                            class="form-control @error('mobile_phone') is-invalid @enderror"
+                                            value="{{ old('mobile_phone', $patient->mobile_phone) }}" required>
+                                        @error('mobile_phone')
+                                            <span class="invalid-feedback">{{ $message }}</span>
+                                        @enderror
                                     </div>
 
                                     <div class="form-group">
                                         <label for="gender">Gender <span class="text-danger">*</span></label>
-                                        <select id="gender" name="gender" class="form-control @error('gender') is-invalid @enderror" required>
+                                        <select id="gender" name="gender"
+                                            class="form-control @error('gender') is-invalid @enderror" required>
                                             <option value="">Choose One Option</option>
-                                            <option value="Male" {{ old('gender', $patient->gender) === 'Male' ? 'selected' : '' }}>Male</option>
-                                            <option value="Female" {{ old('gender', $patient->gender) === 'Female' ? 'selected' : '' }}>Female</option>
-                                            <option value="Other" {{ old('gender', $patient->gender) === 'Other' ? 'selected' : '' }}>Other</option>
+                                            <option value="Male"
+                                                {{ old('gender', $patient->gender) === 'Male' ? 'selected' : '' }}>Male
+                                            </option>
+                                            <option value="Female"
+                                                {{ old('gender', $patient->gender) === 'Female' ? 'selected' : '' }}>Female
+                                            </option>
+                                            <option value="Other"
+                                                {{ old('gender', $patient->gender) === 'Other' ? 'selected' : '' }}>Other
+                                            </option>
                                         </select>
-                                        @error('gender')<span class="invalid-feedback">{{ $message }}</span>@enderror
+                                        @error('gender')
+                                            <span class="invalid-feedback">{{ $message }}</span>
+                                        @enderror
                                     </div>
 
                                     <div class="form-group">
                                         <label for="age">Age <span class="text-danger">*</span></label>
-                                        <input type="number" id="age" name="age" class="form-control @error('age') is-invalid @enderror" value="{{ old('age', $patient->age) }}" required>
-                                        @error('age')<span class="invalid-feedback">{{ $message }}</span>@enderror
+                                        <input type="number" id="age" name="age"
+                                            class="form-control @error('age') is-invalid @enderror"
+                                            value="{{ old('age', $patient->age) }}" required>
+                                        @error('age')
+                                            <span class="invalid-feedback">{{ $message }}</span>
+                                        @enderror
                                     </div>
 
                                     <div class="form-group">
                                         <label for="blood_group">Blood Group</label>
                                         <select id="blood_group" name="blood_group" class="form-control">
                                             <option value="">Choose One Option</option>
-                                            @foreach(['A+','A-','B+','B-','O+','O-','AB+','AB-'] as $group)
-                                                <option value="{{ $group }}" {{ old('blood_group', $patient->blood_group) === $group ? 'selected' : '' }}>{{ $group }}</option>
+                                            @foreach (['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'] as $group)
+                                                <option value="{{ $group }}"
+                                                    {{ old('blood_group', $patient->blood_group) === $group ? 'selected' : '' }}>
+                                                    {{ $group }}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -84,25 +107,41 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="address">Address <span class="text-danger">*</span></label>
-                                        <textarea id="address" name="address" rows="3" class="form-control @error('address') is-invalid @enderror" required>{{ old('address', $patient->address) }}</textarea>
-                                        @error('address')<span class="invalid-feedback">{{ $message }}</span>@enderror
+                                        <textarea id="address" name="address" rows="3" class="form-control @error('address') is-invalid @enderror"
+                                            required>{{ old('address', $patient->address) }}</textarea>
+                                        @error('address')
+                                            <span class="invalid-feedback">{{ $message }}</span>
+                                        @enderror
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="receiving_date">Receiving Date <span class="text-danger">*</span></label>
-                                        <input type="date" id="receiving_date" name="receiving_date" class="form-control @error('receiving_date') is-invalid @enderror" value="{{ old('receiving_date', $patient->receiving_date?->format('Y-m-d')) }}" required>
-                                        @error('receiving_date')<span class="invalid-feedback">{{ $message }}</span>@enderror
+                                        <label for="receiving_date">Receiving Date <span
+                                                class="text-danger">*</span></label>
+                                        <input type="date" id="receiving_date" name="receiving_date"
+                                            class="form-control @error('receiving_date') is-invalid @enderror"
+                                            value="{{ old('receiving_date', $patient->receiving_date?->format('Y-m-d')) }}"
+                                            required>
+                                        @error('receiving_date')
+                                            <span class="invalid-feedback">{{ $message }}</span>
+                                        @enderror
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="reporting_date">Reporting Date <span class="text-danger">*</span></label>
-                                        <input type="date" id="reporting_date" name="reporting_date" class="form-control @error('reporting_date') is-invalid @enderror" value="{{ old('reporting_date', $patient->reporting_date?->format('Y-m-d')) }}" required>
-                                        @error('reporting_date')<span class="invalid-feedback">{{ $message }}</span>@enderror
+                                        <label for="reporting_date">Reporting Date <span
+                                                class="text-danger">*</span></label>
+                                        <input type="date" id="reporting_date" name="reporting_date"
+                                            class="form-control @error('reporting_date') is-invalid @enderror"
+                                            value="{{ old('reporting_date', $patient->reporting_date?->format('Y-m-d')) }}"
+                                            required>
+                                        @error('reporting_date')
+                                            <span class="invalid-feedback">{{ $message }}</span>
+                                        @enderror
                                     </div>
 
                                     <div class="form-group">
                                         <label for="referred_by">Referred By</label>
-                                        <input type="text" id="referred_by" name="referred_by" class="form-control" value="{{ old('referred_by', $patient->referred_by) }}">
+                                        <input type="text" id="referred_by" name="referred_by" class="form-control"
+                                            value="{{ old('referred_by', $patient->referred_by) }}">
                                     </div>
 
                                     <div class="form-group">
@@ -131,7 +170,7 @@
             //     'patient_test_category' => $patient->test_category ?? 'null'
             // ]);
         @endphp
-        @if(!empty($testsWithData))
+        @if (!empty($testsWithData))
             <div class="row">
                 <div class="col-12">
                     <div class="card">
@@ -152,7 +191,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach($testsWithData as $test)
+                                        @foreach ($testsWithData as $test)
                                             @php
                                                 $testSlug = \Str::slug($test['name']);
                                                 $hasData = $test['has_data'];
@@ -165,19 +204,22 @@
                                             <tr>
                                                 <td>
                                                     <div class="d-flex align-items-center">
-                                                        <i class="fas fa-{{ $isMllpData ? 'microchip' : 'vial' }} text-primary mr-2" style="font-size: 16px;"></i>
+                                                        <i class="fas fa-{{ $isMllpData ? 'microchip' : 'vial' }} text-primary mr-2"
+                                                            style="font-size: 16px;"></i>
                                                         <div>
                                                             <strong>{{ $test['name'] }}</strong>
-                                                            @if($isMllpData)
-                                                                <br><small class="badge badge-info"><i class="fas fa-microchip"></i> From Analyzer</small>
+                                                            @if ($isMllpData)
+                                                                <br><small class="badge badge-info"><i
+                                                                        class="fas fa-microchip"></i> From Analyzer</small>
                                                             @elseif(!$hasTemplate)
-                                                                <br><small class="badge badge-info">Generic Template</small>
+                                                                <br><small class="badge badge-info">Generic
+                                                                    Template</small>
                                                             @endif
                                                         </div>
                                                     </div>
                                                 </td>
                                                 <td>
-                                                    @if($hasData)
+                                                    @if ($hasData)
                                                         <span class="badge badge-success">
                                                             <i class="fas fa-check-circle"></i> Completed
                                                         </span>
@@ -188,21 +230,21 @@
                                                     @endif
                                                 </td>
                                                 <td>
-                                                    @if($hasData)
+                                                    @if ($hasData)
                                                         <small class="text-muted">
-                                                            {{ $savedData['test_date'] ?? $savedData['reported_at'] ?? 'Unknown' }}
+                                                            {{ $savedData['test_date'] ?? ($savedData['reported_at'] ?? 'Unknown') }}
                                                         </small>
                                                     @else
                                                         <small class="text-muted text-danger">-</small>
                                                     @endif
                                                 </td>
                                                 <td>
-                                                    @if($hasData)
+                                                    @if ($hasData)
                                                         <div class="d-flex align-items-center">
                                                             <small class="text-muted mr-2">
                                                                 @php
                                                                     $preview = '';
-                                                                    foreach($template['fields'] as $field) {
+                                                                    foreach ($template['fields'] as $field) {
                                                                         $value = $savedData[$field['name']] ?? '';
                                                                         if (!empty($value)) {
                                                                             $preview = substr($value, 0, 40);
@@ -212,7 +254,9 @@
                                                                 @endphp
                                                                 <!-- {{ $preview ?? '-' }}{{ strlen($preview ?? '') > 40 ? '...' : '' }} -->
                                                             </small>
-                                                            <a href="{{ route('patients.printTest', ['patient' => $patient->id, 'testName' => $test['name']]) }}" target="_blank" class="btn btn-sm btn-outline-secondary" title="Print Test Report">
+                                                            <a href="{{ route('patients.printTest', ['patient' => $patient->id, 'testName' => $test['name']]) }}"
+                                                                target="_blank" class="btn btn-sm btn-outline-secondary"
+                                                                title="Print Test Report">
                                                                 <i class="fas fa-file-pdf"></i>
                                                             </a>
                                                         </div>
@@ -221,7 +265,9 @@
                                                     @endif
                                                 </td>
                                                 <td>
-                                                    <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#testModal_{{ $testSlug }}" title="{{ $hasData ? 'Edit Test Data' : 'Add Test Data' }}">
+                                                    <button type="button" class="btn btn-sm btn-primary"
+                                                        data-toggle="modal" data-target="#testModal_{{ $testSlug }}"
+                                                        title="{{ $hasData ? 'Edit Test Data' : 'Add Test Data' }}">
                                                         <i class="fas fa-{{ $hasData ? 'edit' : 'plus' }}"></i>
                                                     </button>
                                                     <!-- PDF button moved to the Preview column -->
@@ -239,7 +285,8 @@
             <div class="row">
                 <div class="col-12">
                     <div class="alert alert-info alert-dismissible fade show" role="alert">
-                        <i class="fas fa-info-circle"></i> <strong>No tests registered</strong> - This patient has no tests registered. Please register tests during patient creation to edit test data.
+                        <i class="fas fa-info-circle"></i> <strong>No tests registered</strong> - This patient has no tests
+                        registered. Please register tests during patient creation to edit test data.
                         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -252,12 +299,12 @@
         @php
             $allReports = json_decode($patient->test_report ?? '[]', true) ?? [];
             // Filter out CBC reports (they have their own section)
-            $testResults = array_filter($allReports, function($report) {
+            $testResults = array_filter($allReports, function ($report) {
                 return !isset($report['test']) || $report['test'] !== 'CBC';
             });
         @endphp
 
-        @if(!empty($testResults))
+        @if (!empty($testResults))
             <div class="row">
                 <div class="col-12">
                     <div class="card">
@@ -267,7 +314,7 @@
                             </h4>
 
                             <div class="accordion" id="testResultsAccordion">
-                                @foreach($testResults as $testName => $testData)
+                                @foreach ($testResults as $testName => $testData)
                                     @php
                                         $testSlug = \Str::slug($testName);
                                         $collapseId = 'testResult_' . $testSlug;
@@ -276,11 +323,14 @@
 
                                     <div class="card border-0 mb-2">
                                         <div class="card-header p-0 bg-light" id="{{ $headingId }}">
-                                            <button class="btn btn-link btn-block text-left p-3" type="button" data-toggle="collapse" data-target="#{{ $collapseId }}" aria-expanded="false" aria-controls="{{ $collapseId }}">
+                                            <button class="btn btn-link btn-block text-left p-3" type="button"
+                                                data-toggle="collapse" data-target="#{{ $collapseId }}"
+                                                aria-expanded="false" aria-controls="{{ $collapseId }}">
                                                 <div class="d-flex justify-content-between align-items-center w-100">
                                                     <div>
                                                         <h6 class="mb-0">
-                                                            <i class="fas fa-chevron-right collapse-icon" style="transition: transform 0.3s;"></i>
+                                                            <i class="fas fa-chevron-right collapse-icon"
+                                                                style="transition: transform 0.3s;"></i>
                                                             <strong>{{ $testName }}</strong>
                                                         </h6>
                                                         <small class="text-muted">
@@ -294,14 +344,15 @@
                                             </button>
                                         </div>
 
-                                        <div id="{{ $collapseId }}" class="collapse" aria-labelledby="{{ $headingId }}" data-parent="#testResultsAccordion">
+                                        <div id="{{ $collapseId }}" class="collapse"
+                                            aria-labelledby="{{ $headingId }}" data-parent="#testResultsAccordion">
                                             <div class="card-body">
                                                 {{-- Try to find the template to display nicely --}}
                                                 @php
                                                     $template = $testTemplates[$testName] ?? null;
                                                 @endphp
 
-                                                @if($template)
+                                                @if ($template)
                                                     {{-- Display with template fields --}}
                                                     <div class="table-responsive">
                                                         <table class="table table-sm table-bordered mb-0">
@@ -312,15 +363,16 @@
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
-                                                                @foreach($template['fields'] as $field)
+                                                                @foreach ($template['fields'] as $field)
                                                                     @php
                                                                         $value = $testData[$field['name']] ?? '';
                                                                     @endphp
                                                                     <tr>
                                                                         <td><strong>{{ $field['label'] }}</strong></td>
                                                                         <td>
-                                                                            @if(!empty($value))
-                                                                                <pre class="mb-0" style="background-color: #f8f9fa; padding: 8px; border-radius: 4px; white-space: pre-wrap; word-wrap: break-word;">{{ $value }}</pre>
+                                                                            @if (!empty($value))
+                                                                                <pre class="mb-0"
+                                                                                    style="background-color: #f8f9fa; padding: 8px; border-radius: 4px; white-space: pre-wrap; word-wrap: break-word;">{{ $value }}</pre>
                                                                             @else
                                                                                 <span class="text-muted">-</span>
                                                                             @endif
@@ -345,13 +397,15 @@
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
-                                                                @foreach($testData as $key => $value)
-                                                                    @if($key !== 'test_date')
+                                                                @foreach ($testData as $key => $value)
+                                                                    @if ($key !== 'test_date')
                                                                         <tr>
-                                                                            <td><strong>{{ ucfirst(str_replace('_', ' ', $key)) }}</strong></td>
+                                                                            <td><strong>{{ ucfirst(str_replace('_', ' ', $key)) }}</strong>
+                                                                            </td>
                                                                             <td>
-                                                                                @if(!empty($value))
-                                                                                    <pre class="mb-0" style="background-color: #f8f9fa; padding: 8px; border-radius: 4px; white-space: pre-wrap; word-wrap: break-word;">{{ $value }}</pre>
+                                                                                @if (!empty($value))
+                                                                                    <pre class="mb-0"
+                                                                                        style="background-color: #f8f9fa; padding: 8px; border-radius: 4px; white-space: pre-wrap; word-wrap: break-word;">{{ $value }}</pre>
                                                                                 @else
                                                                                     <span class="text-muted">-</span>
                                                                                 @endif
@@ -369,7 +423,8 @@
                                                 @endif
 
                                                 <div class="mt-3">
-                                                    <button type="button" class="btn btn-sm btn-warning" data-toggle="modal" data-target="#testModal_{{ $testSlug }}">
+                                                    <button type="button" class="btn btn-sm btn-warning"
+                                                        data-toggle="modal" data-target="#testModal_{{ $testSlug }}">
                                                         <i class="fas fa-edit"></i> Edit Test Data
                                                     </button>
                                                 </div>
@@ -398,7 +453,7 @@
                             @php
                                 $allReports = json_decode($patient->test_report ?? '[]', true) ?? [];
                                 // Filter only CBC reports
-                                $cbcReports = array_filter($allReports, function($report) {
+                                $cbcReports = array_filter($allReports, function ($report) {
                                     return isset($report['test']) && $report['test'] === 'CBC';
                                 });
                             @endphp
@@ -428,15 +483,16 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    @foreach($analytes as $analyte)
+                                                    @foreach ($analytes as $analyte)
                                                         <tr>
                                                             <td><strong>{{ $analyte['name'] }}</strong></td>
                                                             <td>{{ $analyte['value'] }}</td>
                                                             <td>{{ $analyte['units'] ?? '-' }}</td>
                                                             <td>{{ $analyte['ref_range'] ?? '-' }}</td>
                                                             <td>
-                                                                @if(isset($analyte['flags']) && $analyte['flags'] !== 'N')
-                                                                    <span class="badge badge-warning">{{ $analyte['flags'] }}</span>
+                                                                @if (isset($analyte['flags']) && $analyte['flags'] !== 'N')
+                                                                    <span
+                                                                        class="badge badge-warning">{{ $analyte['flags'] }}</span>
                                                                 @else
                                                                     <span class="badge badge-success">Normal</span>
                                                                 @endif
@@ -462,15 +518,16 @@
 
     </div>
 
-    @if(!empty($testsWithData))
-        @foreach($testsWithData as $test)
+    @if (!empty($testsWithData))
+        @foreach ($testsWithData as $test)
             @php
                 $testSlug = \Str::slug($test['name']);
                 $template = $test['template'];
                 $saved = $test['saved_data'];
             @endphp
 
-            <div class="modal fade" id="testModal_{{ $testSlug }}" tabindex="-1" role="dialog" aria-labelledby="testModalLabel_{{ $testSlug }}" aria-hidden="true">
+            <div class="modal fade" id="testModal_{{ $testSlug }}" tabindex="-1" role="dialog"
+                aria-labelledby="testModalLabel_{{ $testSlug }}" aria-hidden="true">
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
                         <div class="modal-header bg-primary text-white">
@@ -481,55 +538,47 @@
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
-                        <form class="test-data-form" data-test-name="{{ $test['name'] }}" data-patient-id="{{ $patient->id }}">
+                        <form class="test-data-form" data-test-name="{{ $test['name'] }}"
+                            data-patient-id="{{ $patient->id }}">
                             <div class="modal-body">
-                                @foreach($template['fields'] as $field)
+                                @foreach ($template['fields'] as $field)
                                     <div class="form-group">
                                         <label for="{{ $testSlug }}_{{ $field['name'] }}">
                                             {{ $field['label'] }}
-                                            @if($field['required'] ?? false)
+                                            @if ($field['required'] ?? false)
                                                 <span class="text-danger">*</span>
                                             @endif
                                         </label>
 
                                         @switch($field['type'] ?? 'text')
                                             @case('textarea')
-                                                <textarea id="{{ $testSlug }}_{{ $field['name'] }}"
-                                                          name="{{ $field['name'] }}"
-                                                          class="form-control"
-                                                          rows="4"
-                                                          {{ ($field['required'] ?? false) ? 'required' : '' }}>{{ $saved[$field['name']] ?? '' }}</textarea>
-                                                @break
+                                                <textarea id="{{ $testSlug }}_{{ $field['name'] }}" name="{{ $field['name'] }}" class="form-control"
+                                                    rows="4" {{ $field['required'] ?? false ? 'required' : '' }}>{{ $saved[$field['name']] ?? '' }}</textarea>
+                                            @break
 
                                             @case('number')
-                                                <input type="number"
-                                                       id="{{ $testSlug }}_{{ $field['name'] }}"
-                                                       name="{{ $field['name'] }}"
-                                                       class="form-control"
-                                                       value="{{ $saved[$field['name']] ?? '' }}"
-                                                       step="{{ $field['step'] ?? '1' }}"
-                                                       {{ ($field['required'] ?? false) ? 'required' : '' }}>
-                                                @break
+                                                <input type="number" id="{{ $testSlug }}_{{ $field['name'] }}"
+                                                    name="{{ $field['name'] }}" class="form-control"
+                                                    value="{{ $saved[$field['name']] ?? '' }}"
+                                                    step="{{ $field['step'] ?? '1' }}"
+                                                    {{ $field['required'] ?? false ? 'required' : '' }}>
+                                            @break
 
                                             @default
-                                                <input type="text"
-                                                       id="{{ $testSlug }}_{{ $field['name'] }}"
-                                                       name="{{ $field['name'] }}"
-                                                       class="form-control"
-                                                       value="{{ $saved[$field['name']] ?? '' }}"
-                                                       {{ ($field['required'] ?? false) ? 'required' : '' }}>
+                                                <input type="text" id="{{ $testSlug }}_{{ $field['name'] }}"
+                                                    name="{{ $field['name'] }}" class="form-control"
+                                                    value="{{ $saved[$field['name']] ?? '' }}"
+                                                    {{ $field['required'] ?? false ? 'required' : '' }}>
                                         @endswitch
                                     </div>
                                 @endforeach
 
                                 <div class="form-group">
-                                    <label for="{{ $testSlug }}_test_date">Test Date <span class="text-danger">*</span></label>
-                                    <input type="date"
-                                           id="{{ $testSlug }}_test_date"
-                                           name="test_date"
-                                           class="form-control"
-                                           value="{{ $saved['test_date'] ?? now()->format('Y-m-d') }}"
-                                           required>
+                                    <label for="{{ $testSlug }}_test_date">Test Date <span
+                                            class="text-danger">*</span></label>
+                                    <input type="date" id="{{ $testSlug }}_test_date" name="test_date"
+                                        class="form-control" value="{{ $saved['test_date'] ?? now()->format('Y-m-d') }}"
+                                        required>
                                 </div>
                             </div>
 
@@ -550,7 +599,7 @@
 
 @section('scripts')
     <script>
-        $(document).ready(function () {
+        $(document).ready(function() {
             // Chevron icon animation for test results accordion
             $('[data-toggle="collapse"]').on('click', function() {
                 $(this).find('.collapse-icon').toggleClass('fa-chevron-right fa-chevron-down');
@@ -559,22 +608,23 @@
             // Auto-rotate chevrons on load for already expanded items
             $('.collapse.show').each(function() {
                 var target = $(this).attr('id');
-                $('[data-target="#' + target + '"] .collapse-icon').addClass('fa-chevron-down').removeClass('fa-chevron-right');
+                $('[data-target="#' + target + '"] .collapse-icon').addClass('fa-chevron-down').removeClass(
+                    'fa-chevron-right');
             });
 
             // Fetch CBC Results
-            $('#fetchCBCResults').on('click', function () {
+            $('#fetchCBCResults').on('click', function() {
                 const btn = $(this);
                 const originalHtml = btn.html();
-                
+
                 btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Fetching...');
-                
-                setTimeout(function () {
+
+                setTimeout(function() {
                     window.location.reload();
                 }, 1000);
             });
 
-            $('.test-data-form').on('submit', function (e) {
+            $('.test-data-form').on('submit', function(e) {
                 e.preventDefault();
 
                 const form = $(this);
@@ -590,7 +640,7 @@
                 formData.append('test_name', testName);
                 formData.append('_token', csrfToken);
 
-                form.find('input, textarea, select').each(function () {
+                form.find('input, textarea, select').each(function() {
                     const field = $(this);
                     const name = field.attr('name');
                     if (name) {
@@ -601,53 +651,61 @@
                 submitBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Saving…');
 
                 $.ajax({
-                    url: "{{ route('patients.storeTestData') }}",
-                    method: 'POST',
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    dataType: 'json'
-                })
-                .done(function (response) {
-                    if (response.success) {
+                        url: "{{ route('patients.storeTestData') }}",
+                        method: 'POST',
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        dataType: 'json'
+                    })
+                    .done(function(response) {
+                        if (response.success) {
+                            if (typeof Swal !== 'undefined') {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Saved',
+                                    text: response.message ?? 'Test data saved.',
+                                    timer: 1800,
+                                    showConfirmButton: false
+                                });
+                            }
+                            setTimeout(function() {
+                                form.closest('.modal').modal('hide');
+                                window.location.reload();
+                            }, 1800);
+                        } else {
+                            const message = response.message ?? 'Failed to save test data.';
+                            if (typeof Swal !== 'undefined') {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: message
+                                });
+                            } else {
+                                alert(message);
+                            }
+                        }
+                    })
+                    .fail(function(xhr) {
+                        let message = 'Failed to save test data.';
+                        if (xhr.status === 422 && xhr.responseJSON?.errors) {
+                            message = Object.values(xhr.responseJSON.errors).flat().join(' ');
+                        } else if (xhr.responseJSON?.message) {
+                            message = xhr.responseJSON.message;
+                        }
                         if (typeof Swal !== 'undefined') {
                             Swal.fire({
-                                icon: 'success',
-                                title: 'Saved',
-                                text: response.message ?? 'Test data saved.',
-                                timer: 1800,
-                                showConfirmButton: false
+                                icon: 'error',
+                                title: 'Error',
+                                text: message
                             });
-                        }
-                        setTimeout(function () {
-                            form.closest('.modal').modal('hide');
-                            window.location.reload();
-                        }, 1800);
-                    } else {
-                        const message = response.message ?? 'Failed to save test data.';
-                        if (typeof Swal !== 'undefined') {
-                            Swal.fire({ icon: 'error', title: 'Error', text: message });
                         } else {
                             alert(message);
                         }
-                    }
-                })
-                .fail(function (xhr) {
-                    let message = 'Failed to save test data.';
-                    if (xhr.status === 422 && xhr.responseJSON?.errors) {
-                        message = Object.values(xhr.responseJSON.errors).flat().join(' ');
-                    } else if (xhr.responseJSON?.message) {
-                        message = xhr.responseJSON.message;
-                    }
-                    if (typeof Swal !== 'undefined') {
-                        Swal.fire({ icon: 'error', title: 'Error', text: message });
-                    } else {
-                        alert(message);
-                    }
-                })
-                .always(function () {
-                    submitBtn.prop('disabled', false).html(originalBtnHtml);
-                });
+                    })
+                    .always(function() {
+                        submitBtn.prop('disabled', false).html(originalBtnHtml);
+                    });
             });
         });
     </script>

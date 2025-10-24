@@ -48,6 +48,11 @@
                                     <td class="text-wrap">{{ $item->department }}</td>
                                     <td class="text-wrap">{{ number_format($item->price, 2) }}</td>
                                     <td>
+                                        <a href="{{ route('labtest.parameters.create', $item->id) }}"
+                                            class="btn btn-info btn-sm">
+                                            <i class="fas fa-list"></i> Add Fields
+                                        </a>
+
                                         <a href="javascript:void(0);" class="btn btn-warning btn-sm editbtn"
                                             data-id={{ $item->id }}><i class="fas fa-edit"></i></a>
                                         <a href="javascript:void(0);" data-id="{{ $item->id }}"

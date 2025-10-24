@@ -75,17 +75,21 @@
 
     <ul class="list-unstyled menu-left mb-0">
         <li class="float-left">
-            <a href="#" class="logo" style="display: flex; align-items: center; gap: 12px; padding: 10px 15px;">
+            <a href="/" class="logo" style="display: flex; align-items: center; gap: 12px; padding: 10px 15px;">
                 <span class="logo-lg" style="display: flex; align-items: center; gap: 12px;">
-                    <img src="{{ asset('assets/images/logo.png') }}" alt="Bacha Lab Logo" height="50" style="border-radius: 50%; background: white; padding: 2px;">
+                    <img src="{{ asset('assets/images/logo.png') }}" alt="Bacha Lab Logo" height="50"
+                        style="border-radius: 50%; background: white; padding: 2px;">
                     <div style="display: flex; flex-direction: column; justify-content: center;">
-                        <span style="font-size: 20px; font-weight: 900; color: #da920d; letter-spacing: 1px; line-height: 1;">BACHA KHAN</span>
-                        
+                        <span
+                            style="font-size: 20px; font-weight: 900; color: #da920d; letter-spacing: 1px; line-height: 1;">BACHA
+                            KHAN</span>
+
                     </div>
                 </span>
-                
+
                 <span class="logo-sm">
-                    <img src="{{ asset('assets/images/logo.png') }}" alt="Bacha Lab Logo" height="32" style="border-radius: 50%; background: white; padding: 2px;">
+                    <img src="{{ asset('assets/images/logo.png') }}" alt="Bacha Lab Logo" height="32"
+                        style="border-radius: 50%; background: white; padding: 2px;">
                 </span>
             </a>
         </li>
@@ -115,7 +119,8 @@
         <div class="modal-content" style="background-color: #ecf0f1;">
             <div class="modal-header" style="background-color: #3498db; color: #ffffff;">
                 <h4 class="modal-title" id="exampleModalLabel">Daily Attendance</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: #ffffff;">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                    style="color: #ffffff;">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>

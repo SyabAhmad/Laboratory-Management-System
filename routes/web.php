@@ -63,8 +63,8 @@ Route::middleware(['auth:sanctum', 'verified'])
         Route::post('/new/patients/store', 'App\Http\Controllers\PatientsController@store')->name('patients.store');
         Route::get('/patients/status/{id}', 'App\Http\Controllers\PatientsController@statuschange')->name('patients.status');
         Route::get('/patients/{id}/edit', 'App\Http\Controllers\PatientsController@edit')->name('patients.edit');
-    // Print friendly patient test report (per-test)
-    Route::get('/patients/{patient}/tests/{testName}/print', [App\Http\Controllers\PatientsController::class, 'printTestReport'])->name('patients.printTest');
+        // Print friendly patient test report (per-test)
+        Route::get('/patients/{patient}/tests/{testName}/print', [App\Http\Controllers\PatientsController::class, 'printTestReport'])->name('patients.printTest');
 
         Route::put('/patients/{id}', 'App\Http\Controllers\PatientsController@update')->name('patients.update');
         Route::post('/patients/test-data', 'App\Http\Controllers\PatientsController@storeTestData')->name('patients.test.data.store');
@@ -80,8 +80,14 @@ Route::middleware(['auth:sanctum', 'verified'])
         Route::put('/referrals/update', "App\Http\Controllers\ReferralController@update")->name('referrals.update');
         Route::delete('/referrals/{id}', 'App\Http\Controllers\ReferralController@destroy')->name('referrals.destroy');
 
-        // labtest Category Route
-        Route::get('labtest', 'App\Http\Controllers\LabTestCatController@index')->name('labtest');
+        // Lab Test Category Routes
+        Route::get('/labtest', 'App\Http\Controllers\LabTestCatController@index')->name('labtest.index');
+
+
+        // Lab Test Parameters Routes
+        Route::get('/labtest/{id}/parameters', 'App\Http\Controllers\LabTestParameterController@create')->name('labtest.parameters.create');
+        Route::post('/labtest/{id}/parameters', 'App\Http\Controllers\LabTestParameterController@store')->name('labtest.parameters.store');
+
         Route::post('/labtest/add', 'App\Http\Controllers\LabTestCatController@store')->name('labtest.add');
         Route::delete('/labtest/{id}', 'App\Http\Controllers\LabTestCatController@destroy')->name('labtest.destroy');
         Route::get('/labtest/edit/{id}', 'App\Http\Controllers\LabTestCatController@edit')->name('labtest.edit');

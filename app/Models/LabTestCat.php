@@ -22,4 +22,9 @@ class LabTestCat extends Model
         'price',
         'status',
     ];
+
+    public function parameters()
+    {
+        return $this->hasMany(LabTestParameter::class, 'lab_test_cat_id');
+    }
 }
