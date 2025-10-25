@@ -101,7 +101,7 @@
         <div class="login-card">
             <div class="login-header">
                 <a href="index.html">
-                    <img src="{{ asset('assets/images/logo-dark.png') }}" alt="Logo" height="40">
+                    <img src="{{ asset('assets/images/logo.png') }}" alt="Logo" height="100">
                 </a>
                 <h4 class="mt-3">Welcome Back</h4>
                 <p class="text-muted">Sign in to your account</p>

@@ -102,9 +102,10 @@
                 <div class="row mt-5">
                     <div class="col-md-12">
                         <button onclick="window.history.back()" class="btn btn-primary">Back</button>
-                        <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#editBillModal">Edit Bill</button>
+                        <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#editBillModal">Payment</button>
                         @if(strtolower($bills->status ?? '') !== 'paid')
-                            <button id="markPaidBtn" type="button" class="btn btn-success">Mark as Paid</button>
+                            <!-- <button id="markPaidBtn" type="button" class="btn btn-success">Mark as Paid</button> -->
+                             <span id="display_bill_status" class="badge badge-warning">Not Paid Yet</span>
                         @else
                             <span id="display_bill_status" class="badge badge-success">Paid</span>
                         @endif
@@ -314,59 +315,59 @@
             });
 
             // Mark as Paid button handler
-            $('#markPaidBtn').on('click', function() {
-                Swal.fire({
-                    title: 'Mark bill as paid?',
-                    text: 'This will record the remaining payment and set the bill status to Paid.',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'Yes, mark as paid',
-                    cancelButtonText: 'Cancel'
-                }).then((result) => {
-                    if (!result.isConfirmed) return;
+        //     $('#markPaidBtn').on('click', function() {
+        //         Swal.fire({
+        //             title: 'Mark bill as paid?',
+        //             text: 'This will record the remaining payment and set the bill status to Paid.',
+        //             icon: 'warning',
+        //             showCancelButton: true,
+        //             confirmButtonText: 'Yes, mark as paid',
+        //             cancelButtonText: 'Cancel'
+        //         }).then((result) => {
+        //             if (!result.isConfirmed) return;
 
-                    const url = '{{ route("bills.markPaid", $bills->id) }}';
-                    $.ajax({
-                        url: url,
-                        method: 'POST',
-                        data: { _token: '{{ csrf_token() }}' },
-                        dataType: 'json',
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') || '{{ csrf_token() }}'
-                        },
-                        success: function(resp) {
-                            if (resp.success) {
-                                const updated = resp.bill;
-                                // Update visible values (no label prefixes)
-                                $('#display_paid_amount').text((parseFloat(updated.paid_amount || 0)).toFixed(2));
-                                $('#display_due_amount').text((parseFloat(updated.due_amount || 0)).toFixed(2));
-                                $('#display_net_amount').text((parseFloat(updated.total_price || 0)).toFixed(2));
+        //             const url = '{{ route("bills.markPaid", $bills->id) }}';
+        //             $.ajax({
+        //                 url: url,
+        //                 method: 'POST',
+        //                 data: { _token: '{{ csrf_token() }}' },
+        //                 dataType: 'json',
+        //                 headers: {
+        //                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') || '{{ csrf_token() }}'
+        //                 },
+        //                 success: function(resp) {
+        //                     if (resp.success) {
+        //                         const updated = resp.bill;
+        //                         // Update visible values (no label prefixes)
+        //                         $('#display_paid_amount').text((parseFloat(updated.paid_amount || 0)).toFixed(2));
+        //                         $('#display_due_amount').text((parseFloat(updated.due_amount || 0)).toFixed(2));
+        //                         $('#display_net_amount').text((parseFloat(updated.total_price || 0)).toFixed(2));
 
-                                // Replace button with Paid badge
-                                $('#markPaidBtn').replaceWith('<span id="display_bill_status" class="badge badge-success">Paid</span>');
+        //                         // Replace button with Paid badge
+        //                         $('#markPaidBtn').replaceWith('<span id="display_bill_status" class="badge badge-success">Paid</span>');
 
-                                Swal.fire('Updated', resp.message || 'Bill marked as paid.', 'success');
-                            } else {
-                                Swal.fire('Error', resp.message || 'Failed to mark paid', 'error');
-                            }
-                        },
-                        error: function(xhr) {
-                            console.error('Mark paid error:', xhr);
-                            console.error('Status:', xhr.status);
-                            console.error('Response text:', xhr.responseText);
-                            let serverMsg = 'Failed to mark as paid. ';
-                            try {
-                                const parsed = JSON.parse(xhr.responseText || '{}');
-                                serverMsg += parsed.message || parsed.error || JSON.stringify(parsed);
-                            } catch (e) {
-                                serverMsg += xhr.statusText || 'Unknown error';
-                            }
+        //                         Swal.fire('Updated', resp.message || 'Bill marked as paid.', 'success');
+        //                     } else {
+        //                         Swal.fire('Error', resp.message || 'Failed to mark paid', 'error');
+        //                     }
+        //                 },
+        //                 error: function(xhr) {
+        //                     console.error('Mark paid error:', xhr);
+        //                     console.error('Status:', xhr.status);
+        //                     console.error('Response text:', xhr.responseText);
+        //                     let serverMsg = 'Failed to mark as paid. ';
+        //                     try {
+        //                         const parsed = JSON.parse(xhr.responseText || '{}');
+        //                         serverMsg += parsed.message || parsed.error || JSON.stringify(parsed);
+        //                     } catch (e) {
+        //                         serverMsg += xhr.statusText || 'Unknown error';
+        //                     }
 
-                            Swal.fire('Error', serverMsg, 'error');
-                        }
-                    });
-                });
-            });
-        });
+        //                     Swal.fire('Error', serverMsg, 'error');
+        //                 }
+        //             });
+        //         });
+        //     });
+        // });
     </script>
 @endsection
