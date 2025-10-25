@@ -52,7 +52,7 @@
 
                                 <div class="text-center mb-4">
                                     <a href="index.html">
-                                        <span><img src="assets/images/logo-dark.png" alt="" height="28"></span>
+                                        <span><img src="assets/images/logo.png" alt="" height="100"></span>
                                     </a>
                                 </div>
 

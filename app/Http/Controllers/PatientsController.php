@@ -385,10 +385,10 @@ class PatientsController extends Controller
             'test_category.*' => 'string|max:255',
         ]);
 
-        $patientcount = Patients::count();
-
-        $patient = new Patients;
-        $patient->patient_id = date('Ym') . '0' . ($patientcount + 1);
+    $patient = new Patients;
+    // Generate a unique patient_id to avoid duplicate key errors.
+    // Use a date prefix plus a random suffix and ensure uniqueness in DB.
+    $patient->patient_id = $this->generateUniquePatientId();
         $patient->user_id = Auth::id();
 
         $patient->name = $request->name;
@@ -763,29 +763,97 @@ class PatientsController extends Controller
     {
         $patient = Patients::findOrFail($patientId);
 
-        // Use the same helper to build templates/data
-        $data = $this->getEditTestData($patientId);
-
         // Decode the test name in case it was URL-encoded
         $testName = rawurldecode($testName);
 
-        // Find the matching test in testsWithData
-        $testEntry = null;
-        foreach ($data['testsWithData'] as $t) {
-            if ($t['name'] === $testName) {
-                $testEntry = $t;
+        // Load raw saved test reports for this patient (may be associative or indexed)
+        $existingTestReports = json_decode($patient->test_report ?? '{}', true) ?? [];
+
+        // Try to find the test data by key (case-insensitive), or by entry containing ['test'] field
+        $foundKey = null;
+        foreach ($existingTestReports as $k => $v) {
+            if (is_string($k) && strtolower($k) === strtolower($testName)) {
+                $foundKey = $k;
                 break;
             }
         }
 
-        if (!$testEntry) {
-            abort(404, 'Test report not found for this patient');
+        if ($foundKey === null) {
+            foreach ($existingTestReports as $k => $v) {
+                if (is_array($v) && isset($v['test']) && strtolower($v['test']) === strtolower($testName)) {
+                    $foundKey = $k;
+                    break;
+                }
+            }
         }
 
-        return view('Patient.patient_test_print', array_merge(
-            compact('patient'),
-            $data,
-            ['testEntry' => $testEntry]
-        ));
+        $testData = $foundKey !== null ? $existingTestReports[$foundKey] : null;
+
+        // Also fetch DB-driven template/parameters for this test (authoritative metadata)
+        $templateFields = [];
+        try {
+            $cat = DB::table('labtest_cat')
+                ->whereRaw('LOWER(cat_name) = ?', [strtolower($testName)])
+                ->first();
+
+            if ($cat) {
+                $params = DB::table('lab_test_parameters')
+                    ->where('lab_test_cat_id', $cat->id)
+                    ->orderBy('id')
+                    ->get();
+
+                foreach ($params as $p) {
+                    // create a stable field name key that matches view expectations
+                    $fieldName = preg_replace('/[^a-z0-9]+/i', '_', strtolower($p->parameter_name));
+                    $templateFields[] = [
+                        'name' => $fieldName,
+                        'label' => $p->parameter_name,
+                        'unit' => $p->unit ?? '',
+                        'ref' => $p->reference_range ?? '',
+                        'required' => false,
+                    ];
+                }
+            }
+        } catch (\Exception $e) {
+            // ignore DB errors here; we'll still try to render available data
+            $templateFields = [];
+        }
+
+        // Build the testEntry object the view expects
+        $testEntry = [
+            'name' => $testName,
+            'template' => ['fields' => $templateFields],
+            'saved_data' => is_array($testData) ? $testData : [],
+            'has_template' => !empty($templateFields),
+            'has_data' => !empty($testData),
+        ];
+
+        return view('Patient.patient_test_print', compact('patient', 'testEntry'));
+    }
+
+    /**
+     * Generate a unique patient_id.
+     * Uses a date prefix and a random numeric suffix, checks DB for uniqueness.
+     * Falls back to a looped attempt and throws exception after many tries.
+     *
+     * @return string
+     */
+    private function generateUniquePatientId()
+    {
+        $attempt = 0;
+        do {
+            // e.g. 20251025-8421 (date + 4 random digits)
+            $candidate = date('Ymd') . mt_rand(1000, 9999);
+            $exists = Patients::where('patient_id', $candidate)->exists();
+            $attempt++;
+        } while ($exists && $attempt < 10);
+
+        if ($exists) {
+            // As a last resort, use a more-unique value with time and random
+            $candidate = date('YmdHis') . mt_rand(100, 999);
+            // If still exists (extremely unlikely), let DB throw — or you may loop longer
+        }
+
+        return (string) $candidate;
     }
 }
