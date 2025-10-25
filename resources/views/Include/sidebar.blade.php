@@ -1,4 +1,4 @@
-<div class="left-side-menu">
+<div class="left-side-menu bg-cards text-body" style="background: var(--bg-cards) !important;">
 
     <div class="slimscroll-menu">
 
@@ -7,7 +7,7 @@
 
             <ul class="metismenu" id="side-menu">
 
-                <li class="menu-title">Home</li>
+                <li class="menu-title text-heading">Home</li>
 
                 @if (App\Models\MainCompanys::get()->count() == 0)
                     <li>

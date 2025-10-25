@@ -29,6 +29,8 @@
                                 <th>Patient ID</th>
                                 <th>Name</th>
                                 <th>Phone</th>
+                                <th>Data Status</th>
+                                <th>Bill Status</th>
                                 <th>Age</th>
                                 <th>Gender</th>
                                 <th>Referred By</th>
@@ -126,7 +128,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Update Patient</button>
+                        <button type="submit" class="btn btn-primary-custom">Update Patient</button>
                     </div>
                 </form>
             </div>
@@ -151,15 +153,15 @@
                         <strong>Use this ID on the CBC Machine</strong>
                     </div>
                     <h3 class="mb-3">Patient Name</h3>
-                    <h4 class="text-primary mb-4" id="modalPatientName"></h4>
+                    <h4 class="text-primary-custom mb-4" id="modalPatientName"></h4>
                     <h3 class="mb-3">Patient ID (For CBC Machine)</h3>
-                    <div class="card bg-light">
+                    <div class="card bg-surface">
                         <div class="card-body">
-                            <h1 class="display-4 text-primary font-weight-bold mb-0" id="modalPatientId"></h1>
+                            <h1 class="display-4 text-primary-custom font-weight-bold mb-0" id="modalPatientId"></h1>
                         </div>
                     </div>
                     <div class="mt-4">
-                        <button type="button" class="btn btn-primary btn-lg" onclick="copyPatientId()">
+                        <button type="button" class="btn btn-primary-custom btn-lg" onclick="copyPatientId()">
                             <i class="fas fa-copy"></i> Copy Patient ID
                         </button>
                         <button type="button" class="btn btn-success btn-lg" onclick="printPatientId()">
@@ -188,12 +190,35 @@
             <h1 style="font-size: 48px; margin: 20px 0;">
                 Patient ID: <span id="printPatientId"></span>
             </h1>
-            <p style="font-size: 14px; color: #666;">Enter this ID on CBC Analyzer</p>
+            <p style="font-size: 14px; color: var(--text-body);">Enter this ID on CBC Analyzer</p>
             <hr>
             <p style="font-size: 12px;">Date: {{ date('Y-m-d H:i:s') }}</p>
         </div>
     </div>
-@endsection
+        <!-- Completed Patients Table -->
+        <div class="card mt-4">
+            <div class="card-body bg-var(--success)">
+                <h4 class="mb-3">Completed Patients (Data filled & Bill Paid)</h4>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0 completed_patitent_datatable" id="completed-patients-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Patient ID</th>
+                                <th>Name</th>
+                                <th>Phone</th>
+                                <th>Age</th>
+                                <th>Gender</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    @endsection
 
 @section('scripts')
     <script>
@@ -221,6 +246,14 @@
                         name: 'mobile_phone'
                     },
                     {
+                        data: 'data_status',
+                        name: 'data_status'
+                    },
+                    {
+                        data: 'bill_status',
+                        name: 'bill_status'
+                    },
+                    {
                         data: 'age',
                         name: 'age'
                     },
@@ -243,6 +276,29 @@
                         searchable: true
                     }
                 ],
+                buttons: ['copy', 'excel', 'pdf']
+            });
+
+            // Completed patients table
+            var completedTable = $('.completed_patitent_datatable').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: "{{ route('patients.completed') }}"
+                },
+                columns: [
+                    { data: 'DT_RowIndex', name: 'DT_RowIndex' },
+                    { data: 'patient_id', name: 'patient_id' },
+                    { data: 'name', name: 'name' },
+                    { data: 'mobile_phone', name: 'mobile_phone' },
+                    { data: 'age', name: 'age' },
+                    { data: 'gender', name: 'gender' },
+                    { data: 'action', name: 'action', orderable: true, searchable: true }
+                ],
+                createdRow: function(row, data, dataIndex) {
+                    // Mark completed rows visually as success
+                    $(row).addClass('table-success');
+                },
                 buttons: ['copy', 'excel', 'pdf']
             });
 

@@ -204,7 +204,7 @@
                                             <tr>
                                                 <td>
                                                     <div class="d-flex align-items-center">
-                                                        <i class="fas fa-{{ $isMllpData ? 'microchip' : 'vial' }} text-primary mr-2"
+                                                        <i class="fas fa-{{ $isMllpData ? 'microchip' : 'vial' }} text-primary-custom mr-2"
                                                             style="font-size: 16px;"></i>
                                                         <div>
                                                             <strong>{{ $test['name'] }}</strong>
@@ -349,7 +349,17 @@
                                             <div class="card-body">
                                                 {{-- Try to find the template to display nicely --}}
                                                 @php
-                                                    $template = $testTemplates[$testName] ?? null;
+                                                    // Prefer template provided in $testsWithData (built from DB parameters)
+                                                    $template = null;
+                                                    if (!empty($testsWithData)) {
+                                                        foreach ($testsWithData as $t) {
+                                                            if (isset($t['name']) && $t['name'] === $testName) {
+                                                                $template = $t['template'] ?? null;
+                                                                break;
+                                                            }
+                                                        }
+                                                    }
+                                                    // No fallback to pre-defined config templates — use DB-built templates only
                                                 @endphp
 
                                                 @if ($template)
@@ -372,14 +382,14 @@
                                                                         <td>
                                                                             @if (!empty($value))
                                                                                 <pre class="mb-0"
-                                                                                    style="background-color: #f8f9fa; padding: 8px; border-radius: 4px; white-space: pre-wrap; word-wrap: break-word;">{{ $value }}</pre>
+                                                                                    style="background: var(--surface); padding: 8px; border-radius: 4px; white-space: pre-wrap; word-wrap: break-word;">{{ $value }}</pre>
                                                                             @else
                                                                                 <span class="text-muted">-</span>
                                                                             @endif
                                                                         </td>
                                                                     </tr>
                                                                 @endforeach
-                                                                <tr class="bg-light">
+                                                                <tr class="bg-surface">
                                                                     <td><strong>Test Date</strong></td>
                                                                     <td>{{ $testData['test_date'] ?? 'Unknown' }}</td>
                                                                 </tr>
@@ -405,7 +415,7 @@
                                                                             <td>
                                                                                 @if (!empty($value))
                                                                                     <pre class="mb-0"
-                                                                                        style="background-color: #f8f9fa; padding: 8px; border-radius: 4px; white-space: pre-wrap; word-wrap: break-word;">{{ $value }}</pre>
+                                                                                        style="background: var(--surface); padding: 8px; border-radius: 4px; white-space: pre-wrap; word-wrap: break-word;">{{ $value }}</pre>
                                                                                 @else
                                                                                     <span class="text-muted">-</span>
                                                                                 @endif
@@ -413,7 +423,7 @@
                                                                         </tr>
                                                                     @endif
                                                                 @endforeach
-                                                                <tr class="bg-light">
+                                                                <tr class="bg-surface">
                                                                     <td><strong>Test Date</strong></td>
                                                                     <td>{{ $testData['test_date'] ?? 'Unknown' }}</td>
                                                                 </tr>
@@ -423,7 +433,7 @@
                                                 @endif
 
                                                 <div class="mt-3">
-                                                    <button type="button" class="btn btn-sm btn-warning"
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary"
                                                         data-toggle="modal" data-target="#testModal_{{ $testSlug }}">
                                                         <i class="fas fa-edit"></i> Edit Test Data
                                                     </button>
@@ -442,9 +452,9 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
                             <h4 class="header-title mb-0">CBC Test Results</h4>
-                            <button type="button" class="btn btn-primary" id="fetchCBCResults">
+                            <button type="button" class="btn btn-primary-custom" id="fetchCBCResults">
                                 <i class="fas fa-sync-alt"></i> Fetch Latest CBC Results
                             </button>
                         </div>
@@ -464,7 +474,7 @@
                                 @endphp
 
                                 <div class="card mb-3">
-                                    <div class="card-header bg-light">
+                                    <div class="card-header bg-surface">
                                         <strong>{{ $report['instrument'] ?? 'CBC' }}</strong>
                                         <span class="float-right text-muted">
                                             {{ $report['reported_at'] ?? 'Unknown date' }}
@@ -525,73 +535,74 @@
                 $template = $test['template'];
                 $saved = $test['saved_data'];
             @endphp
-
-            <div class="modal fade" id="testModal_{{ $testSlug }}" tabindex="-1" role="dialog"
-                aria-labelledby="testModalLabel_{{ $testSlug }}" aria-hidden="true">
-                <div class="modal-dialog modal-lg" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header bg-primary text-white">
-                            <h5 class="modal-title" id="testModalLabel_{{ $testSlug }}">
-                                <i class="fas fa-flask"></i> {{ $test['name'] }} - Test Results
-                            </h5>
-                            <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <form class="test-data-form" data-test-name="{{ $test['name'] }}"
-                            data-patient-id="{{ $patient->id }}">
-                            <div class="modal-body">
-                                @foreach ($template['fields'] as $field)
-                                    <div class="form-group">
-                                        <label for="{{ $testSlug }}_{{ $field['name'] }}">
-                                            {{ $field['label'] }}
-                                            @if ($field['required'] ?? false)
-                                                <span class="text-danger">*</span>
-                                            @endif
-                                        </label>
-
-                                        @switch($field['type'] ?? 'text')
-                                            @case('textarea')
-                                                <textarea id="{{ $testSlug }}_{{ $field['name'] }}" name="{{ $field['name'] }}" class="form-control"
-                                                    rows="4" {{ $field['required'] ?? false ? 'required' : '' }}>{{ $saved[$field['name']] ?? '' }}</textarea>
-                                            @break
-
-                                            @case('number')
-                                                <input type="number" id="{{ $testSlug }}_{{ $field['name'] }}"
-                                                    name="{{ $field['name'] }}" class="form-control"
-                                                    value="{{ $saved[$field['name']] ?? '' }}"
-                                                    step="{{ $field['step'] ?? '1' }}"
-                                                    {{ $field['required'] ?? false ? 'required' : '' }}>
-                                            @break
-
-                                            @default
-                                                <input type="text" id="{{ $testSlug }}_{{ $field['name'] }}"
-                                                    name="{{ $field['name'] }}" class="form-control"
-                                                    value="{{ $saved[$field['name']] ?? '' }}"
-                                                    {{ $field['required'] ?? false ? 'required' : '' }}>
-                                        @endswitch
-                                    </div>
-                                @endforeach
-
-                                <div class="form-group">
-                                    <label for="{{ $testSlug }}_test_date">Test Date <span
-                                            class="text-danger">*</span></label>
-                                    <input type="date" id="{{ $testSlug }}_test_date" name="test_date"
-                                        class="form-control" value="{{ $saved['test_date'] ?? now()->format('Y-m-d') }}"
-                                        required>
-                                </div>
-                            </div>
-
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-save"></i> Save Test Data
+            @if (!empty($template) && !empty($template['fields']))
+                <div class="modal fade" id="testModal_{{ $testSlug }}" tabindex="-1" role="dialog"
+                    aria-labelledby="testModalLabel_{{ $testSlug }}" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header bg-primary text-white">
+                                <h5 class="modal-title" id="testModalLabel_{{ $testSlug }}">
+                                    <i class="fas fa-flask"></i> {{ $test['name'] }} - Test Results
+                                </h5>
+                                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
-                        </form>
+                            <form class="test-data-form" data-test-name="{{ $test['name'] }}"
+                                data-patient-id="{{ $patient->id }}">
+                                <div class="modal-body">
+                                    @foreach ($template['fields'] as $field)
+                                        <div class="form-group">
+                                            <label for="{{ $testSlug }}_{{ $field['name'] }}">
+                                                {{ $field['label'] }}
+                                                @if ($field['required'] ?? false)
+                                                    <span class="text-danger">*</span>
+                                                @endif
+                                            </label>
+
+                                            @switch($field['type'] ?? 'text')
+                                                @case('textarea')
+                                                    <textarea id="{{ $testSlug }}_{{ $field['name'] }}" name="{{ $field['name'] }}" class="form-control"
+                                                        rows="4" {{ $field['required'] ?? false ? 'required' : '' }}>{{ $saved[$field['name']] ?? '' }}</textarea>
+                                                @break
+
+                                                @case('number')
+                                                    <input type="number" id="{{ $testSlug }}_{{ $field['name'] }}"
+                                                        name="{{ $field['name'] }}" class="form-control"
+                                                        value="{{ $saved[$field['name']] ?? '' }}"
+                                                        step="{{ $field['step'] ?? '1' }}"
+                                                        {{ $field['required'] ?? false ? 'required' : '' }}>
+                                                @break
+
+                                                @default
+                                                    <input type="text" id="{{ $testSlug }}_{{ $field['name'] }}"
+                                                        name="{{ $field['name'] }}" class="form-control"
+                                                        value="{{ $saved[$field['name']] ?? '' }}"
+                                                        {{ $field['required'] ?? false ? 'required' : '' }}>
+                                            @endswitch
+                                        </div>
+                                    @endforeach
+
+                                    <div class="form-group">
+                                        <label for="{{ $testSlug }}_test_date">Test Date <span
+                                                class="text-danger">*</span></label>
+                                        <input type="date" id="{{ $testSlug }}_test_date" name="test_date"
+                                            class="form-control" value="{{ $saved['test_date'] ?? now()->format('Y-m-d') }}"
+                                            required>
+                                    </div>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save"></i> Save Test Data
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
-            </div>
+            @endif
         @endforeach
     @endif
 

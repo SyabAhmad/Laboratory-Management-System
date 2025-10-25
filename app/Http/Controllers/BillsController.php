@@ -11,6 +11,7 @@ use App\Models\TestReport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
 
 class BillsController extends Controller
@@ -50,6 +51,19 @@ class BillsController extends Controller
                         }
                     }
                     return implode(', ', $all_test_name);
+                })
+                ->addColumn('status', function ($item) {
+                    return ucfirst((string)($item->status ?? 'unpaid'));
+                })
+                ->addColumn('paid_amount', function ($item) {
+                    // prefer stored paid_amount, otherwise sum payments
+                    $paid = $item->paid_amount ?? Payments::where('bill_id', $item->id)->sum('amount');
+                    return number_format((float)$paid, 2);
+                })
+                ->addColumn('tests_completed', function ($item) {
+                    // Simple heuristic: if there are any test reports for this patient, mark as Complete
+                    $hasReports = TestReport::where('patient_id', $item->patient_id)->exists();
+                    return $hasReports ? 'Complete' : 'Pending';
                 })
                 ->addColumn('action', function ($row) {
                     $btn = '&nbsp;&nbsp;<a href="' . route("billing.details", $row->id) . '" class="btn btn-info btn-sm detailsview" data-id="' . $row->id . '"><i class="fas fa-eye"></i></a>';
@@ -261,7 +275,7 @@ class BillsController extends Controller
             $patient->save();
 
             // Update or create the single bill row for the patient
-            \App\Models\Bills::updateOrCreate(
+            $bill = \App\Models\Bills::updateOrCreate(
                 ['patient_id' => $patient->id],
                 [
                     'amount' => $total,
@@ -270,6 +284,42 @@ class BillsController extends Controller
                     'updated_at' => now(),
                 ]
             );
+
+            // Ensure extended billing fields are set (total_price, paid_amount, discount, due_amount, payment_type)
+            try {
+                $bill->total_price = $total;
+                $paid = (float) ($request->input('pay') ?? 0);
+                $bill->paid_amount = $paid;
+                $bill->discount = (float) ($request->input('discount') ?? 0);
+                $bill->due_amount = $bill->total_price - $bill->paid_amount;
+                if ($request->filled('payment_type')) {
+                    $bill->payment_type = $request->input('payment_type');
+                }
+                // generate bill number if not present
+                if (empty($bill->bill_no)) {
+                    $bill->bill_no = 'INV-' . now()->format('Ymd') . '-' . $bill->id;
+                }
+                $bill->save();
+
+                // If payment provided, create a payments record and update company balance
+                if ($paid > 0) {
+                    $payment = new Payments();
+                    $payment->bill_id = $bill->id;
+                    $payment->amount = $paid;
+                    $payment->method = $request->input('payment_type') ?? 'Cash';
+                    $payment->date = date('Y-m-d');
+                    $payment->employee_name = Auth::user()->name ?? null;
+                    $payment->save();
+
+                    $company = MainCompanys::where('id', 1)->first();
+                    if ($company) {
+                        $company->balance = ($company->balance ?? 0) + $paid;
+                        $company->save();
+                    }
+                }
+            } catch (\Exception $e) {
+                Log::warning('Failed to set extended bill/payment fields: ' . $e->getMessage());
+            }
 
             return response()->json([
                 'success' => true,
@@ -342,9 +392,22 @@ class BillsController extends Controller
     {
         try {
             Log::info('Update request received', [
-                'bill_id' => $bills->id,
+                'bill_id' => $bills->id ?? null,
                 'request_data' => $request->all(),
             ]);
+
+            // Defensive: ensure $bills is loaded even if route-model binding failed for any reason
+            if (empty($bills) || empty($bills->id)) {
+                $routeId = $request->route('bill') ?? $request->route('id');
+                if ($routeId) {
+                    $bills = Bills::find($routeId);
+                }
+            }
+
+            if (empty($bills) || empty($bills->id)) {
+                Log::error('BillsController@update: Could not resolve bill id from route or model binding.', ['route_param' => $request->route('bill')]);
+                return response()->json(['success' => false, 'message' => 'Bill not found for update.'], 404);
+            }
 
             $validated = $request->validate([
                 'discount' => 'required|numeric|min:0',
@@ -358,6 +421,49 @@ class BillsController extends Controller
 
             // Update bill with validated data
             $bills->update($validated);
+
+            // If a payment amount was provided, record only the delta (new payment)
+            $paidAmount = (float) ($validated['paid_amount'] ?? 0);
+            $totalPrice = (float) ($validated['total_price'] ?? 0);
+
+            if ($paidAmount > 0) {
+                DB::beginTransaction();
+                try {
+                    // Sum existing payments for this bill
+                    $existingPaid = (float) Payments::where('bill_id', $bills->id)->sum('amount');
+
+                    // Determine delta to record now
+                    $delta = $paidAmount - $existingPaid;
+                    if ($delta > 0) {
+                        $payment = new Payments();
+                        $payment->bill_id = $bills->id;
+                        $payment->amount = $delta;
+                        $payment->method = $validated['payment_type'] ?? 'Cash';
+                        $payment->save();
+
+                        // Update company balance by the delta
+                        $company = MainCompanys::where('id', 1)->first();
+                        if ($company) {
+                            $company->balance = ($company->balance ?? 0) + $delta;
+                            $company->save();
+                        }
+                    }
+
+                    // Recalculate total paid after potential new payment
+                    $totalPaid = (float) Payments::where('bill_id', $bills->id)->sum('amount');
+
+                    // If totalPaid covers the bill total, mark paid
+                    if ($totalPrice > 0 && $totalPaid >= $totalPrice) {
+                        $bills->status = 'paid';
+                        $bills->save();
+                    }
+
+                    DB::commit();
+                } catch (\Exception $e) {
+                    DB::rollBack();
+                    Log::warning('Failed to record payment/delta for bill ' . ($bills->id ?? 'unknown') . ': ' . $e->getMessage());
+                }
+            }
 
             // Refresh to get updated data
             $bills->refresh();
@@ -421,6 +527,76 @@ class BillsController extends Controller
                 'success' => false,
                 'message' => 'Failed to delete bill: ' . $e->getMessage()
             ], 500);
+        }
+    }
+
+    /**
+     * Mark a bill as paid: record the remaining payment (delta), update company balance and set bill status to 'paid'.
+     */
+    public function markAsPaid(Request $request, Bills $bills)
+    {
+        try {
+            Log::info('markAsPaid request received', ['bill_id' => $bills->id ?? null, 'user_id' => Auth::id() ?? null, 'input' => $request->all()]);
+            if (empty($bills) || empty($bills->id)) {
+                return response()->json(['success' => false, 'message' => 'Bill not found.'], 404);
+            }
+
+            // Determine the bill total to be considered as 'paid'
+            $totalPrice = (float) ($bills->total_price ?? ($bills->amount - ($bills->discount ?? 0)));
+            if ($totalPrice <= 0) {
+                return response()->json(['success' => false, 'message' => 'Invalid bill total.'], 400);
+            }
+
+            DB::beginTransaction();
+            try {
+                // Sum existing payments for this bill
+                $existingPaid = (float) Payments::where('bill_id', $bills->id)->sum('amount');
+
+                // Amount to record now
+                $delta = $totalPrice - $existingPaid;
+
+                if ($delta > 0) {
+                    $payment = new Payments();
+                    $payment->bill_id = $bills->id;
+                    $payment->amount = $delta;
+                    $payment->method = $request->input('method', $bills->payment_type ?? 'Cash');
+                    $payment->date = date('Y-m-d');
+                    $payment->employee_name = Auth::user()->name ?? null;
+                    $payment->save();
+
+                    // Update company balance
+                    $company = MainCompanys::where('id', 1)->first();
+                    if ($company) {
+                        $company->balance = ($company->balance ?? 0) + $delta;
+                        $company->save();
+                    }
+                }
+
+                // Recalculate total paid and update bill
+                $totalPaid = (float) Payments::where('bill_id', $bills->id)->sum('amount');
+                $bills->paid_amount = $totalPaid;
+                $bills->due_amount = max(0, $totalPrice - $totalPaid);
+                $bills->total_price = $totalPrice;
+                if ($totalPaid >= $totalPrice) {
+                    $bills->status = 'paid';
+                }
+                $bills->save();
+
+                DB::commit();
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Bill marked as paid.',
+                    'bill' => $bills
+                ]);
+            } catch (\Exception $e) {
+                DB::rollBack();
+                Log::error('markAsPaid failed for bill ' . ($bills->id ?? 'unknown') . ': ' . $e->getMessage());
+                return response()->json(['success' => false, 'message' => 'Failed to mark as paid: ' . $e->getMessage()], 500);
+            }
+        } catch (\Exception $e) {
+            Log::error('Error in BillsController@markAsPaid: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Internal error.'], 500);
         }
     }
 

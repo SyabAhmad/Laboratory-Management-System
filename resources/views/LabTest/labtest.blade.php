@@ -20,11 +20,11 @@
         </div>
         <!-- end page title -->
 
-        <div class="card">
+        <div class="card bg-cards">
             <div class="card-body">
-                <h4 class="text-center">Lab Test Cat</h4>
+                <h4 class="text-center text-primary-custom">Lab Test Cat</h4>
                 <p class="text-right">
-                    <button type="button" class="btn btn-info waves-effect waves-light" data-toggle="modal"
+                    <button type="button" class="btn btn btn-primary-custom waves-effect waves-light" data-toggle="modal"
                         data-target=".bs-example-modal-lg"><i class="fas fa-plus"></i> Add Lab Test Category</button>
                 </p>
                 <h6 class="text-center">List of all Lab Test Category</h6>
@@ -49,14 +49,14 @@
                                     <td class="text-wrap">{{ number_format($item->price, 2) }}</td>
                                     <td>
                                         <a href="{{ route('labtest.parameters.create', $item->id) }}"
-                                            class="btn btn-info btn-sm">
+                                            class="btn btn-outline-secondary btn-sm">
                                             <i class="fas fa-list"></i> Add Fields
                                         </a>
 
-                                        <a href="javascript:void(0);" class="btn btn-warning btn-sm editbtn"
+                                        <a href="javascript:void(0);" class="btn btn-outline-secondary btn-sm editbtn"
                                             data-id={{ $item->id }}><i class="fas fa-edit"></i></a>
                                         <a href="javascript:void(0);" data-id="{{ $item->id }}"
-                                            class="btn btn-danger btn-sm deletebtn">
+                                            class="btn btn-outline-danger btn-sm deletebtn">
                                             <i class="fas fa-trash"></i>
                                         </a>
                                     </td>

@@ -1,4 +1,4 @@
-<div class="navbar-custom" style="background: linear-gradient(to right, #480048, #C04848);">
+<div class="navbar-custom accent-primary">
     <ul class="list-unstyled topnav-menu float-right mb-0">
 
 
@@ -16,52 +16,51 @@
                         class="rounded-circle">
                 @endif
 
-                <span class="pro-user-name ml-1" style="color: #ecf0f1;">
+                <span class="pro-user-name ml-1 text-white">
                     {{ Auth::user()->name }} <i class="mdi mdi-chevron-down"></i>
                 </span>
             </a>
-            <div class="dropdown-menu dropdown-menu-right profile-dropdown "
-                style="background-color: #34495e; border: 1px solid #7f8c8d;">
+            <div class="dropdown-menu dropdown-menu-right profile-dropdown bg-cards"
+                style="border: 1px solid rgba(100,116,139,0.12);">
                 <!-- item-->
-                <div class="dropdown-item noti-title" style="background-color: #3498db;">
-                    <h6 class="m-0" style="color: #ffffff;">
+                <div class="dropdown-item noti-title" style="background: var(--primary);">
+                    <h6 class="m-0 text-white">
                         Welcome !
                     </h6>
                 </div>
 
                 <!-- item-->
-                <a href="{{ route('user.profile') }}" class="dropdown-item notify-item"
-                    style="color: #ecf0f1; border-bottom: 1px solid #7f8c8d;">
-                    <i class="dripicons-user" style="color: #3498db;"></i>
+                <a href="{{ route('user.profile') }}" class="dropdown-item notify-item" style="color: var(--text-heading); border-bottom: 1px solid rgba(100,116,139,0.06);">
+                    <i class="dripicons-user text-primary-custom"></i>
                     <span>My Account</span>
                 </a>
 
                 <a href="javascript:void(0);" class="dropdown-item notify-item" data-toggle="modal"
-                    data-target="#attendance" style="color: #ecf0f1; border-bottom: 1px solid #7f8c8d;">
-                    <i class="dripicons-user" style="color: #3498db;"></i>
+                    data-target="#attendance" style="color: var(--text-heading); border-bottom: 1px solid rgba(100,116,139,0.06);">
+                    <i class="dripicons-user text-primary-custom"></i>
                     <span>Attendance</span>
                 </a>
 
                 <a href="javascript:void(0);" class="dropdown-item notify-item" data-toggle="modal"
-                    data-target="#dailyactivities" style="color: #ecf0f1; border-bottom: 1px solid #7f8c8d;">
-                    <i class="dripicons-user" style="color: #3498db;"></i>
+                    data-target="#dailyactivities" style="color: var(--text-heading); border-bottom: 1px solid rgba(100,116,139,0.06);">
+                    <i class="dripicons-user text-primary-custom"></i>
                     <span>Daily Activity</span>
                 </a>
 
                 <a href="javascript:void(0);" class="dropdown-item notify-item" data-toggle="modal"
-                    data-target="#support" style="color: #ecf0f1; border-bottom: 1px solid #7f8c8d;">
-                    <i class="dripicons-help" style="color: #3498db;"></i>
+                    data-target="#support" style="color: var(--text-heading); border-bottom: 1px solid rgba(100,116,139,0.06);">
+                    <i class="dripicons-help text-primary-custom"></i>
                     <span>Support</span>
                 </a>
 
-                <div class="dropdown-divider" style="background-color: #7f8c8d;"></div>
+                <div class="dropdown-divider" style="background-color: rgba(100,116,139,0.12);"></div>
 
                 <!-- item-->
                 <a href="{{ route('logout') }}" class="dropdown-item notify-item"
                     onclick="event.preventDefault();
                 document.getElementById('logout-form').submit();"
-                    style="color: #e74c3c;">
-                    <i class="dripicons-power" style="color: #e74c3c;"></i>
+                    style="color: var(--danger);">
+                    <i class="dripicons-power text-danger"></i>
                     <span>Logout</span>
                 </a>
                 <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
@@ -80,8 +79,7 @@
                     <img src="{{ asset('assets/images/logo.png') }}" alt="Bacha Lab Logo" height="50"
                         style="border-radius: 50%; background: white; padding: 2px;">
                     <div style="display: flex; flex-direction: column; justify-content: center;">
-                        <span
-                            style="font-size: 20px; font-weight: 900; color: #da920d; letter-spacing: 1px; line-height: 1;">BACHA
+                        <span style="font-size: 20px; font-weight: 900; color: var(--bg-cards); letter-spacing: 1px; line-height: 1;">BACHA
                             KHAN</span>
 
                     </div>
@@ -104,8 +102,7 @@
         </li>
         <li class="app-search d-none d-md-block">
             <form>
-                <input type="text" placeholder="Search..." class="form-control"
-                    style="background-color: #ffffffff; color: #ecf0f1; border: 1px solid #7f8c8d;">
+                <input type="text" placeholder="Search..." class="form-control bg-surface text-body">
                 <button type="submit" class="sr-only"></button>
             </form>
         </li>
@@ -116,11 +113,11 @@
 <!-- Attendance Modal -->
 <div class="modal fade" id="attendance" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content" style="background-color: #ecf0f1;">
-            <div class="modal-header" style="background-color: #3498db; color: #ffffff;">
+            <div class="modal-content bg-cards">
+            <div class="modal-header" style="background: var(--primary); color: var(--surface);">
                 <h4 class="modal-title" id="exampleModalLabel">Daily Attendance</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"
-                    style="color: #ffffff;">
+                    style="color: var(--surface);">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -152,8 +149,7 @@
                     // ->get()
                 @endphp
                 @if ($items2 == 0)
-                    <div class="alert alert-primary" role="alert"
-                        style="background-color: #3498db; color: #ffffff; border-color: #2980b9;">
+                    <div class="alert" role="alert" style="background:var(--primary); color:var(--surface); border-color:rgba(37,99,235,0.9);">
                         Welcome to the system. Please take your <strong>attendance</strong>.
                     </div>
                     <form role="form" class="parsley-examples" id="AttendanceForm" method="POST"
@@ -163,15 +159,13 @@
                         <input id="entry_date" value="{{ $date }}" name="entry_date" style="display: none">
                         <input id="entry_time" value="{{ $time }}" name="entry_time" style="display: none">
                         <div class="text-center">
-                            <button type="submit" class="btn btn-primary waves-effect waves-light mr-1"
-                                style="background-color: #3498db; border-color: #2980b9;">
+                            <button type="submit" class="btn btn-primary waves-effect waves-light mr-1 btn-primary-custom">
                                 Entry
                             </button>
                         </div>
                     </form>
                 @elseif ($items2 > 0 && $items3 == 0)
-                    <div class="alert alert-primary" role="alert"
-                        style="background-color: #3498db; color: #ffffff; border-color: #2980b9;">
+                    <div class="alert" role="alert" style="background:var(--primary); color:var(--surface); border-color:rgba(37,99,235,0.9);">
                         Welcome to the system. Please take your <strong>attendance</strong>.
                     </div>
                     <form role="form" class="parsley-examples" id="AttendanceForm" method="POST"
@@ -181,15 +175,13 @@
                         <input id="entry_date" value="{{ $date }}" name="entry_date" style="display: none">
                         <input id="entry_time" value="{{ $time }}" name="entry_time" style="display: none">
                         <div class="text-center">
-                            <button type="submit" class="btn btn-primary waves-effect waves-light mr-1"
-                                style="background-color: #3498db; border-color: #2980b9;">
+                            <button type="submit" class="btn btn-primary waves-effect waves-light mr-1 btn-primary-custom">
                                 Entry
                             </button>
                         </div>
                     </form>
                 @elseif($items3 == 1 && $items4->exit_date == null)
-                    <div class="alert alert-primary" role="alert"
-                        style="background-color: #f39c12; color: #ffffff; border-color: #e67e22;">
+                    <div class="alert" role="alert" style="background:var(--warning); color:var(--surface); border-color:rgba(245,158,11,0.9);">
                         We Recoard Your Enter Time At <strong>{{ $items4->enter_date }}
                             ({{ $items4->enter_time }})</strong>
                     </div>
@@ -201,15 +193,13 @@
                         <input id="exit_date" value="{{ $date }}" name="exit_date" style="display: none">
                         <input id="exit_time" value="{{ $time }}" name="exit_time" style="display: none">
                         <div class="text-center">
-                            <button type="submit" class="btn btn-primary waves-effect waves-light mr-1"
-                                style="background-color: #f39c12; border-color: #e67e22;">
+                            <button type="submit" class="btn btn-primary waves-effect waves-light mr-1" style="background:var(--warning); border-color:rgba(230,126,34,0.9); color:var(--surface);">
                                 Exit
                             </button>
                         </div>
                     </form>
                 @elseif($items4->exit_date != null)
-                    <div class="alert alert-primary" role="alert"
-                        style="background-color: #27ae60; color: #ffffff; border-color: #2ecc71;">
+                    <div class="alert" role="alert" style="background:var(--success); color:var(--surface); border-color:rgba(16,185,129,0.9);">
                         We Recoard Your Exit Time At <strong>{{ $items4->exit_date }}
                             ({{ $items4->exit_time }})</strong>
                     </div>
@@ -224,11 +214,11 @@
 <!-- Activites Modal -->
 <div class="modal fade" id="dailyactivities" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content" style="background-color: #ecf0f1;">
-            <div class="modal-header" style="background-color: #3498db; color: #ffffff;">
+        <div class="modal-content bg-cards">
+            <div class="modal-header" style="background:var(--primary); color:var(--surface);">
                 <h4 class="modal-title" id="exampleModalLabel">Daily Activities</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"
-                    style="color: #ffffff;">
+                    style="color: var(--surface);">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -260,8 +250,7 @@
                     // ->get()
                 @endphp
                 @if ($items2 == 0)
-                    <div class="alert alert-primary" role="alert"
-                        style="background-color: #3498db; color: #ffffff; border-color: #2980b9;">
+                    <div class="alert" role="alert" style="background:var(--primary); color:var(--surface); border-color:rgba(37,99,235,0.9);">
                         Please take your <strong>Record Your Daily Activities</strong>.
                     </div>
                     <form role="form" class="parsley-examples" id="ActivitiesForm" method="POST"
@@ -279,15 +268,13 @@
                         </div>
 
                         <div class="text-center">
-                            <button type="submit" class="btn btn-primary waves-effect waves-light mr-1"
-                                style="background-color: #3498db; border-color: #2980b9;">
+                            <button type="submit" class="btn btn-primary waves-effect waves-light mr-1 btn-primary-custom">
                                 Save
                             </button>
                         </div>
                     </form>
                 @elseif ($items2 > 0 && $items3 == 0)
-                    <div class="alert alert-primary" role="alert"
-                        style="background-color: #3498db; color: #ffffff; border-color: #2980b9;">
+                    <div class="alert" role="alert" style="background:var(--primary); color:var(--surface); border-color:rgba(37,99,235,0.9);">
                         Please take your <strong>Record Your Daily Activities</strong>.
                     </div>
                     <form role="form" class="parsley-examples" id="ActivitiesForm" method="POST"
@@ -305,15 +292,13 @@
                         </div>
 
                         <div class="text-center">
-                            <button type="submit" class="btn btn-primary waves-effect waves-light mr-1"
-                                style="background-color: #3498db; border-color: #2980b9;">
+                            <button type="submit" class="btn btn-primary waves-effect waves-light mr-1 btn-primary-custom">
                                 Save
                             </button>
                         </div>
                     </form>
                 @elseif($items3 == 1)
-                    <div class="alert alert-primary" role="alert"
-                        style="background-color: #f39c12; color: #ffffff; border-color: #e67e22;">
+                    <div class="alert" role="alert" style="background:var(--warning); color:var(--surface); border-color:rgba(245,158,11,0.9);">
                         Your Today Activities are <strong>Recoded If You Want You Can Change !!</strong>
                     </div>
                     <form role="form" class="parsley-examples" id="updateActivitiesForm" method="POST"
@@ -332,8 +317,7 @@
                         </div>
 
                         <div class="text-center">
-                            <button type="submit" class="btn btn-primary waves-effect waves-light mr-1"
-                                style="background-color: #f39c12; border-color: #e67e22;">
+                            <button type="submit" class="btn btn-primary waves-effect waves-light mr-1" style="background:var(--warning); border-color:rgba(230,126,34,0.9); color:var(--surface);">
                                 Update
                             </button>
                         </div>
@@ -350,17 +334,16 @@
 <!-- Activites Modal -->
 <div class="modal fade" id="support" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content" style="background-color: #ecf0f1;">
-            <div class="modal-header" style="background-color: #3498db; color: #ffffff;">
+            <div class="modal-content bg-cards">
+            <div class="modal-header" style="background:var(--primary); color: var(--surface);">
                 <h4 class="modal-title" id="exampleModalLabel">Support Desk</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"
-                    style="color: #ffffff;">
+                    style="color: var(--surface);">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <div class="alert alert-info" role="alert"
-                    style="background-color: #3498db; color: #ffffff; border-color: #2980b9;">
+                <div class="alert" role="alert" style="background:var(--primary); color:var(--surface); border-color:rgba(37,99,235,0.9);">
                     <p class="text-center font-weight-bold">If You Face Any Error Please Inform Us</p>
                 </div>
 

@@ -101,8 +101,8 @@
                 <!-- end col -->
                 <!-- Start col -->
                 <div class="col-sm-4">
-                    <div class="card rounded">
-                        <a href="#">
+                    <a href="{{ route('balance.index') }}" class="text-decoration-none" aria-label="View balance details">
+                        <div class="card rounded dashboard-card balance-card-accent h-100 clickable-card" role="link">
                             <div class="card-body rounded dashboard-card-body-3">
                                 <div class='px-3 py-3 justify-content-between'>
                                     <div class="row">
@@ -110,9 +110,9 @@
                                             <i class="fas fa-user-md fa-3x dashboard-card-icon"></i>
                                         </div>
                                         <div class="col-sm-9">
-                                            <h4 class="card-title  text-center">Company Total Balance </h4>
+                                            <h4 class="card-title dashboard-card-title text-left">Company Total Balance</h4>
                                             <div>
-                                                <p class="text-center dashboard-card-text">
+                                                <p class="dashboard-card-text">
                                                     {{ isset($totalBalance) ? number_format($totalBalance, 2) : '0.00' }}
                                                 </p>
                                             </div>
@@ -120,8 +120,8 @@
                                     </div>
                                 </div>
                             </div>
-                        </a>
-                    </div>
+                        </div>
+                    </a>
                 </div>
                 <!-- end col -->
 
@@ -160,6 +160,25 @@
                 </div>
             </div>
         @endif
+        <!-- Charts Row -->
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Monthly Billed vs Paid</h5>
+                        <canvas id="chartRevenue" width="400" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Monthly Paid (Payments)</h5>
+                        <canvas id="chartPayments" width="400" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
         <!-- end row -->
 
 
@@ -204,4 +223,65 @@
         showTime();
     </script>
 
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script>
+        (function() {
+            // Data passed from controller
+            const labels = @json($chartLabels ?? []);
+            const billed = @json($chartBilled ?? []);
+            const paid = @json($chartPaid ?? []);
+
+            // Combined chart: billed vs paid
+            const ctx = document.getElementById('chartRevenue');
+            if (ctx) {
+                new Chart(ctx.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Billed',
+                                data: billed,
+                                borderColor: 'rgba(54, 162, 235, 1)',
+                                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                                fill: true,
+                                tension: 0.3
+                            },
+                            {
+                                label: 'Paid',
+                                data: paid,
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                fill: true,
+                                tension: 0.3
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { legend: { position: 'top' } },
+                        scales: { y: { beginAtZero: true } }
+                    }
+                });
+            }
+
+            // Payments bar chart
+            const ctx2 = document.getElementById('chartPayments');
+            if (ctx2) {
+                new Chart(ctx2.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Payments',
+                            data: paid,
+                            backgroundColor: 'rgba(75, 192, 192, 0.6)'
+                        }]
+                    },
+                    options: { responsive: true, scales: { y: { beginAtZero: true } } }
+                });
+            }
+        })();
+    </script>
 @endsection
