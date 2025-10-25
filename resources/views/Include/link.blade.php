@@ -63,6 +63,9 @@
      {{-- <script src="https://cdn.ckeditor.com/4.19.1/standard/ckeditor.js"></script> --}}
      {{-- <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script> --}}
 
+    <!-- Global color palette (external CSS) -->
+    <link href="{{ asset('assets/css/palette.css') }}" rel="stylesheet" type="text/css" />
+
 </head>
 
 <body>

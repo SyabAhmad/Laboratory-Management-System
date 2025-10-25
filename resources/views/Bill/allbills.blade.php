@@ -27,6 +27,9 @@
                             <th>Bill No</th>
                             <th>Patient ID</th>
                             <th>Patient Name</th>
+                            <th>Status</th>
+                            <th>Paid Amount</th>
+                            <th>Tests Status</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -50,6 +53,9 @@
                     { data: 'patient_id', name: 'patient_id' },
                     { data: 'patient_name', name: 'patient_name' },
                     { data: 'billing_date', name: 'billing_date' },
+                    { data: 'status', name: 'status' },
+                    { data: 'paid_amount', name: 'paid_amount' },
+                    { data: 'tests_completed', name: 'tests_completed' },
                     { data: 'action', name: 'action', orderable: true, searchable: true }
                 ],
             });

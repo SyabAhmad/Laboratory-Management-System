@@ -18,41 +18,81 @@
         <link href="{{ asset('assets/css/app.min.css') }}" rel="stylesheet" type="text/css" />
         {{-- <link href="{{ asset('css/app.css') }}" rel="stylesheet" type="text/css" /> --}}
         <style>
+            /* Color palette
+               Primary: #2563EB
+               Secondary: #64748B
+               Background (Cards): #F8FAFC
+               Surface (Main BG): #FFFFFF
+               Success: #10B981
+               Warning: #F59E0B
+               Danger: #EF4444
+               Text Headings: #1E293B
+               Text Body: #475569
+            */
+            :root{
+                --primary: #2563EB;
+                --secondary: #64748B;
+                --bg-cards: #F8FAFC;
+                --surface: #FFFFFF;
+                --success: #10B981;
+                --warning: #F59E0B;
+                --danger: #EF4444;
+                --text-heading: #1E293B;
+                --text-body: #475569;
+            }
+
+            html,body{
+                height:100%;
+                background: var(--surface);
+                color: var(--text-body);
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+            }
+
             .login-container {
                 display: flex;
                 min-height: 100vh;
                 align-items: center;
                 justify-content: center;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             }
             .login-card {
-                background: white;
-                border-radius: 15px;
-                box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+                background: var(--surface);
+                border-radius: 12px;
+                box-shadow: 0 8px 24px rgba(15,23,42,0.08);
                 overflow: hidden;
-                max-width: 400px;
+                max-width: 420px;
                 width: 100%;
+                border: 1px solid rgba(15,23,42,0.04);
             }
             .login-header {
-                background: #f8f9fa;
+                background: var(--bg-cards);
                 padding: 20px;
                 text-align: center;
-                border-bottom: 1px solid #e9ecef;
+                border-bottom: 1px solid rgba(15,23,42,0.05);
+                color: var(--text-heading);
             }
             .login-body {
-                padding: 30px;
+                padding: 28px;
+                color: var(--text-body);
             }
             .btn-login {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                background: var(--primary);
+                color: white;
                 border: none;
-                border-radius: 25px;
-                padding: 10px 20px;
-                font-weight: bold;
+                border-radius: 10px;
+                padding: 10px 18px;
+                font-weight: 600;
             }
             .btn-login:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                transform: translateY(-1px);
+                box-shadow: 0 6px 18px rgba(37,99,235,0.18);
             }
+
+            .login-header h4 { color: var(--text-heading); }
+            .login-header p { color: var(--text-body); margin-top:4px }
+            .form-control { border-radius: 8px; }
+            .invalid-feedback { color: var(--danger); }
+            a.text-muted { color: var(--secondary); }
         </style>
     </head>
 

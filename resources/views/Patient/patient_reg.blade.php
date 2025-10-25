@@ -10,7 +10,7 @@
                 <div class="card shadow-lg border-0 mt-4 mb-5">
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center mb-4">
-                            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mr-3"
+                            <div class="rounded-circle accent-primary text-white d-flex align-items-center justify-content-center mr-3"
                                 style="width: 56px; height: 56px; font-size: 2rem;">
                                 <i class="fas fa-user-plus"></i>
                             </div>
@@ -26,7 +26,7 @@
                                 <div class="col-md-6">
                                     <div class="card mb-3 border-0 shadow-sm">
                                         <div class="card-body py-3">
-                                            <h5 class="mb-3 text-primary"><i class="fas fa-user mr-2"></i>Personal
+                                            <h5 class="mb-3 text-primary-custom"><i class="fas fa-user mr-2"></i>Personal
                                                 Information</h5>
                                             <div class="form-group mb-3">
                                                 <label for="name">Full Name <span class="text-danger">*</span></label>
@@ -106,7 +106,7 @@
                                 <div class="col-md-6">
                                     <div class="card mb-3 border-0 shadow-sm">
                                         <div class="card-body py-3">
-                                            <h5 class="mb-3 text-primary"><i class="fas fa-address-card mr-2"></i>Contact &
+                                            <h5 class="mb-3 text-primary-custom"><i class="fas fa-address-card mr-2"></i>Contact &
                                                 Dates</h5>
                                             <div class="form-group mb-3">
                                                 <label for="address">Address <span class="text-danger">*</span></label>
@@ -160,7 +160,7 @@
                                 <div class="col-12">
                                     <div class="card border-0 shadow-sm mb-3">
                                         <div class="card-body py-3">
-                                            <h5 class="mb-3 text-primary"><i class="fas fa-vials mr-2"></i>Select Tests
+                                            <h5 class="mb-3 text-primary-custom"><i class="fas fa-vials mr-2"></i>Select Tests
                                                 <span class="text-danger">*</span></h5>
                                             @php
                                                 $testCategories = DB::table('labtest_cat')
@@ -210,10 +210,10 @@
                                 </div>
                             </div>
                             <div class="text-right mt-4">
-                                <a href="{{ route('patients.list') }}" class="btn btn-outline-secondary btn-lg mr-2"><i
-                                        class="fas fa-arrow-left mr-1"></i>Cancel</a>
-                                <button type="submit" class="btn btn-gradient-primary btn-lg" id="submitBtn"><i
-                                        class="fas fa-user-plus mr-1"></i>Register Patient</button>
+                <a href="{{ route('patients.list') }}" class="btn btn-outline-secondary btn-lg mr-2"><i
+                    class="fas fa-arrow-left mr-1"></i>Cancel</a>
+                <button type="submit" class="btn btn-primary-custom btn-lg" id="submitBtn"><i
+                    class="fas fa-user-plus mr-1"></i>Register Patient</button>
                             </div>
                         </form>
                     </div>
@@ -237,18 +237,21 @@
         }
 
         .patient-reg-advanced .custom-checkbox-adv .custom-control-input:checked~.custom-control-label {
-            color: #007bff;
+            color: var(--primary);
         }
 
-        .patient-reg-advanced .btn-gradient-primary {
-            background: linear-gradient(90deg, #007bff 0%, #00c6ff 100%);
+        /* Replace gradient with primary palette color */
+        .patient-reg-advanced .btn-gradient-primary,
+        .btn-gradient-primary {
+            background: var(--primary);
             border: none;
-            color: #fff;
-            box-shadow: 0 2px 8px rgba(0, 123, 255, 0.08);
+            color: var(--surface);
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.08);
         }
 
-        .patient-reg-advanced .btn-gradient-primary:hover {
-            background: linear-gradient(90deg, #0056b3 0%, #00aaff 100%);
+        .patient-reg-advanced .btn-gradient-primary:hover,
+        .btn-gradient-primary:hover {
+            filter: brightness(0.95);
         }
 
         .patient-reg-advanced .card-body h5 {

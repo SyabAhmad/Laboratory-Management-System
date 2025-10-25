@@ -5,29 +5,29 @@
         <tr>
             <!-- Left: Logo -->
             <td width="15%" valign="top" align="center" style="padding-right: 15px;">
-                <img src="{{ asset('assets/images/logo.png') }}" alt="Logo" style="width: 75px; height: 75px; border-radius: 50%; border: 2px solid #da920d; display: block;">
+                <img src="{{ asset('assets/images/logo.png') }}" alt="Logo" style="width: 75px; height: 75px; border-radius: 50%; border: 2px solid var(--primary); display: block;">
             </td>
             <!-- Center: Lab Name & Info -->
             <td>
-                <div style="color: #da920d; font-weight: bold; font-size: 18px; margin: 0; line-height: 1.1;">NEW MODERN CLINICAL<br>LABORATORY</div>
-                <div style="font-size: 10px; color: #da920d; margin: 4px 0 0 0; font-weight: 600;">(KP HCC) REG: 03663 SWAT</div>
+                <div style="font-weight: bold; font-size: 18px; margin: 0; line-height: 1.1;" class="text-primary-custom">NEW MODERN CLINICAL<br>LABORATORY</div>
+                <div style="font-size: 10px; margin: 4px 0 0 0; font-weight: 600;" class="text-primary-custom">(KP HCC) REG: 03663 SWAT</div>
                 <div style="font-size: 9px; color: #333; margin: 3px 0 0 0; line-height: 1.3;">
                     Bacha Khan, BS Pathology (KMU)<br>
                     DMLT KPK Peshawar
                 </div>
             </td>
             <!-- Right: Contact Info -->
-            <td width="30%" valign="top" align="right" style="font-size: 9px; color: #333; line-height: 1.4; padding-left: 10px; border-left: 2px solid #da920d;">
-                <strong style="color: #da920d;">Tel:</strong><br>
+            <td width="30%" valign="top" align="right" style="font-size: 9px; color: #333; line-height: 1.4; padding-left: 10px; border-left: 2px solid var(--primary);">
+                <strong class="text-primary-custom">Tel:</strong><br>
                 0302-8080191<br>
                 0313-9797790<br><br>
-                <strong style="color: #da920d;">Address:</strong><br>
+                <strong class="text-primary-custom">Address:</strong><br>
                 Kabal Road, Near Township Chowk Kanju Swat
             </td>
         </tr>
     </table>
 
-    <div style="border-top: 2px solid #da920d; margin-bottom: 12px;"></div>
+    <div style="border-top: 2px solid var(--primary); margin-bottom: 12px;"></div>
 
     <!-- Patient Info Table -->
     <table width="100%" cellpadding="4" cellspacing="0" style="border: 1px solid #ccc; margin-bottom: 15px; font-size: 10px;">
@@ -62,18 +62,18 @@
     </table>
 
     <!-- Test Title Section -->
-    <div style="margin: 15px 0; padding: 5px 0; border-bottom: 2px solid #da920d; font-weight: bold; color: #da920d; font-size: 13px;">
+    <div style="margin: 15px 0; padding: 5px 0; border-bottom: 2px solid var(--primary); font-weight: bold; color: var(--primary); font-size: 13px;">
         {{ $testEntry['name'] }}
     </div>
 
     <!-- Main Results Table -->
     <table width="100%" cellpadding="5" cellspacing="0" style="border-collapse: collapse; font-size: 11px; margin-bottom: 20px;">
         <thead>
-            <tr style="background-color: white; border-bottom: 2px solid #da920d;">
-                <th style="text-align: left; padding: 8px; font-weight: bold; width: 40%; color: #da920d;">Test Name</th>
-                <th style="text-align: left; padding: 8px; font-weight: bold; width: 20%; color: #da920d;">Results</th>
-                <th style="text-align: left; padding: 8px; font-weight: bold; width: 15%; color: #da920d;">Reference Ranges</th>
-                <th style="text-align: left; padding: 8px; font-weight: bold; width: 25%; color: #da920d;">Unit </th>
+            <tr style="background: var(--surface); border-bottom: 2px solid var(--primary);">
+                <th style="text-align: left; padding: 8px; font-weight: bold; width: 40%; color: var(--primary);">Test Name</th>
+                <th style="text-align: left; padding: 8px; font-weight: bold; width: 20%; color: var(--primary);">Results</th>
+                <th style="text-align: left; padding: 8px; font-weight: bold; width: 15%; color: var(--primary);">Reference Ranges</th>
+                <th style="text-align: left; padding: 8px; font-weight: bold; width: 25%; color: var(--primary);">Unit </th>
             </tr>
         </thead>
         <tbody>
@@ -145,7 +145,7 @@
             This is a digitally signed report and does not require manual signature.
         </div>
         <div style="text-align: right; white-space: nowrap;">
-            <div style="font-weight: bold; color: #da920d; margin-bottom: 5px;">
+            <div style="font-weight: bold; color: var(--primary); margin-bottom: 5px;">
                 This is a digitally signed report by<br>
                 <strong>Bacha Khan</strong>
             </div>

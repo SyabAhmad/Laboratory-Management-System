@@ -11,10 +11,29 @@
         <link rel="shortcut icon" href="{{ asset('assets/images/favicon.ico') }}">
 
         <!-- App css -->
+        <meta name="csrf-token" content="{{ csrf_token() }}">
         <link href="{{ asset('assets/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
         <link href="{{ asset('assets/css/icons.min.css') }}" rel="stylesheet" type="text/css" />
         <link href="{{ asset('assets/css/app.min.css') }}" rel="stylesheet" type="text/css" />
 
+        <style>
+            :root{
+                --primary: #2563EB;
+                --secondary: #64748B;
+                --bg-cards: #F8FAFC;
+                --surface: #FFFFFF;
+                --text-heading: #1E293B;
+                --text-body: #475569;
+            }
+            html,body{background:var(--surface);color:var(--text-body);}
+            .account-pages{padding-top:40px;padding-bottom:40px}
+            .card{border-radius:10px}
+            .card-body{background:var(--bg-cards)}
+            .btn-success{background:var(--primary);border-color:var(--primary)}
+            .btn-success:hover{background:#1f54d1}
+            .text-muted a{color:var(--secondary)}
+            .form-control{border-radius:8px}
+        </style>
     </head>
 
     <body class="authentication-bg authentication-bg-pattern d-flex align-items-center">

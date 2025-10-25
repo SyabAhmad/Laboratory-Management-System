@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\MainCompanys;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+use App\Models\Bills;
+use App\Models\Payments;
 
 class DashboardController extends Controller
 {
@@ -21,11 +25,46 @@ class DashboardController extends Controller
         }
         
         // Calculate total balance from bills
-        $totalBilled = \App\Models\Bills::sum('amount') ?? 0;
-        
+        $totalBilled = Bills::sum('amount') ?? 0;
+
+        // Prepare monthly billed and paid totals for last 12 months
+        $end = Carbon::now()->endOfMonth();
+        $start = (clone $end)->subMonths(11)->startOfMonth();
+
+        // Months labels (YYYY-MM) in ascending order
+        $period = [];
+        $cursor = (clone $start);
+        while ($cursor->lte($end)) {
+            $period[] = $cursor->format('Y-m');
+            $cursor->addMonth();
+        }
+
+        // Query billed amounts grouped by month
+        $billedRows = DB::table('bills')
+            ->select(DB::raw("DATE_FORMAT(created_at, '%Y-%m') as month"), DB::raw('COALESCE(SUM(amount),0) as total'))
+            ->whereBetween('created_at', [$start->toDateTimeString(), $end->toDateTimeString()])
+            ->groupBy('month')
+            ->pluck('total', 'month')
+            ->toArray();
+
+        // Query payments grouped by month
+        $paidRows = DB::table('payments')
+            ->select(DB::raw("DATE_FORMAT(created_at, '%Y-%m') as month"), DB::raw('COALESCE(SUM(amount),0) as total'))
+            ->whereBetween('created_at', [$start->toDateTimeString(), $end->toDateTimeString()])
+            ->groupBy('month')
+            ->pluck('total', 'month')
+            ->toArray();
+
+        $labels = array_map(function($m){ return Carbon::createFromFormat('Y-m', $m)->format('M Y'); }, $period);
+        $billedData = array_map(function($m) use ($billedRows){ return isset($billedRows[$m]) ? (float)$billedRows[$m] : 0; }, $period);
+        $paidData = array_map(function($m) use ($paidRows){ return isset($paidRows[$m]) ? (float)$paidRows[$m] : 0; }, $period);
+
         return view('dashboard', [
             'company' => $company,
-            'totalBalance' => $totalBilled
+            'totalBalance' => $totalBilled,
+            'chartLabels' => $labels,
+            'chartBilled' => $billedData,
+            'chartPaid' => $paidData,
         ]);
     }
 

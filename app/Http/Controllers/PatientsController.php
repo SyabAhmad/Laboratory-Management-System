@@ -14,6 +14,8 @@ use App\Models\Tests\TestModelFactory;
 use App\Models\Tests\CBC;
 use App\Models\Tests\Urinal;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use App\Models\Bills;
 
 class PatientsController extends Controller
 {
@@ -92,57 +94,36 @@ class PatientsController extends Controller
                     $unitStr = $param->unit ? ' (' . $param->unit . ')' : '';
                     $refRangeStr = $param->reference_range ? ' - Ref: ' . $param->reference_range : '';
 
+                    // Normalize parameter name to a safe key for form input / JSON storage
+                    $key = Str::slug($param->parameter_name, '_');
+
                     $fields[] = [
-                        'name' => $param->parameter_name,
+                        'name' => $key, // use slug key in the template
                         'label' => $param->parameter_name . $unitStr . $refRangeStr,
+                        'orig_name' => $param->parameter_name, // keep original for mapping
                         'type' => 'text',
                         'required' => false,
                     ];
                 }
 
-                $template = [
-                    'fields' => array_merge([
-                        [
-                            'name' => 'reported_at',
-                            'label' => 'Reported At',
-                            'type' => 'text',
-                            'required' => false,
-                        ],
-                        [
-                            'name' => 'instrument',
-                            'label' => 'Instrument',
-                            'type' => 'text',
-                            'required' => false,
-                        ],
-                        [
-                            'name' => 'accession_no',
-                            'label' => 'Accession No',
-                            'type' => 'text',
-                            'required' => false,
-                        ],
-                    ], $fields)
-                ];
-            } else {
-                // fallback generic template
-                $template = [
-                    'fields' => [
-                        [
-                            'name' => 'result',
-                            'label' => 'Test Result',
-                            'type' => 'textarea',
-                            'required' => true,
-                        ],
-                        [
-                            'name' => 'notes',
-                            'label' => 'Notes/Comments',
-                            'type' => 'textarea',
-                            'required' => false,
-                        ],
-                    ]
-                ];
-            }
+                // Only use DB-driven fields; do not add any predefined/report metadata fields
+                $template = !empty($fields) ? ['fields' => $fields] : null;
 
-            $savedData = $this->flattenTestData($testData);
+                $savedData = $this->flattenTestData($testData);
+
+                // Map any existing values saved under original parameter names to the slug keys
+                foreach ($parameters as $param) {
+                    $orig = $param->parameter_name;
+                    $key = Str::slug($orig, '_');
+                    if (isset($savedData[$orig]) && !isset($savedData[$key])) {
+                        $savedData[$key] = $savedData[$orig];
+                    }
+                }
+            } else {
+                // No DB-driven template available
+                $template = null;
+                $savedData = $this->flattenTestData($testData);
+            }
             $isMllpData = isset($testData['instrument']) || isset($testData['analytes']);
 
             $testsWithData[] = [
@@ -170,9 +151,12 @@ class PatientsController extends Controller
                     $unitStr = isset($analyte['units']) ? ' (' . $analyte['units'] . ')' : '';
                     $refRangeStr = isset($analyte['ref_range']) ? ' - Ref: ' . $analyte['ref_range'] : '';
 
+                    $key = Str::slug($analyte['name'], '_');
+
                     $fields[] = [
-                        'name' => $analyte['name'],
+                        'name' => $key,
                         'label' => $analyte['name'] . $unitStr . $refRangeStr,
+                        'orig_name' => $analyte['name'],
                         'type' => 'text',
                         'required' => false,
                     ];
@@ -219,7 +203,18 @@ class PatientsController extends Controller
                     ]
                 ];
 
-            $savedData = $this->flattenTestData($testData);
+                $savedData = $this->flattenTestData($testData);
+
+                // Map analyte original names to slug keys so saved_data matches template keys
+                foreach ($analytes as $analyte) {
+                    if (is_array($analyte) && isset($analyte['name'])) {
+                        $orig = $analyte['name'];
+                        $key = Str::slug($orig, '_');
+                        if (isset($savedData[$orig]) && !isset($savedData[$key])) {
+                            $savedData[$key] = $savedData[$orig];
+                        }
+                    }
+                }
 
             $testsWithData[] = [
                 'name' => $testName,
@@ -281,11 +276,38 @@ class PatientsController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $data = Patients::orderBy('id', 'DESC')->get();
+            // Exclude patients who are "completed": have test_report filled and have a paid bill.
+            // First collect IDs of completed patients, then exclude them from main listing.
+            $completedIds = Patients::whereNotNull('test_report')
+                ->where('test_report', '<>', '')
+                ->where('test_report', '<>', 'null')
+                ->where('test_report', '<>', '{}')
+                ->whereExists(function ($q) {
+                    $q->select(DB::raw(1))
+                        ->from('bills')
+                        ->whereColumn('bills.patient_id', 'patients.id')
+                        ->where('bills.status', 'paid');
+                })
+                ->pluck('id')
+                ->toArray();
+
+            $data = Patients::whereNotIn('id', $completedIds)
+                ->orderBy('id', 'DESC')
+                ->get();
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('age', function ($row) {
                     return $row->age;
+                })
+                ->addColumn('data_status', function ($row) {
+                    $hasData = !empty($row->test_report) && $row->test_report !== '{}' && $row->test_report !== 'null';
+                    return $hasData ? 'Complete' : 'Pending';
+                })
+                ->addColumn('bill_status', function ($row) {
+                    $bill = Bills::where('patient_id', $row->id)->first();
+                    if (!$bill) return 'No Bill';
+                    $isPaid = strtolower($bill->status ?? '') === 'paid' || ((float)($bill->paid_amount ?? 0) >= (float)($bill->total_price ?? $bill->amount ?? 0) && (float)($bill->total_price ?? $bill->amount ?? 0) > 0);
+                    return $isPaid ? 'Paid' : 'Unpaid';
                 })
                 ->addColumn('action', function ($row) {
                     $btn  = '<a href="' . route('patients.edit', $row->id) . '" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>';
@@ -299,6 +321,38 @@ class PatientsController extends Controller
                 ->make(true);
         }
         return view('Patient.patient_list');
+    }
+
+    /**
+     * Return patients with test data filled and bill paid (for completed table)
+     */
+    public function completedList(Request $request)
+    {
+        if ($request->ajax()) {
+            $data = Patients::whereNotNull('test_report')
+                ->where('test_report', '<>', '')
+                ->whereExists(function ($q) {
+                    $q->select(DB::raw(1))
+                        ->from('bills')
+                        ->whereColumn('bills.patient_id', 'patients.id')
+                        ->where('bills.status', 'paid');
+                })
+                ->orderBy('id', 'desc')
+                ->get();
+
+            return DataTables::of($data)
+                ->addIndexColumn()
+                ->addColumn('age', fn($r) => $r->age)
+                ->addColumn('action', function ($row) {
+                    $btn  = '<a href="' . route('patients.edit', $row->id) . '" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>';
+                    $btn .= '&nbsp;&nbsp;<a href="' . route("patients.profile", $row->id) . '" class="btn btn-info btn-sm detailsview" data-id="' . $row->id . '"><i class="fas fa-eye"></i></a>';
+                    return $btn;
+                })
+                ->rawColumns(['action'])
+                ->make(true);
+        }
+
+        return response()->json(['message' => 'Invalid request'], 400);
     }
 
     /**
