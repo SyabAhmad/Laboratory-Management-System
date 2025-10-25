@@ -65,7 +65,7 @@
                             readonly>
                     </div>
 
-                    <!-- Payment Type -->
+                    {{-- <!-- Payment Type -->
                     <div class="col-md-6">
                         <label for="paidby" class="form-label fw-semibold">Payment Type</label>
                         <select class="form-select" id="paidby" name="paidby" required>
@@ -73,7 +73,7 @@
                             <option value="Card">Card</option>
                             <option value="Mobile Banking">Mobile Banking</option>
                         </select>
-                    </div>
+                    </div> --}}
 
                     <!-- Registered Tests Section -->
                     @if (isset($registeredTests) && $registeredTests->count() > 0)
@@ -261,7 +261,7 @@
             if ($('#selectedTests tbody tr').length === 0) {
                 $('#selectedTests tbody').html(
                     '<tr class="no-tests-row"><td colspan="4" class="text-center text-muted">No tests in bill yet</td></tr>'
-                    );
+                );
             }
         }
 
@@ -353,7 +353,7 @@
                         } else {
                             $('#registeredTestsList').html(
                                 '<tr><td colspan="5" class="text-center text-muted">No registered tests.</td></tr>'
-                                );
+                            );
                         }
 
                         renumberSelectedTests();
@@ -434,7 +434,7 @@
                 if ($('#selectedTests tbody tr[data-id]').length === 0) {
                     $('#selectedTests tbody').html(
                         '<tr class="no-tests-row"><td colspan="4" class="text-center text-muted">No tests in bill yet</td></tr>'
-                        );
+                    );
                 }
 
                 updateTotals();
@@ -462,7 +462,7 @@
                 const formData = new FormData(this);
                 console.log('Form Data:', formData);
                 console.log('Tests selected:', testCount);
-                
+
                 $.ajax({
                     url: "{{ route('billing.add') }}",
                     type: "POST",
@@ -482,7 +482,8 @@
                     },
                     error: function(xhr) {
                         console.error('Error Response:', xhr);
-                        const errorMsg = xhr.responseJSON?.message || xhr.responseText || 'Something went wrong';
+                        const errorMsg = xhr.responseJSON?.message || xhr.responseText ||
+                            'Something went wrong';
                         Swal.fire('Error', errorMsg);
                         $btn.prop('disabled', false);
                     }

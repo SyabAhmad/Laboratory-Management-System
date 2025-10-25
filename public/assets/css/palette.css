@@ -2,207 +2,214 @@
    Variables and small helper classes
 */
 :root {
-    --primary: #2563eb; /* Strong, trustworthy blue */
-    --secondary: #64748b; /* Slate gray */
-    --bg-cards: #f8fafc; /* Soft off-white for cards */
-    --surface: #ffffff; /* Main background / surface */
-    --success: #10b981; /* Green */
-    --warning: #f59e0b; /* Amber */
-    --danger: #ef4444; /* Red */
-    --text-heading: #1e293b; /* Headings */
-    --text-body: #475569; /* Body text */
+  --primary: #2563eb; /* Strong, trustworthy blue */
+  --secondary: #64748b; /* Slate gray */
+  --bg-cards: #f8fafc; /* Soft off-white for cards */
+  --surface: #ffffff; /* Main background / surface */
+  --success: #10b981; /* Green */
+  --warning: #f59e0b; /* Amber */
+  --danger: #ef4444; /* Red */
+  --text-heading: #1e293b; /* Headings */
+  --text-body: #475569; /* Body text */
 }
 
 /* Small helpers */
 .bg-surface {
-    background: var(--surface) !important;
+  background: var(--surface) !important;
 }
 .bg-cards {
-    background: var(--bg-cards) !important;
+  background: var(--bg-cards) !important;
 }
 .text-primary-custom {
-    color: var(--primary) !important;
+  color: var(--primary) !important;
 }
 .text-heading {
-    color: var(--text-heading) !important;
+  color: var(--text-heading) !important;
 }
 .text-body {
-    color: var(--text-body) !important;
+  color: var(--text-body) !important;
 }
 /* Secondary text helper (icons/less prominent text) */
 .text-secondary {
-    color: var(--secondary) !important;
+  color: var(--secondary) !important;
 }
 .btn-primary-custom {
-    background: var(--primary);
-    border-color: var(--primary);
-    color: #fff;
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
 }
 .btn-primary-custom:hover {
-    filter: brightness(0.95);
+  filter: brightness(0.95);
 }
 
 /* Semantic helpers */
 .text-success {
-    color: var(--success) !important;
+  color: var(--success) !important;
 }
 .text-warning {
-    color: var(--warning) !important;
+  color: var(--warning) !important;
 }
 .text-danger {
-    color: var(--danger) !important;
+  color: var(--danger) !important;
 }
 
 /* Form control tweaks */
 .form-control {
-    border-radius: 6px;
+  border-radius: 6px;
 }
 
 /* Card defaults */
 .card,
 .modal-content {
-    background: var(--bg-cards);
+  background: var(--bg-cards);
 }
 
 /* Topbar/sidebar accents (optional classes) */
 .accent-primary {
-    background-color: var(--primary);
-    color: #fff;
+  background-color: var(--primary);
+  color: #fff;
 }
 .accent-secondary {
-    background-color: var(--secondary);
-    color: #fff;
+  background-color: var(--secondary);
+  color: #fff;
 }
 
 /* Utility spacing if needed */
 .px-1 {
-    padding-left: 0.25rem;
-    padding-right: 0.25rem;
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
 }
 .py-1 {
-    padding-top: 0.25rem;
-    padding-bottom: 0.25rem;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
 }
 
 /* Accessibility: focus outline using primary */
 :focus {
-    outline: 3px solid rgba(37, 99, 235, 0.16);
-    outline-offset: 2px;
+  outline: 3px solid rgba(37, 99, 235, 0.16);
+  outline-offset: 2px;
 }
 
 /* Sidebar and navigation defaults */
 #side-menu .menu-title {
-    color: var(--text-heading);
-    font-weight: 700;
+  color: var(--text-heading);
+  font-weight: 700;
 }
 #side-menu a {
-    color: var(--text-body);
+  color: var(--text-body);
 }
 #side-menu a:hover,
 #side-menu a:focus {
-    color: var(--primary);
+  color: var(--primary);
 }
 
 /* Badges */
 .badge.badge-primary {
-    background: var(--primary);
-    color: #fff;
+  background: var(--primary);
+  color: #fff;
 }
 
 /* Footer */
 .footer {
-    background: var(--surface);
-    color: var(--text-body);
-    border-top: 1px solid rgba(15, 23, 42, 0.04);
+  background: var(--surface);
+  color: var(--text-body);
+  border-top: 1px solid rgba(15, 23, 42, 0.04);
 }
 
 /* Left sidebar specifics */
 .left-side-menu {
-    background: var(--bg-cards);
+  background: var(--bg-cards);
 }
 .left-side-menu .metismenu li a {
-    color: var(--text-body);
+  color: var(--text-body);
 }
 .left-side-menu .metismenu li a .fas,
 .left-side-menu .metismenu li a .dripicons,
 .left-side-menu .metismenu li a .mdi {
-    color: var(--secondary) !important;
+  color: var(--secondary) !important;
 }
 
 /* Dashboard card modern styles and overrides (higher specificity to override vendor CSS) */
 .dashboard-card {
-    border-radius: 12px;
-    box-shadow: 0 6px 20px rgba(16, 24, 40, 0.06);
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
-    overflow: hidden;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(16, 24, 40, 0.06);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  overflow: hidden;
 }
 .dashboard-card .card-body {
-    padding: 1.25rem;
+  padding: 1.25rem;
 }
 .clickable-card {
-    cursor: pointer;
+  cursor: pointer;
 }
 .clickable-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 10px 30px rgba(16, 24, 40, 0.12);
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px rgba(16, 24, 40, 0.12);
 }
 .dashboard-card-icon {
-    color: var(--primary) !important;
+  color: var(--primary) !important;
 }
 .dashboard-card-title {
-    color: var(--text-heading) !important;
-    font-weight: 700;
-    margin-bottom: 0.25rem;
+  color: var(--text-heading) !important;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
 }
 .dashboard-card-text {
-    color: var(--text-body) !important;
-    font-size: 1.15rem;
-    font-weight: 600;
+  color: var(--text-body) !important;
+  font-size: 1.15rem;
+  font-weight: 600;
 }
+
+.dashboard-card-text1 {
+  color: #fff !important;
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
 .balance-card-accent {
-    background: linear-gradient(
-        90deg,
-        rgba(37, 99, 235, 0.06),
-        rgba(16, 185, 129, 0.03)
-    );
-    border-left: 4px solid var(--primary);
+  background: linear-gradient(
+    90deg,
+    rgba(37, 99, 235, 0.06),
+    rgba(16, 185, 129, 0.03)
+  );
+  border-left: 4px solid var(--primary);
 }
 
 /* Ensure anchor wrappers don't change text decoration */
 .dashboard-card a.text-decoration-none {
-    text-decoration: none !important;
+  text-decoration: none !important;
 }
 .left-side-menu .metismenu li a:hover,
 .left-side-menu .metismenu li.active > a {
-    color: var(--primary);
-    background: rgba(37, 99, 235, 0.06);
+  color: var(--primary);
+  background: rgba(37, 99, 235, 0.06);
 }
 .left-side-menu .metismenu li.active > a .fas,
 .left-side-menu .metismenu li.active > a .dripicons,
 .left-side-menu .metismenu li.active > a .mdi {
-    color: var(--primary);
+  color: var(--primary);
 }
 .left-side-menu .menu-arrow {
-    color: var(--secondary);
+  color: var(--secondary);
 }
 .left-side-menu .nav-second-level {
-    background: transparent;
+  background: transparent;
 }
 
 /* Make badges consistent */
 .left-side-menu .badge {
-    background: var(--primary);
-    color: #fff;
+  background: var(--primary);
+  color: #fff;
 }
 
 /* Small transition for hover states */
 .left-side-menu .metismenu li a {
-    transition: color 0.12s ease, background 0.12s ease;
+  transition: color 0.12s ease, background 0.12s ease;
 }
 
 /* Reinforce icon color in case vendor styles are loaded after our file */
 .left-side-menu .metismenu li a .fas,
 .left-side-menu .metismenu li a .dripicons,
 .left-side-menu .metismenu li a .mdi {
-    color: var(--secondary) !important;
+  color: var(--secondary) !important;
 }

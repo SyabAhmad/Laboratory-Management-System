@@ -31,14 +31,14 @@ class AddCbcDefaultParameters extends Migration
 
         // Common CBC parameters (from HL7 sample)
         $params = [
-            ['parameter_name' => 'WBC', 'unit' => '10^9/L', 'reference_range' => '4.0-10.0'],
-            ['parameter_name' => 'RBC', 'unit' => '10^12/L', 'reference_range' => '4.5-6.0'],
-            ['parameter_name' => 'HGB', 'unit' => 'g/dL', 'reference_range' => '13.0-17.0'],
-            ['parameter_name' => 'HCT', 'unit' => '%', 'reference_range' => '40-50'],
+            ['parameter_name' => 'White Blood Cells', 'unit' => '10^9/L', 'reference_range' => '4.0-10.0'],
+            ['parameter_name' => 'Red Blood Cells', 'unit' => '10^12/L', 'reference_range' => '4.5-6.0'],
+            ['parameter_name' => 'Hemoglobin', 'unit' => 'g/dL', 'reference_range' => '13.0-17.0'],
+            ['parameter_name' => 'Hematocrit', 'unit' => '%', 'reference_range' => '40-50'],
             ['parameter_name' => 'MCV', 'unit' => 'fL', 'reference_range' => '80-100'],
             ['parameter_name' => 'MCH', 'unit' => 'pg', 'reference_range' => '27-33'],
             ['parameter_name' => 'MCHC', 'unit' => 'g/dL', 'reference_range' => '32-36'],
-            ['parameter_name' => 'PLT', 'unit' => '10^9/L', 'reference_range' => '150-400'],
+            ['parameter_name' => 'Platelets', 'unit' => '10^9/L', 'reference_range' => '150-400'],
         ];
 
         foreach ($params as $p) {
@@ -74,7 +74,7 @@ class AddCbcDefaultParameters extends Migration
 
         $catId = $cat->id;
 
-        $names = ['WBC','RBC','HGB','HCT','MCV','MCH','MCHC','PLT'];
+        $names = ['WBC', 'RBC', 'HGB', 'HCT', 'MCV', 'MCH', 'MCHC', 'PLT'];
 
         DB::table('lab_test_parameters')
             ->where('lab_test_cat_id', $catId)

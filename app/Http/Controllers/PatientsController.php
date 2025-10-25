@@ -203,18 +203,18 @@ class PatientsController extends Controller
                     ]
                 ];
 
-                $savedData = $this->flattenTestData($testData);
+            $savedData = $this->flattenTestData($testData);
 
-                // Map analyte original names to slug keys so saved_data matches template keys
-                foreach ($analytes as $analyte) {
-                    if (is_array($analyte) && isset($analyte['name'])) {
-                        $orig = $analyte['name'];
-                        $key = Str::slug($orig, '_');
-                        if (isset($savedData[$orig]) && !isset($savedData[$key])) {
-                            $savedData[$key] = $savedData[$orig];
-                        }
+            // Map analyte original names to slug keys so saved_data matches template keys
+            foreach ($analytes as $analyte) {
+                if (is_array($analyte) && isset($analyte['name'])) {
+                    $orig = $analyte['name'];
+                    $key = Str::slug($orig, '_');
+                    if (isset($savedData[$orig]) && !isset($savedData[$key])) {
+                        $savedData[$key] = $savedData[$orig];
                     }
                 }
+            }
 
             $testsWithData[] = [
                 'name' => $testName,
@@ -385,10 +385,10 @@ class PatientsController extends Controller
             'test_category.*' => 'string|max:255',
         ]);
 
-    $patient = new Patients;
-    // Generate a unique patient_id to avoid duplicate key errors.
-    // Use a date prefix plus a random suffix and ensure uniqueness in DB.
-    $patient->patient_id = $this->generateUniquePatientId();
+        $patient = new Patients;
+        // Generate a unique patient_id to avoid duplicate key errors.
+        // Use a date prefix plus a random suffix and ensure uniqueness in DB.
+        $patient->patient_id = $this->generateUniquePatientId();
         $patient->user_id = Auth::id();
 
         $patient->name = $request->name;
@@ -827,6 +827,7 @@ class PatientsController extends Controller
             'has_template' => !empty($templateFields),
             'has_data' => !empty($testData),
         ];
+
 
         return view('Patient.patient_test_print', compact('patient', 'testEntry'));
     }

@@ -99,12 +99,12 @@
                             </ul>
                         </li> -->
 
-                        <li>
+                        {{-- <li>
                             <a href="{{ route('referrels.list') }}">
                                 <i class="fad fa-asterisk"></i>
                                 <span> Referral </span>
                             </a>
-                        </li>
+                        </li> --}}
 
                         <li>
                             <a href="javascript: void(0);">

@@ -76,28 +76,28 @@
 
                 <!-- Start col -->
                 <div class="col-sm-4">
-    <a href="{{ route('patients.list') }}" class="text-decoration-none">
-        <div class="card rounded h-100">
-            <div class="card-body rounded dashboard-card-body-4">
-                <div class='px-3 py-3 justify-content-between'>
-                    <div class="row">
-                        <div class="col-sm-3 my-auto text-center">
-                            <i class="fas fa-user-injured fa-3x dashboard-card-icon"></i>
-                        </div>
-                        <div class="col-sm-9">
-                            <h4 class="card-title text-center">Patients</h4>
-                            <div>
-                                <p class="text-center dashboard-card-text">
-                                    {{ App\Models\Patients::get()->count() }}
-                                </p>
+                    <a href="{{ route('patients.list') }}" class="text-decoration-none">
+                        <div class="card rounded h-100">
+                            <div class="card-body rounded dashboard-card-body-4">
+                                <div class='px-3 py-3 justify-content-between'>
+                                    <div class="row">
+                                        <div class="col-sm-3 my-auto text-center">
+                                            <i class="fas fa-user-injured fa-3x dashboard-card-icon"></i>
+                                        </div>
+                                        <div class="col-sm-9">
+                                            <h4 class="card-title text-center">Patients</h4>
+                                            <div>
+                                                <p class="text-center dashboard-card-text1">
+                                                    {{ App\Models\Patients::get()->count() }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
-            </div>
-        </div>
-    </a>
-</div>
                 <!-- end col -->
                 <!-- Start col -->
                 <div class="col-sm-4">
@@ -110,9 +110,10 @@
                                             <i class="fas fa-user-md fa-3x dashboard-card-icon"></i>
                                         </div>
                                         <div class="col-sm-9">
-                                            <h4 class="card-title dashboard-card-title text-left">Company Total Balance</h4>
+                                            <h4 class="card-title  text-left">Company Total
+                                                Balance</h4>
                                             <div>
-                                                <p class="dashboard-card-text">
+                                                <p class="dashboard-card-text1">
                                                     {{ isset($totalBalance) ? number_format($totalBalance, 2) : '0.00' }}
                                                 </p>
                                             </div>
@@ -137,7 +138,7 @@
                                     <div class="col-sm-9">
                                         <h4 class="card-title  text-center">Referrals </h4>
                                         <div>
-                                            <p class="text-center dashboard-card-text">
+                                            <p class="text-center dashboard-card-text1">
                                                 {{ App\Models\Referrals::get()->count() }}</p>
                                         </div>
                                     </div>
@@ -239,8 +240,7 @@
                     type: 'line',
                     data: {
                         labels: labels,
-                        datasets: [
-                            {
+                        datasets: [{
                                 label: 'Billed',
                                 data: billed,
                                 borderColor: 'rgba(54, 162, 235, 1)',
@@ -260,8 +260,16 @@
                     },
                     options: {
                         responsive: true,
-                        plugins: { legend: { position: 'top' } },
-                        scales: { y: { beginAtZero: true } }
+                        plugins: {
+                            legend: {
+                                position: 'top'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
                     }
                 });
             }
@@ -279,7 +287,14 @@
                             backgroundColor: 'rgba(75, 192, 192, 0.6)'
                         }]
                     },
-                    options: { responsive: true, scales: { y: { beginAtZero: true } } }
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
                 });
             }
         })();
