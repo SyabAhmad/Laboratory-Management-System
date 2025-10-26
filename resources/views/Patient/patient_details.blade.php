@@ -19,68 +19,81 @@
         </div>
         <!-- end page title -->
 
-        <div class="card print-card">
+        <div class="card print-card" style="border-radius: 8px; overflow: hidden;">
             <div class="card-body p-4">
                 <!-- Header Section with Logo and Lab Name -->
-                <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 15px;">
+                <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 20px; border-bottom: 2px solid black; padding-bottom: 15px;">
                     <tr>
                         <!-- Left: Logo -->
                         <td width="15%" valign="top" align="center" style="padding-right: 15px;">
                             <img src="{{ asset('assets/images/logo.png') }}" alt="Logo"
-                                style="width: 75px; height: 75px; border-radius: 50%; border: 2px solid var(--primary); display: block;">
+                                style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid black; display: block; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                         </td>
                         <!-- Center: Lab Name & Info -->
-                        <td>
-                            <div style="font-weight: bold; font-size: 18px; margin: 0; line-height: 1.1;"
-                                class="text-primary-custom">NEW MODERN CLINICAL<br>LABORATORY</div>
-                            <div style="font-size: 10px; margin: 4px 0 0 0; font-weight: 600;" class="text-primary-custom">
-                                (KP HCC) REG: 03663 SWAT</div>
-                            <div style="font-size: 9px; color: #333; margin: 3px 0 0 0; line-height: 1.3;">
-                                Bacha Khan <br>
-                                BS Pathology (KMU)<br>
-                                DMLT KPK Peshawar<br>
-
+                        <td style="padding: 0 15px;">
+                            <div style="font-weight: bold; font-size: 20px; margin: 0; line-height: 1.1; color: black; text-align: center;">
+                                NEW MODERN CLINICAL LABORATORY
+                            </div>
+                            <div style="font-size: 11px; margin: 5px 0 0 0; font-weight: 600; color: black; text-align: center;">
+                                (KP HCC) REG: 03663 SWAT
+                            </div>
+                            <div style="font-size: 10px; color: #555; margin: 5px 0 0 0; line-height: 1.3; text-align: center;">
+                                Bacha Khan, BS Pathology (KMU)<br>
+                                DMLT KPK Peshawar
                             </div>
                         </td>
                         <!-- Right: Contact Info -->
                         <td width="30%" valign="top" align="right"
-                            style="font-size: 9px; color: #333; line-height: 1.4; padding-left: 10px; border-left: 2px solid var(--primary);">
-                            <strong class="text-primary-custom">Tel:</strong><br>
+                            style="font-size: 10px; color: #333; line-height: 1.4; padding-left: 15px; border-left: 2px solid black;">
+                            <div style="font-weight: bold; color: black; margin-bottom: 5px;">Contact Information</div>
+                            <strong>Tel:</strong><br>
                             0302-8080191<br>
                             0313-9797790<br><br>
-                            <strong class="text-primary-custom">Address:</strong><br>
-                            Kabal Road, Near Township Chowk Kanju Swat
+                            <strong>Address:</strong><br>
+                            Kabal Road, Near Township Chowk<br>
+                            Kanju Swat
                         </td>
                     </tr>
                 </table>
-
-                <div style="border-top: 2px solid var(--primary); margin-bottom: 12px;"></div>
 
                 <!-- Patient Information Section -->
-                <table width="100%" cellpadding="4" cellspacing="0"
-                    style="border: 1px solid #ccc; margin-bottom: 15px; font-size: 10px;">
-                    <tr>
-                        <td width="20%"><strong>Name:</strong></td>
-                        <td width="30%">{{ $patient->name }}</td>
-                        <td width="20%"><strong>Age / Gender:</strong></td>
-                        <td width="30%">{{ $patient->age }} yr(s) / {{ $patient->gender }}</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Patient ID:</strong></td>
-                        <td>{{ $patient->patient_id }}</td>
-                        <td><strong>Blood Group:</strong></td>
-                        <td>{{ $patient->blood_group ?? 'N/A' }}</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Referred By:</strong></td>
-                        <td>
-                            @php $refName = optional($patient->referral)->name; @endphp
-                            {{ empty($patient->referred_by) || $patient->referred_by === 'none' || $refName === null ? 'Self' : $refName }}
-                        </td>
-                        <td><strong>Mobile:</strong></td>
-                        <td>{{ $patient->mobile_phone }}</td>
-                    </tr>
-                </table>
+                <div style="background: linear-gradient(135deg, rgba(248, 250, 252, 0.8), rgba(255, 255, 255, 0.8)); border: 1px solid #e0e0e0; border-radius: 6px; padding: 15px; margin-bottom: 20px;">
+                    <table width="100%" cellpadding="6" cellspacing="0" style="font-size: 11px; border-collapse: collapse;">
+                        <tr>
+                            <td width="25%" style="font-weight: bold; color: black; padding-bottom: 8px;">
+                                <i class="fas fa-user" style="margin-right: 5px;"></i>Patient Name:
+                            </td>
+                            <td width="25%" style="padding-bottom: 8px; font-weight: 600;">{{ $patient->name }}</td>
+                            <td width="25%" style="font-weight: bold; color: black; padding-bottom: 8px;">
+                                <i class="fas fa-birthday-cake" style="margin-right: 5px;"></i>Age / Gender:
+                            </td>
+                            <td width="25%" style="padding-bottom: 8px; font-weight: 600;">{{ $patient->age }} yr(s) / {{ $patient->gender }}</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: bold; color: black; padding-bottom: 8px;">
+                                <i class="fas fa-id-card" style="margin-right: 5px;"></i>Patient ID:
+                            </td>
+                            <td style="padding-bottom: 8px; font-weight: 600;">{{ $patient->patient_id }}</td>
+                            <td style="font-weight: bold; color: black; padding-bottom: 8px;">
+                                <i class="fas fa-tint" style="margin-right: 5px;"></i>Blood Group:
+                            </td>
+                            <td style="padding-bottom: 8px; font-weight: 600;">{{ $patient->blood_group ?? 'N/A' }}</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: bold; color: black;">
+                                <i class="fas fa-user-md" style="margin-right: 5px;"></i>Referred By:
+                            </td>
+                            <td style="font-weight: 600;">
+                                @php $refName = optional($patient->referral)->name; @endphp
+                                {{ empty($patient->referred_by) || $patient->referred_by === 'none' || $refName === null ? 'Self' : $refName }}
+                            </td>
+                            <td style="font-weight: bold; color: black;">
+                                <i class="fas fa-phone" style="margin-right: 5px;"></i>Mobile:
+                            </td>
+                            <td style="font-weight: 600;">{{ $patient->mobile_phone }}</td>
+                        </tr>
+                    </table>
+                </div>
 
                 <!-- Test Results Section -->
                 @if (!empty($testsWithData))
@@ -96,83 +109,89 @@
                         @endphp
 
                         <!-- Test Title -->
-                        <div
-                            style="margin: 20px 0 10px 0; padding: 8px 0; border-bottom: 2px solid var(--primary); font-weight: bold; color: var(--primary); font-size: 14px;">
-                            {{ $testName }}
+                        <div style="background: linear-gradient(135deg, black, rgba(37, 99, 235, 0.8)); color: white; padding: 12px 15px; border-radius: 6px; margin: 20px 0; font-weight: bold; font-size: 14px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <i class="fas fa-flask" style="margin-right: 8px;"></i>{{ $testName }}
                         </div>
 
                         <!-- Test Results Table -->
-                        <table width="100%" cellpadding="5" cellspacing="0"
-                            style="border-collapse: collapse; font-size: 11px; margin-bottom: 20px;">
-                            <thead>
-                                <tr style="background: var(--surface); border-bottom: 2px solid var(--primary);">
-                                    <th
-                                        style="text-align: left; padding: 8px; font-weight: bold; width: 40%; color: var(--primary);">
-                                        Test Name</th>
-                                    <th
-                                        style="text-align: left; padding: 8px; font-weight: bold; width: 20%; color: var(--primary);">
-                                        Results</th>
-                                    <th
-                                        style="text-align: left; padding: 8px; font-weight: bold; width: 15%; color: var(--primary);">
-                                        Unit</th>
-                                    <th
-                                        style="text-align: left; padding: 8px; font-weight: bold; width: 25%; color: var(--primary);">
-                                        Reference Ranges</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @if ($hasHL7Data)
-                                    @foreach ($analytes as $analyte)
-                                        <tr>
-                                            <td style="padding: 8px; border: 1px solid #ddd;">
-                                                {{ $analyte['name'] ?? ($analyte['code'] ?? 'Unknown') }}</td>
-                                            <td style="padding: 8px; border: 1px solid #ddd; font-weight: 600;">
-                                                {{ $analyte['value'] ?? '' }}</td>
-                                            <td style="padding: 8px; border: 1px solid #ddd;">{{ $analyte['units'] ?? '' }}
-                                            </td>
-                                            <td style="padding: 8px; border: 1px solid #ddd;">
-                                                {{ $analyte['ref_range'] ?? '' }}</td>
-                                        </tr>
-                                    @endforeach
-                                @elseif($hasData && !empty($template['fields']))
-                                    @foreach ($template['fields'] as $field)
-                                        @php
-                                            $value = $savedData[$field['name']] ?? '';
-                                            $label = $field['label'] ?? 'Unknown';
-                                            $unit = '';
-                                            $ref = '';
-
-                                            if (preg_match('/\(([^)]+)\)/', $label, $matches)) {
-                                                $unit = trim($matches[1]);
-                                                $label = preg_replace('/\s*\([^)]+\)\s*/', '', $label);
-                                            }
-
-                                            if (preg_match('/Ref:\s*([^\n]+)$/i', $label, $matches)) {
-                                                $ref = trim($matches[1]);
-                                                $label = preg_replace('/\s*[-–—]\s*Ref:\s*[^\n]+$/i', '', $label);
-                                            }
-
-                                            $label = trim($label);
-                                        @endphp
-                                        @if (!empty($value))
-                                            <tr>
-                                                <td style="padding: 8px; border: 1px solid #ddd;">{{ $label }}</td>
-                                                <td style="padding: 8px; border: 1px solid #ddd; font-weight: 600;">
-                                                    {{ $value }}</td>
-                                                <td style="padding: 8px; border: 1px solid #ddd;">{{ $unit }}</td>
-                                                <td style="padding: 8px; border: 1px solid #ddd;">{{ $ref }}</td>
-                                            </tr>
-                                        @endif
-                                    @endforeach
-                                @else
-                                    <tr>
-                                        <td colspan="4"
-                                            style="padding: 12px; text-align: center; color: var(--text-body);">No test data
-                                            recorded</td>
+                        <div style="border: 1px solid #e0e0e0; border-radius: 6px; overflow: hidden; margin-bottom: 20px;">
+                            <table width="100%" cellpadding="5" cellspacing="0" style="border-collapse: collapse; font-size: 11px;">
+                                <thead>
+                                    <tr style="background: linear-gradient(135deg, rgba(248, 250, 252, 0.9), rgba(255, 255, 255, 0.9)); border-bottom: 2px solid black;">
+                                        <th style="text-align: left; padding: 12px; font-weight: bold; width: 40%; color: black;">
+                                            <i class="fas fa-tag" style="margin-right: 5px;"></i>Test Name
+                                        </th>
+                                        <th style="text-align: left; padding: 12px; font-weight: bold; width: 20%; color: black;">
+                                            <i class="fas fa-chart-line" style="margin-right: 5px;"></i>Results
+                                        </th>
+                                        <th style="text-align: left; padding: 12px; font-weight: bold; width: 15%; color: black;">
+                                            <i class="fas fa-balance-scale" style="margin-right: 5px;"></i>Unit
+                                        </th>
+                                        <th style="text-align: left; padding: 12px; font-weight: bold; width: 25%; color: black;">
+                                            <i class="fas fa-ruler" style="margin-right: 5px;"></i>Reference Ranges
+                                        </th>
                                     </tr>
-                                @endif
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    @php $rowCount = 0; @endphp
+                                    @if ($hasHL7Data)
+                                        @foreach ($analytes as $analyte)
+                                            @php $rowCount++; @endphp
+                                            <tr style="background: {{ $rowCount % 2 == 0 ? '#f9f9f9' : '#fff' }};">
+                                                <td style="padding: 10px; border-bottom: 1px solid #e0e0e0; font-weight: 500;">
+                                                    {{ $analyte['name'] ?? ($analyte['code'] ?? 'Unknown') }}
+                                                </td>
+                                                <td style="padding: 10px; border-bottom: 1px solid #e0e0e0; font-weight: 700; color: black;">
+                                                    {{ $analyte['value'] ?? '' }}
+                                                </td>
+                                                <td style="padding: 10px; border-bottom: 1px solid #e0e0e0;">
+                                                    {{ $analyte['units'] ?? '' }}
+                                                </td>
+                                                <td style="padding: 10px; border-bottom: 1px solid #e0e0e0;">
+                                                    {{ $analyte['ref_range'] ?? '' }}
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    @elseif($hasData && !empty($template['fields']))
+                                        @foreach ($template['fields'] as $field)
+                                            @php
+                                                $value = $savedData[$field['name']] ?? '';
+                                                $label = $field['label'] ?? 'Unknown';
+                                                $unit = '';
+                                                $ref = '';
+                                                $rowCount++;
+
+                                                if (preg_match('/\(([^)]+)\)/', $label, $matches)) {
+                                                    $unit = trim($matches[1]);
+                                                    $label = preg_replace('/\s*\([^)]+\)\s*/', '', $label);
+                                                }
+
+                                                if (preg_match('/Ref:\s*([^\n]+)$/i', $label, $matches)) {
+                                                    $ref = trim($matches[1]);
+                                                    $label = preg_replace('/\s*[-–—]\s*Ref:\s*[^\n]+$/i', '', $label);
+                                                }
+
+                                                $label = trim($label);
+                                            @endphp
+                                            @if (!empty($value))
+                                                <tr style="background: {{ $rowCount % 2 == 0 ? '#f9f9f9' : '#fff' }};">
+                                                    <td style="padding: 10px; border-bottom: 1px solid #e0e0e0; font-weight: 500;">{{ $label }}</td>
+                                                    <td style="padding: 10px; border-bottom: 1px solid #e0e0e0; font-weight: 700; color: black;">{{ $value }}</td>
+                                                    <td style="padding: 10px; border-bottom: 1px solid #e0e0e0;">{{ $unit }}</td>
+                                                    <td style="padding: 10px; border-bottom: 1px solid #e0e0e0;">{{ $ref }}</td>
+                                                </tr>
+                                            @endif
+                                        @endforeach
+                                    @else
+                                        <tr>
+                                            <td colspan="4" style="padding: 12px; text-align: center; color: var(--text-body); background: #f9f9f9;">
+                                                <i class="fas fa-info-circle" style="margin-right: 5px;"></i>No test data recorded
+                                            </td>
+                                        </tr>
+                                    @endif
+                                </tbody>
+                            </table>
+                        </div>
 
                         <!-- Individual Test PDF Button -->
                         <div class="no-print" style="margin-bottom: 15px; text-align: right;">
@@ -187,25 +206,27 @@
             </div>
 
             <!-- Doctor Signature Section -->
-            <div
-                style="margin-top: 25px; padding-top: 10px; border-top: 1px solid #aaa; display: flex; justify-content: space-between; align-items: center; font-size: 9px; color: #333;">
+            <div style="background: linear-gradient(135deg, rgba(248, 250, 252, 0.8), rgba(255, 255, 255, 0.8)); border: 1px solid #e0e0e0; border-radius: 6px; padding: 15px; margin-top: 25px; display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: #333;">
                 <div style="flex: 1; text-align: left;">
-                    <strong>Please Note:</strong><br>
-                    Test(s) are performed on the state-of-the-art ARCHITECT MODULAR Ci4100 from Abbott Diagnostics,
-                    U.S.A.<br>
-                    This is a digitally signed report and does not require manual signature.
+                    <div style="background: rgba(255, 255, 255, 0.8); padding: 10px; border-radius: 4px; border-left: 3px solid black;">
+                        <strong style="color: black;">Please Note:</strong><br>
+                        <i class="fas fa-info-circle" style="margin-right: 5px; color: black;"></i>Test(s) are performed on the state-of-the-art ARCHITECT MODULAR Ci4100 from Abbott Diagnostics, U.S.A.<br>
+                        <i class="fas fa-signature" style="margin-right: 5px; color: black;"></i>This is a digitally signed report and does not require manual signature.
+                    </div>
                 </div>
                 <div style="text-align: right; white-space: nowrap;">
-                    <div style="font-weight: bold; color: var(--primary); margin-bottom: 5px;">
-                        This is a digitally signed report by<br>
-                        <strong>Bacha Khan</strong>
+                    <div style="background: rgba(255, 255, 255, 0.8); padding: 10px; border-radius: 4px; border-right: 3px solid black;">
+                        <div style="font-weight: bold; color: black; margin-bottom: 5px;">
+                            <i class="fas fa-user-md" style="margin-right: 5px;"></i>This is a digitally signed report by
+                        </div>
+                        <strong style="font-size: 11px;">Bacha Khan</strong>
                     </div>
                 </div>
             </div>
 
             <!-- Footer Section -->
             <div
-                style="background: var(--primary); color: var(--surface); padding: 10px 15px; margin: 15px -1.5rem -1.5rem -1.5rem; font-size: 10px; text-align: center;">
+                style="background: black; color: var(--surface); padding: 10px 15px; margin: 15px -1.5rem -1.5rem -1.5rem; font-size: 10px; text-align: center;">
                 <strong>�</strong> Asad Abad Road, Near Township Chowk Kamla Swat |
                 <strong>📞</strong> 0302-9050191 - 03139796050 |
                 <!-- <strong>🌐</strong> www.newmoderncliniclab.com -->

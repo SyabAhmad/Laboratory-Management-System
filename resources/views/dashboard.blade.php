@@ -24,133 +24,98 @@
 
 
         @if (Auth::user()->user_type == 'Admin' || Auth::user()->user_type == 'Super Admin')
-            <div class="row">
-                <!-- Start col -->
-                {{-- <div class="col-sm-4">
-                    <div class="card rounded">
-                        <a href="#">
-                            <div class="card-body rounded dashboard-card-body-1">
-                                <div class='px-3 py-3 justify-content-between'>
-                                    <div class="row">
-                                        <div class="col-sm-3 my-auto text-center">
-                                            <i class="fas fa-users fa-3x dashboard-card-icon"></i>
-                                        </div>
-                                        <div class="col-sm-9">
-                                            <h4 class="card-title text-center">Active Employees</h4>
-                                            <div>
-                                                <p class="text-center dashboard-card-text">
-                                                    {{ App\Models\Employees::get()->count() }}</p>
-                                            </div>
-                                        </div>
+            <!-- Quick Links Section -->
+            <div class="row mb-4">
+                <div class="col-lg-6 col-md-6 col-sm-12 mb-3">
+                    <a href="{{ route('patients.create') }}" class="text-decoration-none">
+                        <div class="card dashboard-card h-100">
+                            <div class="card-body dashboard-card-body-2">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-section">
+                                        <i class="fas fa-user-plus dashboard-card-icon"></i>
                                     </div>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                </div> --}}
-                <!-- end col -->
-                <!-- Start col -->
-                {{-- <div class="col-sm-4">
-                    <div class="card rounded">
-                        <a href="#">
-                            <div class="card-body rounded dashboard-card-body-2">
-                                <div class='px-3 py-3 justify-content-between'>
-                                    <div class="row">
-                                        <div class="col-sm-3 my-auto text-center">
-                                            <i class="fas fa-users-cog fa-3x dashboard-card-icon"></i>
-                                        </div>
-                                        <div class="col-sm-9">
-                                            <h4 class="card-title  text-center">Users </h4>
-                                            <div>
-                                                <p class="text-center dashboard-card-text">{{ App\Models\User::count() }}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                </div> --}}
-                <!-- end col -->
-
-                <!-- Start col -->
-                <div class="col-sm-4">
-                    <a href="{{ route('patients.list') }}" class="text-decoration-none">
-                        <div class="card rounded h-100">
-                            <div class="card-body rounded dashboard-card-body-4">
-                                <div class='px-3 py-3 justify-content-between'>
-                                    <div class="row">
-                                        <div class="col-sm-3 my-auto text-center">
-                                            <i class="fas fa-user-injured fa-3x dashboard-card-icon"></i>
-                                        </div>
-                                        <div class="col-sm-9">
-                                            <h4 class="card-title text-center">Patients</h4>
-                                            <div>
-                                                <p class="text-center dashboard-card-text1">
-                                                    {{ App\Models\Patients::get()->count() }}
-                                                </p>
-                                            </div>
-                                        </div>
+                                    <div class="content-section">
+                                        <h5 class="card-title dashboard-card-title">Add Patient</h5>
+                                        <p class="dashboard-card-text">Create new patient</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </a>
                 </div>
-                <!-- end col -->
-                <!-- Start col -->
-                <div class="col-sm-4">
-                    <a href="{{ route('balance.index') }}" class="text-decoration-none" aria-label="View balance details">
-                        <div class="card rounded dashboard-card balance-card-accent h-100 clickable-card" role="link">
-                            <div class="card-body rounded dashboard-card-body-3">
-                                <div class='px-3 py-3 justify-content-between'>
-                                    <div class="row">
-                                        <div class="col-sm-3 my-auto text-center">
-                                            <i class="fas fa-user-md fa-3x dashboard-card-icon"></i>
-                                        </div>
-                                        <div class="col-sm-9">
-                                            <h4 class="card-title  text-left">Company Total
-                                                Balance</h4>
-                                            <div>
-                                                <p class="dashboard-card-text1">
-                                                    {{ isset($totalBalance) ? number_format($totalBalance, 2) : '0.00' }}
-                                                </p>
-                                            </div>
-                                        </div>
+                <div class="col-lg-6 col-md-6 col-sm-12 mb-3">
+                    <a href="{{ route('allbills') }}" class="text-decoration-none">
+                        <div class="card dashboard-card h-100">
+                            <div class="card-body dashboard-card-body-1">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-section">
+                                        <i class="fas fa-file-invoice-dollar dashboard-card-icon"></i>
+                                    </div>
+                                    <div class="content-section">
+                                        <h5 class="card-title dashboard-card-title">All Bills</h5>
+                                        <p class="dashboard-card-text1">View all bills</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </a>
                 </div>
-                <!-- end col -->
-
-                <!-- Start col -->
-                <div class="col-sm-4">
-                    <div class="card rounded">
-                        <div class="card-body rounded dashboard-card-body-5">
-                            <div class='px-3 py-3 justify-content-between'>
-                                <div class="row">
-                                    <div class="col-sm-3 my-auto text-center">
-                                        <i class="fas fa-bed fa-3x dashboard-card-icon"></i>
-                                    </div>
-                                    <div class="col-sm-9">
-                                        <h4 class="card-title  text-center">Referrals </h4>
-                                        <div>
-                                            <p class="text-center dashboard-card-text1">
-                                                {{ App\Models\Referrals::get()->count() }}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- end col -->
-
-
             </div>
+            <!-- End Quick Links Section -->
+
+            <!-- Stats Cards Section -->
+            <div class="row mb-4">
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+                    <a href="{{ route('patients.list') }}" class="text-decoration-none">
+                        <div class="card dashboard-card h-100">
+                            <div class="card-body dashboard-card-body-4">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-section">
+                                        <i class="fas fa-user-injured dashboard-card-icon"></i>
+                                    </div>
+                                    <div class="content-section">
+                                        <h5 class="card-title dashboard-card-title">Patients</h5>
+                                        <p class="dashboard-card-text1">{{ App\Models\Patients::get()->count() }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+                    <a href="{{ route('balance.index') }}" class="text-decoration-none" aria-label="View balance details">
+                        <div class="card dashboard-card balance-card-accent h-100 clickable-card" role="link">
+                            <div class="card-body dashboard-card-body-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-section">
+                                        <i class="fas fa-balance-scale dashboard-card-icon"></i>
+                                    </div>
+                                    <div class="content-section">
+                                        <h5 class="card-title dashboard-card-title">Company Total Balance</h5>
+                                        <p class="dashboard-card-text1">{{ isset($totalBalance) ? number_format($totalBalance, 2) : '0.00' }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+                    <div class="card dashboard-card h-100">
+                        <div class="card-body dashboard-card-body-5">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-section">
+                                    <i class="fas fa-handshake dashboard-card-icon"></i>
+                                </div>
+                                <div class="content-section">
+                                    <h5 class="card-title dashboard-card-title">Referrals</h5>
+                                    <p class="dashboard-card-text1">{{ App\Models\Referrals::get()->count() }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End Stats Cards Section -->
         @else
             <div class="card">
                 <div class="card-body bg-dark">
@@ -163,18 +128,18 @@
         @endif
         <!-- Charts Row -->
         <div class="row mt-4">
-            <div class="col-md-6">
-                <div class="card">
+            <div class="col-lg-6 col-md-12 mb-4">
+                <div class="card dashboard-card">
                     <div class="card-body">
-                        <h5 class="card-title">Monthly Billed vs Paid</h5>
+                        <h5 class="card-title dashboard-card-title">Monthly Billed vs Paid</h5>
                         <canvas id="chartRevenue" width="400" height="200"></canvas>
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="card">
+            <div class="col-lg-6 col-md-12 mb-4">
+                <div class="card dashboard-card">
                     <div class="card-body">
-                        <h5 class="card-title">Monthly Paid (Payments)</h5>
+                        <h5 class="card-title dashboard-card-title">Monthly Paid (Payments)</h5>
                         <canvas id="chartPayments" width="400" height="200"></canvas>
                     </div>
                 </div>

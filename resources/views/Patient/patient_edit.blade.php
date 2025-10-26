@@ -31,19 +31,23 @@
 
         <div class="row">
             <div class="col-12">
-                <div class="card">
-                    <div class="card-body">
-                        <h4 class="header-title mb-3">Patient Information</h4>
+                <div class="card shadow-sm" style="border-radius: 12px; border: 1px solid rgba(37, 99, 235, 0.1);">
+                    <div class="card-body" style="padding: 2rem;">
+                        <h4 class="header-title mb-4" style="color: var(--text-heading); font-weight: 600;">
+                            <i class="fas fa-user-edit text-primary-custom mr-2"></i> Patient Information
+                        </h4>
 
                         <form method="POST" action="{{ route('patients.update', $patient->id) }}">
                             @csrf
                             @method('PUT')
 
                             <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="name">Full Name <span class="text-danger">*</span></label>
-                                        <input type="text" id="name" name="name"
+                                <div class="col-12 col-md-6">
+                                    <div class="form-group mb-4">
+                                        <label for="name" class="font-weight-bold">
+                                            <i class="fas fa-user text-primary-custom mr-1"></i> Full Name <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="text" id="name" name="name" placeholder="Enter full name"
                                             class="form-control @error('name') is-invalid @enderror"
                                             value="{{ old('name', $patient->name) }}" required>
                                         @error('name')
@@ -51,9 +55,11 @@
                                         @enderror
                                     </div>
 
-                                    <div class="form-group">
-                                        <label for="mobile_phone">Mobile Number <span class="text-danger">*</span></label>
-                                        <input type="text" id="mobile_phone" name="mobile_phone"
+                                    <div class="form-group mb-4">
+                                        <label for="mobile_phone" class="font-weight-bold">
+                                            <i class="fas fa-phone text-primary-custom mr-1"></i> Mobile Number <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="text" id="mobile_phone" name="mobile_phone" placeholder="Enter mobile number"
                                             class="form-control @error('mobile_phone') is-invalid @enderror"
                                             value="{{ old('mobile_phone', $patient->mobile_phone) }}" required>
                                         @error('mobile_phone')
@@ -61,8 +67,10 @@
                                         @enderror
                                     </div>
 
-                                    <div class="form-group">
-                                        <label for="gender">Gender <span class="text-danger">*</span></label>
+                                    <div class="form-group mb-4">
+                                        <label for="gender" class="font-weight-bold">
+                                            <i class="fas fa-venus-mars text-primary-custom mr-1"></i> Gender <span class="text-danger">*</span>
+                                        </label>
                                         <select id="gender" name="gender"
                                             class="form-control @error('gender') is-invalid @enderror" required>
                                             <option value="">Choose One Option</option>
@@ -81,9 +89,11 @@
                                         @enderror
                                     </div>
 
-                                    <div class="form-group">
-                                        <label for="age">Age <span class="text-danger">*</span></label>
-                                        <input type="number" id="age" name="age"
+                                    <div class="form-group mb-4">
+                                        <label for="age" class="font-weight-bold">
+                                            <i class="fas fa-birthday-cake text-primary-custom mr-1"></i> Age <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="number" id="age" name="age" placeholder="Enter age"
                                             class="form-control @error('age') is-invalid @enderror"
                                             value="{{ old('age', $patient->age) }}" required>
                                         @error('age')
@@ -91,8 +101,10 @@
                                         @enderror
                                     </div>
 
-                                    <div class="form-group">
-                                        <label for="blood_group">Blood Group</label>
+                                    <div class="form-group mb-4">
+                                        <label for="blood_group" class="font-weight-bold">
+                                            <i class="fas fa-tint text-primary-custom mr-1"></i> Blood Group
+                                        </label>
                                         <select id="blood_group" name="blood_group" class="form-control">
                                             <option value="">Choose One Option</option>
                                             @foreach (['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'] as $group)
@@ -104,19 +116,22 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="address">Address <span class="text-danger">*</span></label>
-                                        <textarea id="address" name="address" rows="3" class="form-control @error('address') is-invalid @enderror"
+                                <div class="col-12 col-md-6">
+                                    <div class="form-group mb-4">
+                                        <label for="address" class="font-weight-bold">
+                                            <i class="fas fa-map-marker-alt text-primary-custom mr-1"></i> Address <span class="text-danger">*</span>
+                                        </label>
+                                        <textarea id="address" name="address" rows="3" placeholder="Enter address" class="form-control @error('address') is-invalid @enderror"
                                             required>{{ old('address', $patient->address) }}</textarea>
                                         @error('address')
                                             <span class="invalid-feedback">{{ $message }}</span>
                                         @enderror
                                     </div>
 
-                                    <div class="form-group">
-                                        <label for="receiving_date">Receiving Date <span
-                                                class="text-danger">*</span></label>
+                                    <div class="form-group mb-4">
+                                        <label for="receiving_date" class="font-weight-bold">
+                                            <i class="fas fa-calendar-check text-primary-custom mr-1"></i> Receiving Date <span class="text-danger">*</span>
+                                        </label>
                                         <input type="date" id="receiving_date" name="receiving_date"
                                             class="form-control @error('receiving_date') is-invalid @enderror"
                                             value="{{ old('receiving_date', $patient->receiving_date?->format('Y-m-d')) }}"
@@ -126,9 +141,10 @@
                                         @enderror
                                     </div>
 
-                                    <div class="form-group">
-                                        <label for="reporting_date">Reporting Date <span
-                                                class="text-danger">*</span></label>
+                                    <div class="form-group mb-4">
+                                        <label for="reporting_date" class="font-weight-bold">
+                                            <i class="fas fa-calendar-alt text-primary-custom mr-1"></i> Reporting Date <span class="text-danger">*</span>
+                                        </label>
                                         <input type="date" id="reporting_date" name="reporting_date"
                                             class="form-control @error('reporting_date') is-invalid @enderror"
                                             value="{{ old('reporting_date', $patient->reporting_date?->format('Y-m-d')) }}"
@@ -138,15 +154,19 @@
                                         @enderror
                                     </div>
 
-                                    <div class="form-group">
-                                        <label for="referred_by">Referred By</label>
-                                        <input type="text" id="referred_by" name="referred_by" class="form-control"
+                                    <div class="form-group mb-4">
+                                        <label for="referred_by" class="font-weight-bold">
+                                            <i class="fas fa-user-md text-primary-custom mr-1"></i> Referred By
+                                        </label>
+                                        <input type="text" id="referred_by" name="referred_by" placeholder="Enter referrer name" class="form-control"
                                             value="{{ old('referred_by', $patient->referred_by) }}">
                                     </div>
 
-                                    <div class="form-group">
-                                        <label for="note">Note</label>
-                                        <textarea id="note" name="note" rows="3" class="form-control">{{ old('note', $patient->note) }}</textarea>
+                                    <div class="form-group mb-4">
+                                        <label for="note" class="font-weight-bold">
+                                            <i class="fas fa-sticky-note text-primary-custom mr-1"></i> Note
+                                        </label>
+                                        <textarea id="note" name="note" rows="3" placeholder="Enter any additional notes" class="form-control">{{ old('note', $patient->note) }}</textarea>
                                     </div>
                                 </div>
                             </div>
@@ -173,15 +193,15 @@
         @if (!empty($testsWithData))
             <div class="row">
                 <div class="col-12">
-                    <div class="card">
-                        <div class="card-body">
-                            <h4 class="header-title mb-3">
-                                <i class="fas fa-flask"></i> Edit Test Data
+                    <div class="card shadow-sm" style="border-radius: 12px; border: 1px solid rgba(37, 99, 235, 0.1);">
+                        <div class="card-body" style="padding: 2rem;">
+                            <h4 class="header-title mb-4" style="color: var(--text-heading); font-weight: 600;">
+                                <i class="fas fa-flask text-primary-custom mr-2"></i> Edit Test Data
                             </h4>
 
                             <div class="table-responsive">
-                                <table class="table table-hover mb-0">
-                                    <thead class="thead-light">
+                                <table class="table table-striped table-hover mb-0" style="border-radius: 8px; overflow: hidden;">
+                                    <thead class="thead-light" style="background: linear-gradient(135deg, rgba(248, 250, 252, 0.9), rgba(255, 255, 255, 0.9));">
                                         <tr>
                                             <th>Test Name</th>
                                             <th>Status</th>
@@ -307,13 +327,13 @@
         @if (!empty($testResults))
             <div class="row">
                 <div class="col-12">
-                    <div class="card">
-                        <div class="card-body">
-                            <h4 class="header-title mb-3">
-                                <i class="fas fa-file-alt"></i> Test Results Summary
+                    <div class="card shadow-sm" style="border-radius: 12px; border: 1px solid rgba(37, 99, 235, 0.1);">
+                        <div class="card-body" style="padding: 2rem;">
+                            <h4 class="header-title mb-4" style="color: var(--text-heading); font-weight: 600;">
+                                <i class="fas fa-file-alt text-primary-custom mr-2"></i> Test Results Summary
                             </h4>
 
-                            <div class="accordion" id="testResultsAccordion">
+                            <div class="accordion" id="testResultsAccordion" style="border-radius: 8px; overflow: hidden;">
                                 @foreach ($testResults as $testName => $testData)
                                     @php
                                         $testSlug = \Str::slug($testName);
@@ -321,15 +341,15 @@
                                         $headingId = 'heading_' . $testSlug;
                                     @endphp
 
-                                    <div class="card border-0 mb-2">
-                                        <div class="card-header p-0 bg-light" id="{{ $headingId }}">
+                                    <div class="card border-0 mb-2" style="border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                        <div class="card-header p-0 bg-light" id="{{ $headingId }}" style="border-radius: 8px 8px 0 0; background: linear-gradient(135deg, rgba(248, 250, 252, 0.9), rgba(255, 255, 255, 0.9));">
                                             <button class="btn btn-link btn-block text-left p-3" type="button"
                                                 data-toggle="collapse" data-target="#{{ $collapseId }}"
-                                                aria-expanded="false" aria-controls="{{ $collapseId }}">
+                                                aria-expanded="false" aria-controls="{{ $collapseId }}" style="color: var(--text-heading); font-weight: 500;">
                                                 <div class="d-flex justify-content-between align-items-center w-100">
                                                     <div>
                                                         <h6 class="mb-0">
-                                                            <i class="fas fa-chevron-right collapse-icon"
+                                                            <i class="fas fa-chevron-right collapse-icon text-primary-custom"
                                                                 style="transition: transform 0.3s;"></i>
                                                             <strong>{{ $testName }}</strong>
                                                         </h6>
@@ -337,7 +357,7 @@
                                                             Recorded: {{ $testData['test_date'] ?? 'Unknown date' }}
                                                         </small>
                                                     </div>
-                                                    <span class="badge badge-success">
+                                                    <span class="badge badge-success" style="background: linear-gradient(135deg, #28a745, #20c997); border: none;">
                                                         <i class="fas fa-check-circle"></i> Completed
                                                     </span>
                                                 </div>
@@ -450,11 +470,13 @@
         @endif
         <div class="row">
             <div class="col-12">
-                <div class="card">
-                    <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h4 class="header-title mb-0">CBC Test Results</h4>
-                            <button type="button" class="btn btn-primary-custom" id="fetchCBCResults">
+                <div class="card shadow-sm" style="border-radius: 12px; border: 1px solid rgba(37, 99, 235, 0.1);">
+                    <div class="card-body" style="padding: 2rem;">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h4 class="header-title mb-0" style="color: var(--text-heading); font-weight: 600;">
+                                <i class="fas fa-chart-bar text-primary-custom mr-2"></i> CBC Test Results
+                            </h4>
+                            <button type="button" class="btn btn-primary-custom" id="fetchCBCResults" style="border-radius: 8px; padding: 0.5rem 1rem; transition: all 0.3s ease;">
                                 <i class="fas fa-sync-alt"></i> Fetch Latest CBC Results
                             </button>
                         </div>

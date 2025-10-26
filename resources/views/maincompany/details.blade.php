@@ -19,48 +19,69 @@
         <!-- end page title -->
 
         <div class="card">
-            <div class="card-body">
-                <h3 class="text-center">Lab Information</h3>
+            <div class="card-body py-4">
+                <h3 class="text-center mb-4">Lab Information</h3>
 
                 <div class="row">
-                    @foreach (App\Models\MainCompanys::where('id', 1)->get() as $lab)
+                    @php
+                        $lab = App\Models\MainCompanys::where('id', 1)->first();
+                    @endphp
+                    @if($lab)
                         <div class="col-md-8">
-                            <table class="table table-borderless">
-                                <tbody>
-                                    <tr>
-                                        <th>Lab Name:</th>
-                                        <td>{{ $lab->lab_name }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Address:</th>
-                                        <td>{{ $lab->lab_address }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Phone:</th>
-                                        <td>{{ $lab->lab_phone }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Email:</th>
-                                        <td>{{ $lab->lab_email }}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                            <div class="row row-cols-1 row-cols-md-2 g-4">
+                                <div class="col">
+                                    <div class="card h-100 border-0 shadow-sm">
+                                        <div class="card-body text-center">
+                                            <i class="fas fa-building fa-2x text-primary mb-3"></i>
+                                            <h5 class="card-title1 ">Lab Name</h5>
+                                            <p class="card-text">{{ $lab->lab_name }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="card h-100 border-0 shadow-sm">
+                                        <div class="card-body text-center">
+                                            <i class="fas fa-map-marker-alt fa-2x text-success mb-3"></i>
+                                            <h5 class="card-title1">Address</h5>
+                                            <p class="card-text">{{ $lab->lab_address }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="card h-100 border-0 shadow-sm">
+                                        <div class="card-body text-center">
+                                            <i class="fas fa-phone fa-2x text-info mb-3"></i>
+                                            <h5 class="card-title1">Phone</h5>
+                                            <p class="card-text">{{ $lab->lab_phone }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="card h-100 border-0 shadow-sm">
+                                        <div class="card-body text-center">
+                                            <i class="fas fa-envelope fa-2x text-warning mb-3"></i>
+                                            <h5 class="card-title1">Email</h5>
+                                            <p class="card-text">{{ $lab->lab_email }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="text-right"><a href="javascript:void(0);" class="btn btn-info btn-sm editbtn"
-                                    data-id={{ $lab->id }}><i class="fas fa-edit"></i></a></div>
-                            <!-- <img src="{{ asset('/assets/HMS/lablogo/' . $lab->lab_image) }}" alt="{{ $lab->lab_name }}"
-                                class="img-fluid" /> -->
-                                <span class="logo-lg" style="display: flex; align-items: center; gap: 12px;">
-                    <img src="{{ asset('/assets/HMS/lablogo/' . $lab->lab_image) }}" alt="Bacha Lab Logo" height="150" style="border-radius: 50%; background: white; padding: 2px;">
-                    <div style="display: flex; flex-direction: column; justify-content: center;">
-                        
-                    </div>
-                </span>
-
+                        <div class="col-md-4 text-center">
+                            <div class="mb-3">
+                                <a href="javascript:void(0);" class="btn btn-info btn-sm editbtn" data-id="{{ $lab->id }}">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+                            </div>
+                            <div class="d-flex justify-content-center">
+                                <img src="{{ asset('/assets/HMS/lablogo/' . $lab->lab_image) }}" alt="{{ $lab->lab_name }}" class="img-fluid rounded-circle shadow" style="max-width: 150px; height: auto;">
+                            </div>
                         </div>
-                    @endforeach
-
+                    @else
+                        <div class="col-12 text-center">
+                            <p class="text-muted">No lab information found. Please add lab details first.</p>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -155,11 +176,17 @@
                     $('#lab_address').val(labtest.lab_address);
                     $('.modal-demo2').modal('show');
                 },
-                error: function(error) {
+                error: function(xhr) {
+                    let errorMessage = 'We have some error';
+                    if (xhr.status === 404) {
+                        errorMessage = 'Lab information not found';
+                    } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMessage = xhr.responseJSON.message;
+                    }
                     Swal.fire({
                         position: 'top-end',
                         icon: 'error',
-                        title: 'We have some error',
+                        title: errorMessage,
                         showConfirmButton: false,
                         timerProgressBar: true,
                         timer: 1800
@@ -200,14 +227,25 @@
                     $('#lab_infoForm')[0].reset();
 
                 },
-                error: function(data) {
+                error: function(xhr) {
+                    let errorMessage = 'Something went wrong';
+                    if (xhr.responseJSON && xhr.responseJSON.errors) {
+                        // Handle validation errors
+                        let errors = Object.values(xhr.responseJSON.errors).flat();
+                        errorMessage = errors.join(', ');
+                    } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMessage = xhr.responseJSON.message;
+                    } else if (xhr.status === 422) {
+                        errorMessage = 'Validation failed. Please check your input.';
+                    } else if (xhr.status === 500) {
+                        errorMessage = 'Server error. Please try again later.';
+                    }
                     Swal.fire({
                         title: 'Alert!',
-                        text: 'Something Wrong',
+                        text: errorMessage,
                         icon: 'warning',
-                        showConfirmButton: false,
+                        showConfirmButton: true,
                     });
-                    // console.log('Error:', data);
                 }
             });
 

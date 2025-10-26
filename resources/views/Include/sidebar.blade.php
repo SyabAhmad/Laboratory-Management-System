@@ -1,5 +1,24 @@
 <div class="left-side-menu bg-cards text-body" style="background: var(--bg-cards) !important;">
 
+    <style>
+        .enlarged .sidebar-close-btn {
+            display: none;
+        }
+        @media (max-width: 767px) {
+            .sidebar-enable .button-menu-mobile {
+                display: none;
+            }
+            body:not(.sidebar-enable) .sidebar-close-btn {
+                display: none;
+            }
+        }
+    </style>
+
+    <!-- Sidebar Toggle Button -->
+    <!-- <button class="sidebar-close-btn" style="position: absolute; top: 10px; right: 10px; background: none; border: none; color: var(--text-body); font-size: 20px; z-index: 10;">
+        <i class="mdi mdi-close"></i>
+    </button> -->
+
     <div class="slimscroll-menu">
 
         <!--- Sidemenu -->
@@ -7,7 +26,7 @@
 
             <ul class="metismenu" id="side-menu">
 
-                <li class="menu-title text-heading">Home</li>
+                <!-- <li class="menu-title text-heading">Home</li> -->
 
                 @if (App\Models\MainCompanys::get()->count() == 0)
                     <li>

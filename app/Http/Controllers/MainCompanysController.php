@@ -59,6 +59,9 @@ class MainCompanysController extends Controller
     public function edit($id)
     {
         $maincompanys = MainCompanys::find($id);
+        if (!$maincompanys) {
+            return response()->json(['message' => 'Lab information not found'], 404);
+        }
         return response()->json($maincompanys);
     }
 
@@ -71,11 +74,21 @@ class MainCompanysController extends Controller
      */
     public function update(Request $request)
     {
-        $maincompanys = MainCompanys::find($request->id);
-        $maincompanys->lab_name = $request->lab_name;
-        $maincompanys->lab_address = $request->lab_address;
-        $maincompanys->lab_phone = $request->lab_phone;
-        $maincompanys->lab_email = $request->lab_email;
+        $validated = $request->validate([
+            'id' => 'required|exists:companys,id',
+            'lab_name' => 'required|string|max:255',
+            'lab_address' => 'required|string',
+            'lab_phone' => 'required|string|max:20',
+            'lab_email' => 'required|email|max:255',
+            'lab_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $maincompanys = MainCompanys::find($validated['id']);
+        $maincompanys->lab_name = $validated['lab_name'];
+        $maincompanys->lab_address = $validated['lab_address'];
+        $maincompanys->lab_phone = $validated['lab_phone'];
+        $maincompanys->lab_email = $validated['lab_email'];
+
         if($request->hasFile('lab_image')){
             $destination = public_path().'/assets/HMS/lablogo/'.$maincompanys->lab_image;
             if(File::exists($destination)){
@@ -83,10 +96,15 @@ class MainCompanysController extends Controller
             }
             $image = $request->file('lab_image');
             $image_name = time().'.'.$image->getClientOriginalExtension();
-            $image->move(public_path().'/assets/HMS/lablogo/',$image_name);
-            $maincompanys->lab_image = $image_name;
+            try {
+                $image->move(public_path().'/assets/HMS/lablogo/',$image_name);
+                $maincompanys->lab_image = $image_name;
+            } catch (\Exception $e) {
+                return response()->json(['message' => 'Failed to upload image. Please check file permissions or directory.'], 500);
+            }
         }
-        $maincompanys->update();
+
+        $maincompanys->save();
         return response()->json($maincompanys);
     }
     /**

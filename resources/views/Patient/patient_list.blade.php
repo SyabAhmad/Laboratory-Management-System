@@ -43,158 +43,158 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="modal fade" id="editPatientModal" tabindex="-1" aria-labelledby="editPatientModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editPatientModalLabel">Edit Patient</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+        <div class="modal fade" id="editPatientModal" tabindex="-1" aria-labelledby="editPatientModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editPatientModalLabel">Edit Patient</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form id="editPatientForm">
+                        @csrf
+                        @method('PUT')
+                        <input type="hidden" id="edit_patient_id" name="patient_id">
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="edit_name">Full Name <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="edit_name" name="name" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="edit_mobile_phone">Mobile Number <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="edit_mobile_phone" name="mobile_phone"
+                                            required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="edit_gender">Gender <span class="text-danger">*</span></label>
+                                        <select class="form-control" id="edit_gender" name="gender" required>
+                                            <option value="">Choose One Option</option>
+                                            <option value="Male">Male</option>
+                                            <option value="Female">Female</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="edit_age">Age <span class="text-danger">*</span></label>
+                                        <input type="number" class="form-control" id="edit_age" name="age" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="edit_blood_group">Blood Group</label>
+                                        <select class="form-control" id="edit_blood_group" name="blood_group">
+                                            <option value="">Choose One Option</option>
+                                            <option value="A+">A+</option>
+                                            <option value="A-">A-</option>
+                                            <option value="B+">B+</option>
+                                            <option value="B-">B-</option>
+                                            <option value="O+">O+</option>
+                                            <option value="O-">O-</option>
+                                            <option value="AB+">AB+</option>
+                                            <option value="AB-">AB-</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="edit_address">Address <span class="text-danger">*</span></label>
+                                        <textarea class="form-control" id="edit_address" name="address" rows="3" required></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="edit_receiving_date">Receiving Date <span
+                                                class="text-danger">*</span></label>
+                                        <input type="date" class="form-control" id="edit_receiving_date"
+                                            name="receiving_date" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="edit_reporting_date">Reporting Date <span
+                                                class="text-danger">*</span></label>
+                                        <input type="date" class="form-control" id="edit_reporting_date"
+                                            name="reporting_date" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="edit_referred_by">Referred By</label>
+                                        <input type="text" class="form-control" id="edit_referred_by" name="referred_by">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="edit_note">Note</label>
+                                        <textarea class="form-control" id="edit_note" name="note" rows="3"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary-custom">Update Patient</button>
+                        </div>
+                    </form>
                 </div>
-                <form id="editPatientForm">
-                    @csrf
-                    @method('PUT')
-                    <input type="hidden" id="edit_patient_id" name="patient_id">
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="edit_name">Full Name <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="edit_name" name="name" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="edit_mobile_phone">Mobile Number <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="edit_mobile_phone" name="mobile_phone"
-                                        required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="edit_gender">Gender <span class="text-danger">*</span></label>
-                                    <select class="form-control" id="edit_gender" name="gender" required>
-                                        <option value="">Choose One Option</option>
-                                        <option value="Male">Male</option>
-                                        <option value="Female">Female</option>
-                                        <option value="Other">Other</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="edit_age">Age <span class="text-danger">*</span></label>
-                                    <input type="number" class="form-control" id="edit_age" name="age" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="edit_blood_group">Blood Group</label>
-                                    <select class="form-control" id="edit_blood_group" name="blood_group">
-                                        <option value="">Choose One Option</option>
-                                        <option value="A+">A+</option>
-                                        <option value="A-">A-</option>
-                                        <option value="B+">B+</option>
-                                        <option value="B-">B-</option>
-                                        <option value="O+">O+</option>
-                                        <option value="O-">O-</option>
-                                        <option value="AB+">AB+</option>
-                                        <option value="AB-">AB-</option>
-                                    </select>
-                                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="patientIdModal" tabindex="-1" role="dialog" aria-labelledby="patientIdModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header bg-success text-white">
+                        <h5 class="modal-title" id="patientIdModalLabel">
+                            <i class="fas fa-check-circle"></i> Patient Registered Successfully
+                        </h5>
+                        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body text-center py-4">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i>
+                            <strong>Use this ID on the CBC Machine</strong>
+                        </div>
+                        <h3 class="mb-3">Patient Name</h3>
+                        <h4 class="text-primary-custom mb-4" id="modalPatientName"></h4>
+                        <h3 class="mb-3">Patient ID (For CBC Machine)</h3>
+                        <div class="card bg-surface">
+                            <div class="card-body">
+                                <h1 class="display-4 text-primary-custom font-weight-bold mb-0" id="modalPatientId"></h1>
                             </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="edit_address">Address <span class="text-danger">*</span></label>
-                                    <textarea class="form-control" id="edit_address" name="address" rows="3" required></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <label for="edit_receiving_date">Receiving Date <span
-                                            class="text-danger">*</span></label>
-                                    <input type="date" class="form-control" id="edit_receiving_date"
-                                        name="receiving_date" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="edit_reporting_date">Reporting Date <span
-                                            class="text-danger">*</span></label>
-                                    <input type="date" class="form-control" id="edit_reporting_date"
-                                        name="reporting_date" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="edit_referred_by">Referred By</label>
-                                    <input type="text" class="form-control" id="edit_referred_by" name="referred_by">
-                                </div>
-                                <div class="form-group">
-                                    <label for="edit_note">Note</label>
-                                    <textarea class="form-control" id="edit_note" name="note" rows="3"></textarea>
-                                </div>
-                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <button type="button" class="btn btn-primary-custom btn-lg" onclick="copyPatientId()">
+                                <i class="fas fa-copy"></i> Copy Patient ID
+                            </button>
+                            <button type="button" class="btn btn-success btn-lg" onclick="printPatientId()">
+                                <i class="fas fa-print"></i> Print Label
+                            </button>
+                        </div>
+                        <div class="alert alert-warning mt-4">
+                            <small>
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <strong>Important:</strong> Enter this Patient ID on the CBC analyzer (PID-3 field) before
+                                running the test.
+                            </small>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary-custom">Update Patient</button>
                     </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="patientIdModal" tabindex="-1" role="dialog" aria-labelledby="patientIdModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header bg-success text-white">
-                    <h5 class="modal-title" id="patientIdModalLabel">
-                        <i class="fas fa-check-circle"></i> Patient Registered Successfully
-                    </h5>
-                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body text-center py-4">
-                    <div class="alert alert-info">
-                        <i class="fas fa-info-circle"></i>
-                        <strong>Use this ID on the CBC Machine</strong>
-                    </div>
-                    <h3 class="mb-3">Patient Name</h3>
-                    <h4 class="text-primary-custom mb-4" id="modalPatientName"></h4>
-                    <h3 class="mb-3">Patient ID (For CBC Machine)</h3>
-                    <div class="card bg-surface">
-                        <div class="card-body">
-                            <h1 class="display-4 text-primary-custom font-weight-bold mb-0" id="modalPatientId"></h1>
-                        </div>
-                    </div>
-                    <div class="mt-4">
-                        <button type="button" class="btn btn-primary-custom btn-lg" onclick="copyPatientId()">
-                            <i class="fas fa-copy"></i> Copy Patient ID
-                        </button>
-                        <button type="button" class="btn btn-success btn-lg" onclick="printPatientId()">
-                            <i class="fas fa-print"></i> Print Label
-                        </button>
-                    </div>
-                    <div class="alert alert-warning mt-4">
-                        <small>
-                            <i class="fas fa-exclamation-triangle"></i>
-                            <strong>Important:</strong> Enter this Patient ID on the CBC analyzer (PID-3 field) before
-                            running the test.
-                        </small>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div id="printLabelTemplate" style="display: none;">
-        <div style="text-align: center; padding: 20px; font-family: Arial, sans-serif;">
-            <h2>Patient Label</h2>
-            <p><strong>Name:</strong> <span id="printPatientName"></span></p>
-            <h1 style="font-size: 48px; margin: 20px 0;">
-                Patient ID: <span id="printPatientId"></span>
-            </h1>
-            <p style="font-size: 14px; color: var(--text-body);">Enter this ID on CBC Analyzer</p>
-            <hr>
-            <p style="font-size: 12px;">Date: {{ date('Y-m-d H:i:s') }}</p>
+        <div id="printLabelTemplate" style="display: none;">
+            <div style="text-align: center; padding: 20px; font-family: Arial, sans-serif;">
+                <h2>Patient Label</h2>
+                <p><strong>Name:</strong> <span id="printPatientName"></span></p>
+                <h1 style="font-size: 48px; margin: 20px 0;">
+                    Patient ID: <span id="printPatientId"></span>
+                </h1>
+                <p style="font-size: 14px; color: var(--text-body);">Enter this ID on CBC Analyzer</p>
+                <hr>
+                <p style="font-size: 12px;">Date: {{ date('Y-m-d H:i:s') }}</p>
+            </div>
         </div>
-    </div>
+
         <!-- Completed Patients Table -->
         <div class="card mt-4">
             <div class="card-body bg-var(--success)">
@@ -217,8 +217,9 @@
                 </div>
             </div>
         </div>
+    </div>
 
-    @endsection
+@endsection
 
 @section('scripts')
     <script>

@@ -72,6 +72,17 @@
 
     </ul>
 
+    <style>
+        body.enlarged .logo-lg {
+            display: none !important;
+        }
+        body.enlarged .logo-sm {
+            display: inline-block !important;
+        }
+        .logo-sm {
+            display: none;
+        }
+    </style>
     <ul class="list-unstyled menu-left mb-0">
         <li class="float-left">
             <a href="/" class="logo" style="display: flex; align-items: center; gap: 12px; padding: 10px 15px;">
