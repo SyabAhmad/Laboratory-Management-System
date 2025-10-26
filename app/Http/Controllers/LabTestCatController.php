@@ -85,15 +85,16 @@ class LabTestCatController extends Controller
     public function update(Request $request)
     {
         $validated = $request->validate([
-            'id'        => 'required|integer|exists:labtest,id',
-            'test_name' => 'required_without:cat_name|string|max:191',
-            'cat_name'  => 'required_without:test_name|string|max:191',
-            'price'     => 'nullable|numeric',
+            'id'          => 'required|integer|exists:labtest_cat,id',
+            'cat_name1'   => 'required|string|max:191',
+            'department1' => 'nullable|string|max:191',
+            'price1'      => 'nullable|numeric',
         ]);
 
         $labtest = LabTestCat::find($validated['id']);
-        $labtest->test_name = $request->input('test_name', $request->input('cat_name'));
-        $labtest->price     = $validated['price'] ?? $labtest->price;
+        $labtest->cat_name   = $request->input('cat_name1');
+        $labtest->department = $request->input('department1');
+        $labtest->price      = $validated['price1'] ?? $labtest->price;
         $labtest->save();
 
         return response()->json(['success' => 'Data updated successfully.', 'data' => $labtest]);

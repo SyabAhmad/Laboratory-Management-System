@@ -20,12 +20,18 @@ class AddCbcDefaultParameters extends Migration
             $catId = DB::table('labtest_cat')->insertGetId([
                 'cat_name' => 'CBC',
                 'department' => 'Hematology',
-                'price' => 0,
+                'price' => 500,
                 'status' => 1,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ]);
         } else {
+            // Update existing category with price and department
+            DB::table('labtest_cat')->where('id', $cat->id)->update([
+                'department' => 'Hematology',
+                'price' => 500,
+                'updated_at' => Carbon::now(),
+            ]);
             $catId = $cat->id;
         }
 

@@ -6,14 +6,17 @@
         <!-- start page title -->
         <div class="row">
             <div class="col-12">
-                <div class="page-title-box">
+                <div class="page-title-box d-flex align-items-center justify-content-between">
+                    <div>
+                        <h4 class="page-title mb-1"><i class="mdi mdi-receipt"></i> Patient Billing Details</h4>
+                        <p class="text-muted mb-0">Invoice Number: {{ $bills->bill_no }}</p>
+                    </div>
                     <div class="page-title-right">
                         <ol class="breadcrumb m-0">
                             <li class="breadcrumb-item"><a href="javascript: void(0);">Billing System</a></li>
                             <li class="breadcrumb-item active">Billing Details</li>
                         </ol>
                     </div>
-                    <h4 class="page-title">Patient Billing Details</h4>
                 </div>
             </div>
         </div>
@@ -22,101 +25,179 @@
         <div class="card">
             <div class="card-body">
                 <div id="printarea">
-                    <div class="text-center mt-3">
+                    <div class="text-center mt-4 mb-4">
                         @foreach (App\Models\MainCompanys::where('id', 1)->get() as $item)
                             <img src="{{ asset('/assets/HMS/lablogo/' . $item->lab_image) }}" alt="Lab Logo"
-                                style="width: 120px; height: 120px" class="img-fluid"> <br />
+                                style="width: 120px; height: 120px" class="img-fluid rounded shadow-sm"> <br />
                         @endforeach
                     </div>
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <span class="h4">Invoice Number : {{ $bills->bill_no }}</span><br>
-                                <span class="h6">Patient Id :
-                                    {{ optional($bills->patient)->patient_id ?? 'N/A' }}</span><br>
-                                <span class="h6">Patient Name :
-                                    {{ optional($bills->patient)->name ?? 'N/A' }}</span><br>
-                                <span class="h6">Mobile Number :
-                                    {{ optional($bills->patient)->mobile_phone ?? 'N/A' }}</span><br>
-                            </div>
 
-                            <div class="col-sm-6">
-                                <div class="text-right">
+                    <style>
+                        @media print {
+                            body * {
+                                visibility: hidden;
+                            }
+                            #printarea, #printarea * {
+                                visibility: visible;
+                            }
+                            #printarea {
+                                position: absolute;
+                                left: 0;
+                                top: 0;
+                                width: 100%;
+                            }
+                            .no-print {
+                                display: none !important;
+                            }
+                            .card {
+                                border: 1px solid #ddd !important;
+                                box-shadow: none !important;
+                            }
+                            .table {
+                                font-size: 12px;
+                            }
+                            .btn {
+                                display: none;
+                            }
+                        }
+                    </style>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-body">
+                                    <h5 class="card-title text-primary mb-3"><i class="mdi mdi-account"></i> Patient Information</h5>
+                                    <div class="row">
+                                        <div class="col-sm-6"><strong>Patient ID:</strong></div>
+                                        <div class="col-sm-6">{{ optional($bills->patient)->patient_id ?? 'N/A' }}</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-6"><strong>Name:</strong></div>
+                                        <div class="col-sm-6">{{ optional($bills->patient)->name ?? 'N/A' }}</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-6"><strong>Mobile:</strong></div>
+                                        <div class="col-sm-6">{{ optional($bills->patient)->mobile_phone ?? 'N/A' }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-body">
+                                    <h5 class="card-title text-primary mb-3"><i class="mdi mdi-office-building"></i> Laboratory Information</h5>
                                     @foreach (App\Models\MainCompanys::where('id', 1)->get() as $item)
-                                        <span class="h4">{{ $item->lab_name }}</span><br>
-                                        <span class="h6">{{ $item->lab_address }}</span><br>
-                                        <span class="h6">{{ $item->lab_phone }}</span><br>
-                                        <span class="h6">{{ $item->lab_email }}</span><br>
+                                        <div class="row">
+                                            <div class="col-sm-4"><strong>Name:</strong></div>
+                                            <div class="col-sm-8">{{ $item->lab_name }}</div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-4"><strong>Address:</strong></div>
+                                            <div class="col-sm-8">{{ $item->lab_address }}</div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-4"><strong>Phone:</strong></div>
+                                            <div class="col-sm-8">{{ $item->lab_phone }}</div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-4"><strong>Email:</strong></div>
+                                            <div class="col-sm-8">{{ $item->lab_email }}</div>
+                                        </div>
                                     @endforeach
                                 </div>
                             </div>
-
                         </div>
                     </div>
 
-                    <div class="container mt-5">
-                        <table class="table table-sm">
+                    <div class="container mt-4">
+                        <h5 class="mb-3"><i class="mdi mdi-test-tube"></i> Test Details</h5>
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover table-bordered">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th style="width: 50px">S/N</th>
+                                        <th>Test Name</th>
+                                        <th class="text-right">Price (PKR)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @php $total = 0; @endphp
+                                    @if (isset($tests) && count($tests))
+                                        @foreach ($tests as $test)
+                                            <tr>
+                                                <td>{{ $loop->iteration }}</td>
+                                                <td>{{ $test->cat_name }}</td>
+                                                <td class="text-right font-weight-bold">{{ number_format($test->price ?? 0, 2) }}</td>
+                                            </tr>
+                                            @php $total += $test->price ?? 0; @endphp
+                                        @endforeach
+                                    @else
+                                        <tr>
+                                            <td colspan="3" class="text-center text-muted">No test data available</td>
+                                        </tr>
+                                    @endif
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <h5 class="mb-3"><i class="mdi mdi-calculator"></i> Bill Summary</h5>
+                        <table class="table table-borderless">
                             <tbody>
                                 <tr>
-                                    <th>S/N</th>
-                                    <th>Test Name</th>
-                                    <th class="text-right">Price</th>
+                                    <td class="font-weight-bold">Total Amount:</td>
+                                    <td class="text-right font-weight-bold h5 text-primary">{{ number_format($total, 2) }}</td>
                                 </tr>
-                                @php $total = 0; @endphp
-                                @if (isset($tests) && count($tests))
-                                    @foreach ($tests as $test)
-                                        <tr>
-                                            <td style="width: 50px">{{ $loop->iteration }}</td>
-                                            <td>{{ $test->cat_name }}</td>
-                                            <td class="text-right">{{ number_format($test->price ?? 0, 2) }}</td>
-                                        </tr>
-                                        @php $total += $test->price ?? 0; @endphp
-                                    @endforeach
-                                @else
-                                    <tr>
-                                        <td colspan="3" class="text-center">No test data available</td>
-                                    </tr>
-                                @endif
+                                <tr>
+                                    <td>In Words:</td>
+                                    <td class="text-right">{{ ucwords(\App\Helpers\NumberToWords::convert($total)) }} Rupees Only</td>
+                                </tr>
+                                <tr>
+                                    <td>Discount:</td>
+                                    <td class="text-right" id="display_discount">{{ number_format($bills->discount, 2) }}</td>
+                                </tr>
+                                <tr class="border-top">
+                                    <td class="font-weight-bold">Net Amount:</td>
+                                    <td class="text-right font-weight-bold h5 text-success" id="display_net_amount">{{ number_format($bills->total_price, 2) }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Payment Method:</td>
+                                    <td class="text-right" id="display_payment_type">{{ $bills->payment_type }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Paid Amount:</td>
+                                    <td class="text-right" id="display_paid_amount">{{ number_format($bills->paid_amount, 2) }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Due/Return Amount:</td>
+                                    <td class="text-right" id="display_due_amount">{{ number_format($bills->due_amount, 2) }}</td>
+                                </tr>
                             </tbody>
                         </table>
-
-                        <div class="d-flex bd-highlight align-items-start">
-                            <div class="p-2 flex-fill">
-                                <h3>Total Amount :</h3>
-                                <h4>In Words :</h4>
-                                <h4>Discount :</h4>
-                                <h3>Net Amount :</h3>
-                                <h4>Payment Method :</h4>
-                                <h4>Paid Amount :</h4>
-                                <h4>Due/Return Amount :</h4>
-                            </div>
-
-                            <div class="p-2 text-right">
-                                <h3 id="display_total">{{ number_format($total, 2) }}</h3>
-                                <h4 id="display_in_words">{{ ucwords(\App\Helpers\NumberToWords::convert($total)) }} Rupees
-                                    Only</h4>
-                                <h4 id="display_discount">{{ number_format($bills->discount, 2) }}</h4>
-                                <h3 id="display_net_amount">{{ number_format($bills->total_price, 2) }}</h3>
-                                <h4 id="display_payment_type">{{ $bills->payment_type }}</h4>
-                                <h4 id="display_paid_amount">{{ number_format($bills->paid_amount, 2) }}</h4>
-                                <h4 id="display_due_amount">{{ number_format($bills->due_amount, 2) }}</h4>
-                            </div>
-                        </div>
                     </div>
                 </div>
 
-                <div class="row mt-5">
+                <div class="row mt-5 no-print">
                     <div class="col-md-12">
-                        <button onclick="window.history.back()" class="btn btn-primary">Back</button>
-                        <button type="button" class="btn btn-warning" data-toggle="modal"
-                            data-target="#editBillModal">Payment</button>
+                        <button onclick="window.history.back()" class="btn btn-primary" data-toggle="tooltip" title="Go back to previous page">
+                            <i class="mdi mdi-arrow-left"></i> Back
+                        </button>
+                        <button type="button" class="btn btn-warning ml-2" data-toggle="modal" data-target="#editBillModal" data-toggle="tooltip" title="Edit payment details">
+                            <i class="mdi mdi-credit-card"></i> Payment
+                        </button>
                         @if (strtolower($bills->status ?? '') !== 'paid')
                             <!-- <button id="markPaidBtn" type="button" class="btn btn-success">Mark as Paid</button> -->
-                            <span id="display_bill_status" class="badge badge-warning">Not Paid Yet</span>
+                            <span id="display_bill_status" class="badge badge-warning ml-2">
+                                <i class="mdi mdi-clock-outline"></i> Not Paid Yet
+                            </span>
                         @else
-                            <span id="display_bill_status" class="badge badge-success">Paid</span>
+                            <span id="display_bill_status" class="badge badge-success ml-2">
+                                <i class="mdi mdi-check-circle"></i> Paid
+                            </span>
                         @endif
-                        <button onclick="myFunction('printarea')" class="btn btn-success float-right">Print</button>
+                        <button onclick="myFunction('printarea')" class="btn btn-success float-right" data-toggle="tooltip" title="Print this bill">
+                            <i class="mdi mdi-printer"></i> Print
+                        </button>
                     </div>
                 </div>
             </div>
@@ -129,7 +210,7 @@
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header bg-warning">
-                    <h5 class="modal-title" id="editBillModalLabel">Edit Bill Details</h5>
+                    <h5 class="modal-title" id="editBillModalLabel"><i class="mdi mdi-pencil"></i> Edit Bill Details</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -137,65 +218,71 @@
                 <form id="editBillForm">
                     @csrf
                     <div class="modal-body">
-                        <div class="form-group row">
-                            <label class="col-md-4 col-form-label"><strong>Total Amount:</strong></label>
-                            <div class="col-md-8">
-                                <input type="text" class="form-control" id="edit_total_amount" readonly>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="edit_total_amount"><strong>Total Amount (PKR):</strong></label>
+                                    <input type="text" class="form-control" id="edit_total_amount" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="edit_discount"><strong>Discount (PKR):</strong></label>
+                                    <input type="number" class="form-control" id="edit_discount" name="discount" step="0.01"
+                                        min="0" required>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="form-group row">
-                            <label class="col-md-4 col-form-label"><strong>Discount (PKR):</strong></label>
-                            <div class="col-md-8">
-                                <input type="number" class="form-control" id="edit_discount" name="discount" step="0.01"
-                                    min="0" required>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="edit_net_amount"><strong>Net Amount (PKR):</strong></label>
+                                    <input type="text" class="form-control" id="edit_net_amount" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="edit_payment_type"><strong>Payment Method:</strong></label>
+                                    <select class="form-control" id="edit_payment_type" name="payment_type" required>
+                                        <option value="">-- Select Payment Method --</option>
+                                        <option value="Cash">Cash</option>
+                                        <option value="Card">Card</option>
+                                        <option value="Bank Transfer">Bank Transfer</option>
+                                        <option value="Check">Check</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="form-group row">
-                            <label class="col-md-4 col-form-label"><strong>Net Amount:</strong></label>
-                            <div class="col-md-8">
-                                <input type="text" class="form-control" id="edit_net_amount" readonly>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="edit_paid_amount"><strong>Paid Amount (PKR):</strong></label>
+                                    <input type="number" class="form-control" id="edit_paid_amount" name="paid_amount"
+                                        step="0.01" min="0" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="edit_due_amount"><strong>Due/Return Amount (PKR):</strong></label>
+                                    <input type="text" class="form-control" id="edit_due_amount" readonly>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="form-group row">
-                            <label class="col-md-4 col-form-label"><strong>Payment Method:</strong></label>
-                            <div class="col-md-8">
-                                <select class="form-control" id="edit_payment_type" name="payment_type" required>
-                                    <option value="">-- Select Payment Method --</option>
-                                    <option value="Cash">Cash</option>
-                                    <option value="Card">Card</option>
-                                    <option value="Bank Transfer">Bank Transfer</option>
-                                    <option value="Check">Check</option>
-                                    <option value="Other">Other</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <label class="col-md-4 col-form-label"><strong>Paid Amount (PKR):</strong></label>
-                            <div class="col-md-8">
-                                <input type="number" class="form-control" id="edit_paid_amount" name="paid_amount"
-                                    step="0.01" min="0" required>
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <label class="col-md-4 col-form-label"><strong>Due/Return Amount:</strong></label>
-                            <div class="col-md-8">
-                                <input type="text" class="form-control" id="edit_due_amount" readonly>
-                            </div>
-                        </div>
-
-                        <div class="alert alert-info">
-                            <strong>Note:</strong> Due Amount = Net Amount - Paid Amount. If positive, patient owes money.
-                            If negative, return money to patient.
+                        <div class="alert alert-info mt-3">
+                            <i class="mdi mdi-information-outline"></i> <strong>Note:</strong> Due Amount = Net Amount - Paid Amount. If positive, patient owes money. If negative, return money to patient.
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                            <i class="mdi mdi-close"></i> Cancel
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="mdi mdi-content-save"></i> Save Changes
+                        </button>
                     </div>
                 </form>
             </div>

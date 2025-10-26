@@ -1,5 +1,5 @@
 @extends('Layout.master')
-@section('title', 'Lab Test Category')
+@section('title', 'All Bills')
 @section('content')
     <div class="container-fluid">
         <!-- start page title -->
@@ -9,33 +9,37 @@
                     <div class="page-title-right">
                         <ol class="breadcrumb m-0">
                             <li class="breadcrumb-item"><a href="javascript: void(0);">Home</a></li>
-                            <li class="breadcrumb-item active">Billing System</li>
+                            <li class="breadcrumb-item active">All Bills</li>
                         </ol>
                     </div>
-                    <h4 class="page-title">Patient Billing System</h4>
+                    <h4 class="page-title">All Bills</h4>
                 </div>
             </div>
         </div>
         <!-- end page title -->
 
         <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0">Patient Bills Overview</h5>
+            </div>
             <div class="card-body">
-                <table class="table-hover table allbill_datatable">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Bill No</th>
-                            <th>Patient ID</th>
-                            <th>Patient Name</th>
-                            <th>Status</th>
-                            <th>Paid Amount</th>
-                            {{-- <th>Tests Status</th> --}}
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover allbill_datatable">
+                        <thead class="table-light">
+                            <tr>
+                                <th>#</th>
+                                <th>Patient ID</th>
+                                <th>Patient Name</th>
+                                <th>Billing Date</th>
+                                <th>Status</th>
+                                <th>Paid Amount</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

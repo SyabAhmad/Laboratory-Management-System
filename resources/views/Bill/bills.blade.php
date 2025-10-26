@@ -4,19 +4,45 @@
 
     <div class="container-fluid">
         <!-- PAGE HEADER -->
-        <div class="row mb-3">
-            <div class="col">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h4 class="mb-0">🧾 Patient Billing System</h4>
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb m-0">
-                            <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Home</a></li>
-                            <li class="breadcrumb-item"><a href="{{ route('patients.list') }}">Patients</a></li>
-                            <li class="breadcrumb-item active">Billing</li>
-                        </ol>
-                    </nav>
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap">
+                            <div>
+                                <!-- <h2 class="mb-2 text-white fw-bold">
+                                    <i class="fas fa-file-invoice-dollar me-3"></i>Patient Billing System
+                                </h2>
+                                <p class="text-white-50 mb-0 fs-5">Create and manage patient bills efficiently</p> -->
+                            </div>
+                            <nav aria-label="breadcrumb" class="mt-3 mt-md-0">
+                                <ol class="breadcrumb bg-transparent p-0 m-0">
+                                    <li class="breadcrumb-item"><a href="{{ route('dashboard') }}" class="text-white-75"><i class="fas fa-home me-1"></i>Home</a></li>
+                                    <li class="breadcrumb-item"><a href="{{ route('patients.list') }}" class="text-white-75">Patients</a></li>
+                                    <li class="breadcrumb-item active text-white" aria-current="page">Billing</li>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
                 </div>
+                <div class="d-flex justify-content-between align-items-center flex-wrap bg-primary p-4 rounded shadow-sm">
+                            <div>
+                                <h2 class="mb-2 text-white fw-bold">
+                                    <i class="fas fa-file-invoice-dollar me-3"></i>Patient Billing System
+                                </h2>
+                                <p class="text-white-50 mb-0 fs-5">Create and manage patient bills efficiently</p>
+                            </div>
+                            <!-- <nav aria-label="breadcrumb" class="mt-3 mt-md-0">
+                                <ol class="breadcrumb bg-transparent p-0 m-0">
+                                    <li class="breadcrumb-item"><a href="{{ route('dashboard') }}" class="text-white-75"><i class="fas fa-home me-1"></i>Home</a></li>
+                                    <li class="breadcrumb-item"><a href="{{ route('patients.list') }}" class="text-white-75">Patients</a></li>
+                                    <li class="breadcrumb-item active text-white" aria-current="page">Billing</li>
+                                </ol>
+                            </nav> -->
+                        </div>
+                
             </div>
+            
         </div>
 
         @php
@@ -39,20 +65,51 @@
                     <input type="hidden" name="patient_id" value="{{ $patient->id }}">
 
                     <!-- Patient Info Display -->
-                    <div class="col-12">
-                        <div class="alert alert-info">
-                            <div class="row">
-                                <div class="col-md-3">
-                                    <strong>Patient ID:</strong> {{ $patient->patient_id }}
-                                </div>
-                                <div class="col-md-3">
-                                    <strong>Name:</strong> {{ $patient->name }}
-                                </div>
-                                <div class="col-md-3">
-                                    <strong>Age/Gender:</strong> {{ $patient->age }} / {{ $patient->gender }}
-                                </div>
-                                <div class="col-md-3">
-                                    <strong>Phone:</strong> {{ $patient->mobile_phone }}
+                    <div class="col-12 mb-4">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-light">
+                                <h6 class="mb-0 text-primary">
+                                    <i class="fas fa-user-circle me-2"></i>Patient Information
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-3">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-id-card text-muted me-2"></i>
+                                            <div>
+                                                <small class="text-muted d-block">Patient ID</small>
+                                                <strong>{{ $patient->patient_id }}</strong>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-user text-muted me-2"></i>
+                                            <div>
+                                                <small class="text-muted d-block">Name</small>
+                                                <strong>{{ $patient->name }}</strong>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-birthday-cake text-muted me-2"></i>
+                                            <div>
+                                                <small class="text-muted d-block">Age / Gender</small>
+                                                <strong>{{ $patient->age }} / {{ $patient->gender }}</strong>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-phone text-muted me-2"></i>
+                                            <div>
+                                                <small class="text-muted d-block">Phone</small>
+                                                <strong>{{ $patient->mobile_phone }}</strong>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -78,148 +135,210 @@
                     <!-- Registered Tests Section -->
                     @if (isset($registeredTests) && $registeredTests->count() > 0)
                         <div class="col-12 mt-4">
-                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-                                <div>
-                                    <h5 class="text-success fw-semibold mb-2">✅ Registered Tests for This Patient</h5>
-                                    <p class="mb-0">The following tests have been registered for this patient and will be
-                                        automatically added to the bill.</p>
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-0">
+                                            <i class="fas fa-check-circle me-2"></i>Registered Tests for This Patient
+                                        </h6>
+                                        <small class="text-white-50">These tests will be automatically added to the bill</small>
+                                    </div>
+                                    <button type="button" id="refreshRegisteredTests" class="btn btn-light btn-sm"
+                                        data-fetch-url="{{ route('billing.registeredTests', $patient->id) }}">
+                                        <i class="fas fa-sync-alt me-1"></i> Refresh
+                                    </button>
                                 </div>
-                                <button type="button" id="refreshRegisteredTests" class="btn btn-outline-success btn-sm"
-                                    data-fetch-url="{{ route('billing.registeredTests', $patient->id) }}">
-                                    <i class="fas fa-sync-alt me-1"></i> Refresh registered tests
-                                </button>
-                            </div>
-                            <div class="table-responsive">
-                                <table class="table table-striped table-hover align-middle">
-                                    <thead class="table-success">
-                                        <tr>
-                                            <th>#</th>
-                                            <th>Test Name</th>
-                                            <th>Department</th>
-                                            <th>Price (PKR)</th>
-                                            <th>Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="registeredTestsList">
-                                        @foreach ($registeredTests as $test)
-                                            <tr data-test-id="{{ $test->id }}" data-test-name="{{ $test->cat_name }}"
-                                                data-test-price="{{ $test->price }}"
-                                                data-test-dept="{{ $test->department ?? 'N/A' }}">
-                                                <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $test->cat_name }}</td>
-                                                <td>{{ $test->department ?? 'N/A' }}</td>
-                                                <td>{{ number_format($test->price, 2) }}</td>
-                                                <td><span class="badge bg-success">Registered</span></td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
+                                <div class="card-body p-0">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover align-middle mb-0">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th class="border-0 fw-semibold">#</th>
+                                                    <th class="border-0 fw-semibold">Test Name</th>
+                                                    <th class="border-0 fw-semibold">Department</th>
+                                                    <th class="border-0 fw-semibold">Price (PKR)</th>
+                                                    <th class="border-0 fw-semibold">Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="registeredTestsList">
+                                                @foreach ($registeredTests as $test)
+                                                    <tr data-test-id="{{ $test->id }}" data-test-name="{{ $test->cat_name }}"
+                                                        data-test-price="{{ $test->price }}"
+                                                        data-test-dept="{{ $test->department ?? 'N/A' }}"
+                                                        class="table-row-hover">
+                                                        <td class="fw-semibold">{{ $loop->iteration }}</td>
+                                                        <td>
+                                                            <div class="d-flex align-items-center">
+                                                                <i class="fas fa-flask text-success me-2"></i>
+                                                                {{ $test->cat_name }}
+                                                            </div>
+                                                        </td>
+                                                        <td><span class="badge bg-light text-dark">{{ $test->department ?? 'N/A' }}</span></td>
+                                                        <td class="fw-semibold text-success">{{ number_format($test->price, 2) }}</td>
+                                                        <td><span class="badge bg-success"><i class="fas fa-check me-1"></i>Auto-added</span></td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     @endif
 
                     <!-- Additional Tests Section -->
                     <div class="col-12 mt-4">
-                        <h5 class="text-primary fw-semibold mb-2">🧪 Add Additional Tests (Optional)</h5>
-                        <div class="table-responsive">
-                            <table class="table table-striped table-hover align-middle">
-                                <thead class="table-primary">
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Test Name</th>
-                                        <th>Department</th>
-                                        <th>Price (PKR)</th>
-                                        <th>Add</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($tests as $test)
-                                        <tr>
-                                            <td>{{ $loop->iteration }}</td>
-                                            <td>{{ $test->cat_name }}</td>
-                                            <td>{{ $test->department }}</td>
-                                            <td>{{ number_format($test->price, 2) }}</td>
-                                            <td>
-                                                <button type="button" class="btn btn-sm btn-outline-primary add-test-btn"
-                                                    data-id="{{ $test->id }}" data-name="{{ $test->cat_name }}"
-                                                    data-price="{{ $test->price }}" data-dept="{{ $test->department }}">
-                                                    <i class="fas fa-plus"></i> Add
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-primary text-white">
+                                <h6 class="mb-0">
+                                    <i class="fas fa-flask me-2"></i>Add Additional Tests (Optional)
+                                </h6>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle mb-0">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th class="border-0 fw-semibold">#</th>
+                                                <th class="border-0 fw-semibold">Test Name</th>
+                                                <th class="border-0 fw-semibold">Department</th>
+                                                <th class="border-0 fw-semibold">Price (PKR)</th>
+                                                <th class="border-0 fw-semibold">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($tests as $test)
+                                                <tr class="table-row-hover">
+                                                    <td class="fw-semibold">{{ $loop->iteration }}</td>
+                                                    <td>
+                                                        <div class="d-flex align-items-center">
+                                                            <i class="fas fa-vial text-primary me-2"></i>
+                                                            {{ $test->cat_name }}
+                                                        </div>
+                                                    </td>
+                                                    <td><span class="badge bg-light text-dark">{{ $test->department }}</span></td>
+                                                    <td class="fw-semibold text-primary">{{ number_format($test->price, 2) }}</td>
+                                                    <td>
+                                                        <button type="button" class="btn btn-sm btn-outline-primary add-test-btn"
+                                                            data-id="{{ $test->id }}" data-name="{{ $test->cat_name }}"
+                                                            data-price="{{ $test->price }}" data-dept="{{ $test->department }}">
+                                                            <i class="fas fa-plus me-1"></i>Add
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Selected Tests for Bill -->
-                    <div class="col-12 mt-3">
-                        <h5 class="text-success fw-semibold">🧾 Tests in Current Bill</h5>
-                        <div class="table-responsive">
-                            <table class="table table-bordered" id="selectedTests">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Test Name</th>
-                                        <th>Price (PKR)</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @if (!isset($registeredTests) || $registeredTests->count() === 0)
-                                        <tr class="no-tests-row">
-                                            <td colspan="4" class="text-center text-muted">No tests in bill yet</td>
-                                        </tr>
-                                    @endif
-                                </tbody>
-                            </table>
+                    <div class="col-12 mt-4">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-info text-white">
+                                <h6 class="mb-0">
+                                    <i class="fas fa-clipboard-list me-2"></i>Tests in Current Bill
+                                </h6>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle mb-0" id="selectedTests">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th class="border-0 fw-semibold">#</th>
+                                                <th class="border-0 fw-semibold">Test Name</th>
+                                                <th class="border-0 fw-semibold">Price (PKR)</th>
+                                                <th class="border-0 fw-semibold">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @if (!isset($registeredTests) || $registeredTests->count() === 0)
+                                                <tr class="no-tests-row">
+                                                    <td colspan="4" class="text-center py-5">
+                                                        <div class="text-muted">
+                                                            <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
+                                                            <h6>No tests selected yet</h6>
+                                                            <p class="mb-0">Add tests from the sections above to create your bill</p>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            @endif
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Summary Section -->
-                    <div class="col-md-6 offset-md-6">
-                        <table class="table table-borderless">
-                            <tr>
-                                <td><strong>Subtotal:</strong></td>
-                                <td><input type="text" class="form-control text-end" id="grandtotal" name="gtotal"
-                                        value="0.00" readonly></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Discount:</strong></td>
-                                <td><input type="number" step="0.01" class="form-control text-end" id="discount"
-                                        name="discount" value="0"></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Total:</strong></td>
-                                <td><input type="text" class="form-control text-end" id="total_" name="total_"
-                                        value="0.00" readonly></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Amount Paid:</strong></td>
-                                <td><input type="number" step="0.01" class="form-control text-end" id="pay_"
-                                        name="pay" value="0"></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Due / Return:</strong></td>
-                                <td><input type="text" class="form-control text-end" id="return" name="return"
-                                        value="0.00" readonly></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Approval Code:</strong></td>
-                                <td><input type="text" class="form-control" id="abbroval_code" name="abbroval_code"
-                                        placeholder="Optional"></td>
-                            </tr>
-                        </table>
+                    <div class="col-12 mt-5">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-warning text-dark py-3">
+                                <h6 class="mb-0 fw-bold">
+                                    <i class="fas fa-calculator me-2 ml-2"></i>   Bill Summary & Payment
+                                </h6>
+                            </div>
+                            <div class="card-body py-4">
+                                <div class="row g-4">
+                                    <div class="col-md-12">
+                                        <div class="row g-4">
+                                            <div class="col-12">
+                                                <div class="d-flex justify-content-between align-items-center p-4 bg-light rounded shadow-sm">
+                                                    <span class="fw-semibold fs-6">Subtotal:</span>
+                                                    <span class="fs-4 fw-bold text-primary" id="subtotal-display">PKR 0.00</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-12">
+                                                <label for="discount" class="form-label fw-semibold mb-2">Discount (PKR)</label>
+                                                <input type="number" step="0.01" class="form-control form-control-lg py-3" id="discount"
+                                                    name="discount" value="0" placeholder="0.00">
+                                            </div>
+                                            <div class="col-12 mt-4">
+                                                <div class="d-flex justify-content-between align-items-center p-4 bg-success text-white rounded shadow-sm">
+                                                    <span class="fw-semibold fs-6">Total Amount:</span>
+                                                    <span class="fs-4 fw-bold" id="total-display">PKR 0.00</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="row g-4 mt-4">
+                                            <div class="col-12 ">
+                                                <label for="pay_" class="form-label fw-semibold mb-2">Amount Paid (PKR)</label>
+                                                <input type="number" step="0.01" class="form-control form-control-lg py-3" id="pay_"
+                                                    name="pay" value="0" placeholder="0.00">
+                                            </div>
+                                            <div class="col-12 mt-4">
+                                                <div class="d-flex justify-content-between align-items-center p-4 bg-info text-white rounded shadow-sm">
+                                                    <span class="fw-semibold fs-6">Due / Return:</span>
+                                                    <span class="fs-4 fw-bold" id="due-display">PKR 0.00</span>
+                                                </div>
+                                            </div>
+                                            <!-- <div class="col-12">
+                                                <label for="abbroval_code" class="form-label fw-semibold mb-2">Approval Code (Optional)</label>
+                                                <input type="text" class="form-control py-3" id="abbroval_code" name="abbroval_code"
+                                                    placeholder="Enter approval code if applicable">
+                                            </div> -->
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Hidden inputs for form submission -->
+                                <input type="hidden" id="grandtotal" name="gtotal" value="0.00">
+                                <input type="hidden" id="total_" name="total_" value="0.00">
+                                <input type="hidden" id="return" name="return" value="0.00">
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Submit Button -->
-                    <div class="col-12 text-end mt-3">
-                        <a href="{{ route('patients.list') }}" class="btn btn-secondary">
-                            <i class="fas fa-arrow-left"></i> Back to Patients
+                    <div class="col-12 text-end mt-4">
+                        <a href="{{ route('patients.list') }}" class="btn btn-secondary btn-lg px-4">
+                            <i class="fas fa-arrow-left me-2"></i> Back to Patients
                         </a>
-                        <button type="submit" class="btn btn-success">
-                            <i class="fas fa-save"></i> Save Bill
+                        <button type="submit" class="btn btn-success btn-lg px-4 ms-3">
+                            <i class="fas fa-save me-2"></i> Save Bill
                         </button>
                     </div>
                 </form>
@@ -245,9 +364,15 @@
             const paid = parseFloat($('#pay_').val()) || 0;
             const due = total - paid;
 
+            // Update hidden inputs for form submission
             $('#grandtotal').val(subtotal.toFixed(2));
             $('#total_').val(total.toFixed(2));
             $('#return').val(due.toFixed(2));
+
+            // Update display elements with formatted currency
+            $('#subtotal-display').text('PKR ' + subtotal.toFixed(2));
+            $('#total-display').text('PKR ' + total.toFixed(2));
+            $('#due-display').text('PKR ' + due.toFixed(2));
         }
 
         function renumberSelectedTests() {
