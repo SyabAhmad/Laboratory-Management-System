@@ -165,13 +165,13 @@
                             <label for="depertment" class="col-sm-3 col-form-label">Department<span
                                     class="text-danger">*</span></label>
                             <div class="col-sm-9">
-                                <select class="form-control" name="department" id="department">
+                                <select class="form-control" name="department1" id="department1">
                                     <option disabled selected value="">Select Department Name</option>
                                     <option value="Laboratory">Laboratory</option>
                                     <option value="Radiology">Radiology</option>
                                     <option value="Electrocardiography">Electrocardiography</option>
                                     <option value="Ultrasonography">Ultrasonography</option>
-                                    <option value="Electrocardiography">Electrocardiography</option>
+                                    <option value="Hematology">Hematology</option>
                                 </select>
                             </div>
                         </div>

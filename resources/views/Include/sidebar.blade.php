@@ -43,12 +43,7 @@
                             </a>
                         </li>
 
-                        <li>
-                            <a href="{{ route('labdetails.show') }}">
-                                <i class="fas fa-building"></i>
-                                <span> Lab Information </span>
-                            </a>
-                        </li>
+                        
 
                         <li>
                             <a href="javascript: void(0);">
@@ -59,13 +54,14 @@
                             <ul class="nav-second-level" aria-expanded="false">
                                 <li>
                                     <a href="{{ route('referrals.patients') }}">
-                                        <i class="fas fa-users"></i>
+                                        <!-- <i class="fas fa-users"></i> -->
                                         Referrals
+                                        
                                     </a>
                                 </li>
                                 <li>
                                     <a href="{{ route('referrels.list') }}">
-                                        <i class="fad fa-list"></i>
+                                        <!-- <i class="fad fa-list"></i> -->
                                         Referral List
                                     </a>
                                 </li>
@@ -197,7 +193,7 @@
                             </a>
                         </li> --}}
 
-                        <li>
+                        <!-- <li>
                             <a href="javascript: void(0);">
                                 <i class="dripicons-mail"></i>
                                 <span> Financial Management </span>
@@ -207,15 +203,15 @@
                                 <li>
                                     <a href="{{ route('all.bills') }}">Billing History</a>
                                 </li>
-                                <!-- <li>
+                                <li>
                                     <a href="{{ route('other.transection') }}">Other Transaction</a>
                                 </li>
                                 <li>
                                     <a href="{{ route('transection.record') }}">Transaction History</a>
-                                </li> -->
+                                </li>
 
                             </ul>
-                        </li>
+                        </li> -->
 
                         <!-- <li>
                             <a href="javascript: void(0);">
@@ -239,6 +235,13 @@
                         {{-- <li>
                                 <a href="#">Test Report</a>
                             </li> --}}
+
+                            <li>
+                            <a href="{{ route('labdetails.show') }}">
+                                <i class="fas fa-building"></i>
+                                <span> Lab Information </span>
+                            </a>
+                        </li>
             </ul>
             </li>
         @else

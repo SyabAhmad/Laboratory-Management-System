@@ -77,9 +77,13 @@
                 if (btn) { btn.disabled = false; btn.innerHTML = '<i class="bi bi-check-circle me-1"></i> Save Referral'; }
                 return;
             }
+            // Refresh the page to reflect changes
+            window.location.reload();
+            // On success, show success message and refresh the page
+            const data = await res.json();
+            alert('Referral saved successfully!');
 
-            // On success, redirect to referrals list
-            window.location.href = "{{ route('referrels.list') }}";
+            
         }).catch(err => {
             console.error(err);
             alert('An error occurred while saving the referral.');

@@ -226,7 +226,7 @@
                             timerProgressBar: true,
                             timer: 1800
                         });
-                        table.draw();
+                        table.ajax.reload();
                         // location.reload();
                     },
                     error: function(error) {
