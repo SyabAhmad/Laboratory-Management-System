@@ -130,9 +130,17 @@
                                             <div class="row">
                                                 <div class="col-md-6 mb-4">
                                                     <label for="referred_by" class="form-label">Referred By</label>
-                                                    <input type="text" class="form-control modern-input"
-                                                        id="referred_by" name="referred_by"
-                                                        value="{{ old('referred_by') }}" placeholder="Enter referrer name">
+                                                    <select class="form-control modern-input" id="referred_by" name="referred_by">
+                                                        <option value="">Select Referral</option>
+                                                        @php
+                                                            $referrals = DB::table('referrals')->orderBy('name')->get();
+                                                        @endphp
+                                                        @foreach($referrals as $referral)
+                                                            <option value="{{ $referral->name }}" {{ old('referred_by') == $referral->name ? 'selected' : '' }}>
+                                                                {{ $referral->name }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
                                                 </div>
                                                 <div class="col-md-6 mb-0">
                                                     <label for="note" class="form-label">Note</label>
@@ -284,7 +292,7 @@
         .modern-input {
             border: 2px solid #e2e8f0;
             border-radius: 0.75rem;
-            padding: 0.75rem 1rem;
+            padding: 0rem 1rem;
             font-size: 1rem;
             transition: all 0.3s ease;
             background: #f8fafc;
@@ -412,9 +420,9 @@
         }
 
         .btn-primary-modern {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
             border: none;
-            color: white;
+            color: black;
             padding: 0.75rem 2rem;
             border-radius: 0.75rem;
             font-weight: 600;
@@ -422,13 +430,14 @@
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
         }
 
         .btn-primary-modern:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
-            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+            box-shadow:  0 4px 15px rgba(37, 99, 235, 0.3);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            
         }
 
         .form-text {

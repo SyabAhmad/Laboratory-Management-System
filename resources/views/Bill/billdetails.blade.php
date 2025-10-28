@@ -67,16 +67,16 @@
                             <div class="card border-0 shadow-sm">
                                 <div class="card-body">
                                     <h5 class="card-title text-primary mb-3"><i class="mdi mdi-account"></i> Patient Information</h5>
-                                    <div class="row">
-                                        <div class="col-sm-6"><strong>Patient ID:</strong></div>
+                                    <div class="row pl-6">
+                                        <div class="col-sm-6 "><strong> Patient ID:</strong></div>
                                         <div class="col-sm-6">{{ optional($bills->patient)->patient_id ?? 'N/A' }}</div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-sm-6"><strong>Name:</strong></div>
+                                        <div class="col-sm-6"><strong> Name:</strong></div>
                                         <div class="col-sm-6">{{ optional($bills->patient)->name ?? 'N/A' }}</div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-sm-6"><strong>Mobile:</strong></div>
+                                        <div class="col-sm-6"><strong> Mobile:</strong></div>
                                         <div class="col-sm-6">{{ optional($bills->patient)->mobile_phone ?? 'N/A' }}</div>
                                     </div>
                                 </div>

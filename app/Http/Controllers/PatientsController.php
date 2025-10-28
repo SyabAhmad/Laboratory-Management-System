@@ -590,8 +590,11 @@ class PatientsController extends Controller
         // Get test data with templates
         $testData = $this->getEditTestData($id);
 
+        // Get referrals for dropdown
+        $referrals = \App\Models\Referrals::orderBy('name')->get();
+
         return view('Patient.patient_edit', array_merge(
-            compact('patient'),
+            compact('patient', 'referrals'),
             $testData
         ));
     }

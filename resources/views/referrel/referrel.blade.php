@@ -33,12 +33,8 @@
                             <tr>
                                 <th>#</th>
                                 <th>Name</th>
-                                <th>Hospital Name</th>
                                 <th>Email</th>
-                                <th>Phone</th>
-                                <th>Address</th>
-                                <th>Bank Name</th>
-                                <th>Account Number</th>
+                                <th>Phone Number</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -76,14 +72,6 @@
                         </div>
 
                         <div class="form-group row">
-                            <label for="hospitalname" class="col-sm-4 col-form-label">Hospital Name</label>
-                            <div class="col-sm-7">
-                                <input type="text" parsley-type="text" class="form-control" id="hospitalname"
-                                    name="hospitalname" placeholder="ex. ABC Hospital">
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
                             <label for="email" class="col-sm-4 col-form-label">Email<span
                                     class="text-danger">*</span></label>
                             <div class="col-sm-7">
@@ -93,38 +81,10 @@
                         </div>
 
                         <div class="form-group row">
-                            <label for="phone" class="col-sm-4 col-form-label">Phone Number<span
-                                    class="text-danger">*</span></label>
+                            <label for="phone" class="col-sm-4 col-form-label">Phone Number</label>
                             <div class="col-sm-7">
-                                <input type="phone" required class="form-control" id="phone" name="phone"
+                                <input type="text" class="form-control" id="phone" name="phone"
                                     placeholder="Phone Number">
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <label for="bank_name" class="col-sm-4 col-form-label">Bank Name<span
-                                    class="text-danger">*</span></label>
-                            <div class="col-sm-7">
-                                <input type="text" required class="form-control" id="bank_name" name="bank_name"
-                                    placeholder="Bank Name">
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <label for="account_number" class="col-sm-4 col-form-label">Account Number<span
-                                    class="text-danger">*</span></label>
-                            <div class="col-sm-7">
-                                <input type="text" required class="form-control" id="account_number"
-                                    name="account_number" placeholder="ex.5052535126">
-                            </div>
-                        </div>
-
-
-                        <div class="form-group row">
-                            <label for="address" class="col-sm-4 col-form-label">Address<span
-                                    class="text-danger">*</span></label>
-                            <div class="col-sm-7">
-                                <textarea class="form-control" required id="address" name="address" placeholder="Address"></textarea>
                             </div>
                         </div>
 
@@ -173,14 +133,6 @@
                         </div>
 
                         <div class="form-group row">
-                            <label for="hospitalname1" class="col-sm-4 col-form-label">Hospital Name</label>
-                            <div class="col-sm-7">
-                                <input type="text" parsley-type="text" class="form-control" id="hospitalname1"
-                                    name="hospitalname1" placeholder="ex. ABC Hospital">
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
                             <label for="email" class="col-sm-4 col-form-label">Email<span
                                     class="text-danger">*</span></label>
                             <div class="col-sm-7">
@@ -190,37 +142,10 @@
                         </div>
 
                         <div class="form-group row">
-                            <label for="phone" class="col-sm-4 col-form-label">Phone Number<span
-                                    class="text-danger">*</span></label>
+                            <label for="phone" class="col-sm-4 col-form-label">Phone Number</label>
                             <div class="col-sm-7">
-                                <input type="phone" required class="form-control" id="phone1" name="phone1"
+                                <input type="text" class="form-control" id="phone1" name="phone1"
                                     placeholder="Phone Number">
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <label for="bank_name1" class="col-sm-4 col-form-label">Bank Name<span
-                                    class="text-danger">*</span></label>
-                            <div class="col-sm-7">
-                                <input type="text" required class="form-control" id="bank_name1" name="bank_name1"
-                                    placeholder="Bank Name">
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <label for="account_number1" class="col-sm-4 col-form-label">Account Number<span
-                                    class="text-danger">*</span></label>
-                            <div class="col-sm-7">
-                                <input type="text" required class="form-control" id="account_number1"
-                                    name="account_number1">
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <label for="address" class="col-sm-4 col-form-label">Address<span
-                                    class="text-danger">*</span></label>
-                            <div class="col-sm-7">
-                                <textarea class="form-control" required id="address1" name="address1" placeholder="Address"></textarea>
                             </div>
                         </div>
 
@@ -256,25 +181,13 @@
                     }, {
                         data: 'name',
                         name: 'name'
-                    },
-                    {
-                        data: 'hospitalname',
-                        name: 'hospitalname'
                     }, {
                         data: 'email',
                         name: 'email'
-                    }, {
+                    },{
                         data: 'phone',
                         name: 'phone'
-                    }, {
-                        data: 'bank_name',
-                        name: 'bank_name'
-                    }, {
-                        data: 'account_number',
-                        name: 'account_number'
-                    }, {
-                        data: 'address',
-                        name: 'address'
+
                     }, {
                         data: 'action',
                         name: 'action',
@@ -385,12 +298,8 @@
                     success: function(result) {
                         $('#id').val(result.id);
                         $('#name1').val(result.name);
-                        $('#hospitalname1').val(result.hospitalname);
                         $('#email1').val(result.email);
                         $('#phone1').val(result.phone);
-                        $('#bank_name1').val(result.bank_name);
-                        $('#account_number1').val(result.account_number);
-                        $('#address1').val(result.address);
                         $('#ReferrelEditmodel').modal('show');
                     },
                     error: function(error) {
@@ -411,11 +320,7 @@
                 var id = $('#id').val();
                 var email1 = $('#email1').val();
                 var name1 = $('#name1').val();
-                var hospitalname1 = $('#hospitalname1').val();
                 var phone1 = $('#phone1').val();
-                var bank_name1 = $('#bank_name1').val();
-                var account_number1 = $('#account_number1').val();
-                var address1 = $('#address1').val();
                 var _token = $('input[name=_token]').val();
                 $.ajax({
                     type: "PUT",
@@ -424,11 +329,7 @@
                         'id': id,
                         'name1': name1,
                         'email1': email1,
-                        'hospitalname1': hospitalname1,
                         'phone1': phone1,
-                        'bank_name1': bank_name1,
-                        'account_number1': account_number1,
-                        'address1': address1,
                         '_token': _token
                     },
                     dataType: "json",

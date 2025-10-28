@@ -40,7 +40,7 @@ class ReferralController extends Controller
      */
     public function create()
     {
-        //
+        return view('referrel.add_referral');
     }
 
     /**
@@ -53,12 +53,8 @@ class ReferralController extends Controller
     {
         $referral = new Referrals;
         $referral->name = $request->name;
-        $referral->hospitalname = $request->hospitalname;
         $referral->email = $request->email;
         $referral->phone = $request->phone;
-        $referral->address = $request->address;
-        $referral->account_number = $request->account_number;
-        $referral->bank_name = $request->bank_name;
         $referral->save();
         return response()->json($referral);
     }
@@ -97,14 +93,56 @@ class ReferralController extends Controller
     {
         $referral = Referrals::find($request->id);
         $referral->name = $request->name1;
-        $referral->hospitalname = $request->hospitalname1;
         $referral->email = $request->email1;
         $referral->phone = $request->phone1;
-        $referral->address = $request->address1;
-        $referral->account_number = $request->account_number1;
-        $referral->bank_name = $request->bank_name1;
         $referral->update();
         return response()->json($referral);
+    }
+
+    public function patients(Request $request)
+    {
+        // Handle single referral view with pagination
+        if ($request->has('referral_id') && $request->referral_id) {
+            $referral = Referrals::findOrFail($request->referral_id);
+
+            $patientsQuery = $referral->patients()->orderBy('receiving_date', 'desc');
+
+            // Apply search filter if provided
+            if ($request->has('search') && $request->search) {
+                $search = $request->search;
+                $patientsQuery->where(function($q) use ($search) {
+                    $q->where('name', 'like', '%' . $search . '%')
+                      ->orWhere('patient_id', 'like', '%' . $search . '%');
+                });
+            }
+
+            $patients = $patientsQuery->paginate(15);
+
+            return view('referrel.referral_detail', compact('referral', 'patients'));
+        }
+
+        // Handle all referrals view
+        $query = Referrals::with(['patients' => function($q) {
+            $q->orderBy('receiving_date', 'desc');
+        }]);
+
+        // Search functionality for all referrals
+        if ($request->has('search') && $request->search) {
+            $search = $request->search;
+            $query->whereHas('patients', function($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%')
+                  ->orWhere('patient_id', 'like', '%' . $search . '%');
+            });
+        }
+
+        $referrals = $query->get();
+
+        // Calculate total patients
+        $totalPatients = $referrals->sum(function($referral) {
+            return $referral->patients->count();
+        });
+
+        return view('referrel.patients', compact('referrals', 'totalPatients'));
     }
 
     public function patientReport()

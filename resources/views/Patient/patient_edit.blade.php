@@ -158,8 +158,14 @@
                                         <label for="referred_by" class="font-weight-bold">
                                             <i class="fas fa-user-md text-primary-custom mr-1"></i> Referred By
                                         </label>
-                                        <input type="text" id="referred_by" name="referred_by" placeholder="Enter referrer name" class="form-control"
-                                            value="{{ old('referred_by', $patient->referred_by) }}">
+                                        <select id="referred_by" name="referred_by" class="form-control">
+                                            <option value="">Select Referral</option>
+                                            @foreach($referrals as $referral)
+                                                <option value="{{ $referral->name }}" {{ old('referred_by', $patient->referred_by) == $referral->name ? 'selected' : '' }}>
+                                                    {{ $referral->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
                                     </div>
 
                                     <div class="form-group mb-4">

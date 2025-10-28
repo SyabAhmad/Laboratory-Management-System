@@ -177,6 +177,14 @@
     margin-bottom: 0;
 }
 
+/* .modern-input {
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    padding: 1rem 0.75rem;
+    font-size: 1rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+} */
+
 .dashboard-card-text1 {
     color: #fff !important;
     font-size: 1.2rem;
