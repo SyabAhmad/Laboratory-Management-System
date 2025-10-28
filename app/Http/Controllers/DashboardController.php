@@ -47,9 +47,10 @@ class DashboardController extends Controller
             ->pluck('total', 'month')
             ->toArray();
 
-        // Query payments grouped by month
-        $paidRows = DB::table('payments')
-            ->select(DB::raw("DATE_FORMAT(created_at, '%Y-%m') as month"), DB::raw('COALESCE(SUM(amount),0) as total'))
+        // Query paid amounts from bills where status is 'paid'
+        $paidRows = DB::table('bills')
+            ->select(DB::raw("DATE_FORMAT(created_at, '%Y-%m') as month"), DB::raw('COALESCE(SUM(paid_amount),0) as total'))
+            ->where('status', 'paid')
             ->whereBetween('created_at', [$start->toDateTimeString(), $end->toDateTimeString()])
             ->groupBy('month')
             ->pluck('total', 'month')

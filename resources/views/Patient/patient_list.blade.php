@@ -134,7 +134,7 @@
             </div>
         </div>
 
-        <div class="modal fade" id="patientIdModal" tabindex="-1" role="dialog" aria-labelledby="patientIdModalLabel"
+        <!-- <div class="modal fade" id="patientIdModal" tabindex="-1" role="dialog" aria-labelledby="patientIdModalLabel"
             aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
@@ -180,7 +180,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
 
         <div id="printLabelTemplate" style="display: none;">
             <div style="text-align: center; padding: 20px; font-family: Arial, sans-serif;">

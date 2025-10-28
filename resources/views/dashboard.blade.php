@@ -100,19 +100,21 @@
                     </a>
                 </div>
                 <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
-                    <div class="card dashboard-card h-100">
-                        <div class="card-body dashboard-card-body-5">
-                            <div class="d-flex align-items-center">
-                                <div class="icon-section">
-                                    <i class="fas fa-handshake dashboard-card-icon"></i>
-                                </div>
-                                <div class="content-section">
-                                    <h5 class="card-title dashboard-card-title">Referrals</h5>
-                                    <p class="dashboard-card-text1">{{ App\Models\Referrals::get()->count() }}</p>
+                    <a href="{{ route('referrals.patients') }}" class="text-decoration-none">
+                        <div class="card dashboard-card h-100">
+                            <div class="card-body dashboard-card-body-5">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-section">
+                                        <i class="fas fa-handshake dashboard-card-icon"></i>
+                                    </div>
+                                    <div class="content-section">
+                                        <h5 class="card-title dashboard-card-title">Referrals</h5>
+                                        <p class="dashboard-card-text1">{{ App\Models\Referrals::get()->count() }}</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
             </div>
             <!-- End Stats Cards Section -->

@@ -76,10 +76,12 @@ Route::middleware(['auth:sanctum', 'verified'])
 
         // Referrals Route
         Route::get('/referrals', 'App\Http\Controllers\ReferralController@index')->name('referrels.list');
+        Route::get('/referrals/create', 'App\Http\Controllers\ReferralController@create')->name('referrals.create');
         Route::post('/referrals/add', 'App\Http\Controllers\ReferralController@store')->name('referrals.store');
         Route::get('/referrals/edit/{id}', "App\Http\Controllers\ReferralController@edit")->name('referrals.edit');
         Route::put('/referrals/update', "App\Http\Controllers\ReferralController@update")->name('referrals.update');
         Route::delete('/referrals/{id}', 'App\Http\Controllers\ReferralController@destroy')->name('referrals.destroy');
+        Route::get('/referrals/patients', 'App\Http\Controllers\ReferralController@patients')->name('referrals.patients');
 
         // Lab Test Category Routes
         Route::get('/labtest', 'App\Http\Controllers\LabTestCatController@index')->name('labtest.index');

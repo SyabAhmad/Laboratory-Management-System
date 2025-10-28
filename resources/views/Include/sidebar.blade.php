@@ -15,9 +15,7 @@
     </style>
 
     <!-- Sidebar Toggle Button -->
-    <!-- <button class="sidebar-close-btn" style="position: absolute; top: 10px; right: 10px; background: none; border: none; color: var(--text-body); font-size: 20px; z-index: 10;">
-        <i class="mdi mdi-close"></i>
-    </button> -->
+    <!-- <buttonson> -->
 
     <div class="slimscroll-menu">
 
@@ -51,6 +49,29 @@
                                 <span> Lab Information </span>
                             </a>
                         </li>
+
+                        <li>
+                            <a href="javascript: void(0);">
+                                <i class="fad fa-asterisk"></i>
+                                <span> Referral Management </span>
+                                <span class="menu-arrow"></span>
+                            </a>
+                            <ul class="nav-second-level" aria-expanded="false">
+                                <li>
+                                    <a href="{{ route('referrals.patients') }}">
+                                        <i class="fas fa-users"></i>
+                                        Referrals
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('referrels.list') }}">
+                                        <i class="fad fa-list"></i>
+                                        Referral List
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
 
                         <!-- <li>
                             <a href="{{ route('user') }}">
