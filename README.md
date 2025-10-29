@@ -145,7 +145,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 For questions, suggestions, or support, contact:
 
 - Email: iamtalhakhn@gmail.com
-- GitHub: [Your GitHub Profile](https://github.com/Talhakhan-Developer)
+- GitHub: [Talha Khan](https://github.com/Talhakhan-Developer)
 
 ## Acknowledgments
 
