@@ -3,6 +3,7 @@
 ## Currency Update
 
 ### Before ❌
+
 ```
 Total Earned: ₹150,000
 Pending: ₹45,000
@@ -11,6 +12,7 @@ Commission Amount: ₹750
 ```
 
 ### After ✅
+
 ```
 Total Earned: PKR 150,000
 Pending: PKR 45,000
@@ -23,6 +25,7 @@ Commission Amount: PKR 750
 ## Commission Percentage - Zero Issue
 
 ### Before ❌ (Problem)
+
 ```
 Dashboard showing:
 Dr. Smith
@@ -31,13 +34,15 @@ Dr. Smith
   Transactions: 5
 ```
 
-**Why?** 
-- Query was pulling from `referrals.commission_percentage`
-- Which could be 0 or not match actual bills
+**Why?**
+
+-   Query was pulling from `referrals.commission_percentage`
+-   Which could be 0 or not match actual bills
 
 ---
 
 ### After ✅ (Fixed)
+
 ```
 Dashboard showing:
 Dr. Smith
@@ -47,15 +52,17 @@ Dr. Smith
 ```
 
 **How?**
-- Query now pulls from `referral_commissions.commission_percentage`
-- Each commission record stores the actual % used for that bill
-- Dashboard shows the actual percentage that generated the commission
+
+-   Query now pulls from `referral_commissions.commission_percentage`
+-   Each commission record stores the actual % used for that bill
+-   Dashboard shows the actual percentage that generated the commission
 
 ---
 
 ## Data Source Comparison
 
 ### Before: Pulled from referrals table
+
 ```
 referrals table
 ├── id: 1
@@ -64,6 +71,7 @@ referrals table
 ```
 
 ### After: Pulls from referral_commissions table
+
 ```
 referral_commissions table
 ├── id: 1
@@ -81,6 +89,7 @@ referral_commissions table
 ### Statistics Cards (Top Section)
 
 #### Before
+
 ```
 ┌─────────────────────────┐
 │   Total Earned          │
@@ -89,6 +98,7 @@ referral_commissions table
 ```
 
 #### After
+
 ```
 ┌─────────────────────────┐
 │   Total Earned          │
@@ -101,6 +111,7 @@ referral_commissions table
 ### Top Referrals Table
 
 #### Before
+
 ```
 | Rank | Name | Rate | Total | Trans | Email | Action |
 |------|------|------|-------|-------|-------|--------|
@@ -109,6 +120,7 @@ referral_commissions table
 ```
 
 #### After
+
 ```
 | Rank | Name | Rate | Total | Trans | Email | Action |
 |------|------|------|-------|-------|-------|--------|
@@ -121,6 +133,7 @@ referral_commissions table
 ### All Referrals Table
 
 #### Before
+
 ```
 | Name | Rate | Total Earned | Pending | Paid | Count |
 |------|------|--------------|---------|------|-------|
@@ -129,6 +142,7 @@ referral_commissions table
 ```
 
 #### After
+
 ```
 | Name | Rate | Total Earned | Pending | Paid | Count |
 |------|------|--------------|---------|------|-------|
@@ -141,6 +155,7 @@ referral_commissions table
 ## Commission Detail Page
 
 ### Before
+
 ```
 Dr. Smith - Commission Tracking
 
@@ -154,6 +169,7 @@ Commissions Table:
 ```
 
 ### After
+
 ```
 Dr. Smith - Commission Tracking
 
@@ -203,30 +219,35 @@ Commissions Table:
 ### What Users See Now
 
 ✅ **Accurate Commission Rates**
-- No more 0% showing incorrectly
-- Sees the exact percentage applied to each bill
+
+-   No more 0% showing incorrectly
+-   Sees the exact percentage applied to each bill
 
 ✅ **Correct Currency Display**
-- Standardized to PKR
-- Clear and consistent across all pages
+
+-   Standardized to PKR
+-   Clear and consistent across all pages
 
 ✅ **Complete Transaction History**
-- Each commission shows:
-  - Actual date
-  - Bill amount
-  - Commission percentage USED that day
-  - Commission earned
-  - Payment status
+
+-   Each commission shows:
+    -   Actual date
+    -   Bill amount
+    -   Commission percentage USED that day
+    -   Commission earned
+    -   Payment status
 
 ✅ **Better Financial Tracking**
-- Can see if commission rates changed over time
-- Audit trail of what each referral earned at what rate
+
+-   Can see if commission rates changed over time
+-   Audit trail of what each referral earned at what rate
 
 ---
 
 ## Examples of Real-World Scenarios Now Working
 
 ### Scenario 1: Rate Change Over Time
+
 ```
 Dr. Smith commissioned bills:
 - Jan: 3 bills × 10% rate = PKR 1,500 earned
@@ -235,6 +256,7 @@ Dr. Smith commissioned bills:
 ```
 
 ### Scenario 2: Multiple Referrals with Different Rates
+
 ```
 Dashboard shows:
 - Dr. Smith (12%) - PKR 5,000 total
@@ -244,6 +266,7 @@ Dashboard shows:
 ```
 
 ### Scenario 3: Partial Payment
+
 ```
 Dr. Smith - Referral Commission Page shows:
 - Total Earned: PKR 5,600
@@ -257,6 +280,7 @@ Dr. Smith - Referral Commission Page shows:
 ## Technical Details
 
 ### Updated Query (ReferralController)
+
 ```php
 // Gets commissions with actual stored percentages
 $topReferrals = Referrals::with('commissions')
@@ -277,20 +301,21 @@ $topReferrals = Referrals::with('commissions')
 
 ## Summary of Fixes
 
-| Issue | Before | After |
-|-------|--------|-------|
-| Currency | ₹ (Rupee) | PKR |
-| Commission % | 0% or incorrect | Actual % from bills |
-| Commission Amount | May show zero | Correct amount |
-| Data Source | Referral base rate | Actual bill records |
-| Audit Trail | No detail | Full history |
+| Issue             | Before             | After               |
+| ----------------- | ------------------ | ------------------- |
+| Currency          | ₹ (Rupee)          | PKR                 |
+| Commission %      | 0% or incorrect    | Actual % from bills |
+| Commission Amount | May show zero      | Correct amount      |
+| Data Source       | Referral base rate | Actual bill records |
+| Audit Trail       | No detail          | Full history        |
 
 ---
 
 **Status:** ✅ All commission data now displays correctly!
 
-**Next:** 
-- Create sample data to test
-- View dashboard to verify
-- Create bills for referred patients
-- Mark commissions as paid
+**Next:**
+
+-   Create sample data to test
+-   View dashboard to verify
+-   Create bills for referred patients
+-   Mark commissions as paid

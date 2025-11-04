@@ -7,22 +7,25 @@
 All commission-related views now display **PKR** instead of the rupee symbol (₹):
 
 #### Updated Files:
+
 1. **commission_dashboard.blade.php**
-   - Total Earned: ₹ → PKR
-   - Pending Commissions: ₹ → PKR
-   - Paid Commissions: ₹ → PKR
-   - Top Referrals table amounts: ₹ → PKR
-   - All Referrals table amounts: ₹ → PKR
+
+    - Total Earned: ₹ → PKR
+    - Pending Commissions: ₹ → PKR
+    - Paid Commissions: ₹ → PKR
+    - Top Referrals table amounts: ₹ → PKR
+    - All Referrals table amounts: ₹ → PKR
 
 2. **commissions.blade.php** (Individual Referral Commissions)
-   - Total Earned: ₹ → PKR
-   - Pending: ₹ → PKR
-   - Paid: ₹ → PKR
-   - Commission table amounts: ₹ → PKR
-   - Bill Amount column: ₹ → PKR
+
+    - Total Earned: ₹ → PKR
+    - Pending: ₹ → PKR
+    - Paid: ₹ → PKR
+    - Commission table amounts: ₹ → PKR
+    - Bill Amount column: ₹ → PKR
 
 3. **billdetails.blade.php**
-   - Already shows "PKR" ✅
+    - Already shows "PKR" ✅
 
 ---
 
@@ -31,11 +34,13 @@ All commission-related views now display **PKR** instead of the rupee symbol (�
 **Problem:** Commission percentage was showing 0% because it was pulling from the referral's base rate, not the actual rate used in each bill.
 
 **Solution:** Updated `ReferralController::commissionDashboard()` to:
-- Fetch commission data directly from `referral_commissions` table
-- Get the actual `commission_percentage` from each bill transaction
-- Display the percentage that was actually used when the commission was created
+
+-   Fetch commission data directly from `referral_commissions` table
+-   Get the actual `commission_percentage` from each bill transaction
+-   Display the percentage that was actually used when the commission was created
 
 **Code Change:**
+
 ```php
 // OLD: Used referral's base rate (could be 0 if not set)
 $topReferrals = Referrals::withCount('commissions')...
@@ -62,6 +67,7 @@ $topReferrals = Referrals::with('commissions')
 ## 📊 Data Flow
 
 ### Commission Creation (Already Working)
+
 ```
 1. Bill Created for Referred Patient
    ↓
@@ -75,6 +81,7 @@ $topReferrals = Referrals::with('commissions')
 ```
 
 ### Commission Display (Now Fixed)
+
 ```
 Dashboard queries referral_commissions table
    ↓
@@ -88,6 +95,7 @@ Displays per referral with correct percentage
 ## 🔍 Database Fields Used
 
 ### referral_commissions Table
+
 ```sql
 - id (PK)
 - referral_id (FK) → Links to referrals
@@ -106,27 +114,31 @@ Displays per referral with correct percentage
 ## ✨ What Now Shows Correctly
 
 ### Commission Dashboard
+
 ✅ Total Earned: Shows actual commission from database  
 ✅ Pending: Shows unpaid commissions  
 ✅ Paid: Shows compensated commissions  
 ✅ Top Referrals: Shows actual % from commission records  
-✅ All Referrals: Shows actual earned amounts with correct %  
+✅ All Referrals: Shows actual earned amounts with correct %
 
 ### Individual Referral Commission Page
+
 ✅ Shows actual commission % for each bill  
 ✅ Shows correct commission amount per transaction  
-✅ Status shows: Pending/Paid/Cancelled  
+✅ Status shows: Pending/Paid/Cancelled
 
 ### Bill Details Page
+
 ✅ Shows referral name  
 ✅ Shows actual commission %  
-✅ Shows calculated commission amount  
+✅ Shows calculated commission amount
 
 ---
 
 ## 📈 Example Scenario (Now Working Correctly)
 
 ### Scenario: Dr. Smith's Referrals
+
 ```
 Patient 1: Ahmed Khan
 - Bill Amount: 5,000 PKR
@@ -151,28 +163,33 @@ Dashboard Shows for Dr. Smith:
 ## 🧪 How to Test
 
 ### 1. Create a Referral with Commission
+
 ```
 Sidebar → Referral Management → Referral List
 Create/Edit Referral → Set commission_percentage (e.g., 15%)
 ```
 
 ### 2. Create a Patient Referred by This Referral
+
 ```
 Patients → New Patient → "Referred By" = the referral name
 ```
 
 ### 3. Create a Bill for the Patient
+
 ```
 Patients → Patient → Billing → Create Bill
 ```
 
 ### 4. View Commission Dashboard
+
 ```
 Sidebar → Referral Management → Commission Dashboard
 Check: Commission amounts and percentages should display correctly
 ```
 
 ### 5. View Individual Referral Commissions
+
 ```
 Commission Dashboard → Find referral → Click "View Details"
 Should show all bills for this referral with actual commission %
@@ -183,40 +200,43 @@ Should show all bills for this referral with actual commission %
 ## 🔧 Files Modified
 
 1. **app/Http/Controllers/ReferralController.php**
-   - Updated `commissionDashboard()` method
-   - Fixed commission percentage display from database
+
+    - Updated `commissionDashboard()` method
+    - Fixed commission percentage display from database
 
 2. **resources/views/referrel/commission_dashboard.blade.php**
-   - Changed ₹ to PKR in all statistics cards
-   - Changed ₹ to PKR in Top Referrals table
-   - Changed ₹ to PKR in All Referrals table
+
+    - Changed ₹ to PKR in all statistics cards
+    - Changed ₹ to PKR in Top Referrals table
+    - Changed ₹ to PKR in All Referrals table
 
 3. **resources/views/referrel/commissions.blade.php**
-   - Changed ₹ to PKR in summary cards
-   - Changed ₹ to PKR in commission detail table
+    - Changed ₹ to PKR in summary cards
+    - Changed ₹ to PKR in commission detail table
 
 ---
 
 ## ✅ Verification Checklist
 
-- [x] Currency changed from ₹ to PKR globally
-- [x] Commission percentage now pulls from database records
-- [x] Commission amounts displayed correctly
-- [x] No zeros showing for commission percentage (when data exists)
-- [x] Bill details shows correct commission info
-- [x] Dashboard shows actual commission data from referral_commissions table
-- [x] Individual referral pages show correct transactions
+-   [x] Currency changed from ₹ to PKR globally
+-   [x] Commission percentage now pulls from database records
+-   [x] Commission amounts displayed correctly
+-   [x] No zeros showing for commission percentage (when data exists)
+-   [x] Bill details shows correct commission info
+-   [x] Dashboard shows actual commission data from referral_commissions table
+-   [x] Individual referral pages show correct transactions
 
 ---
 
 ## 🚀 Ready to Use
 
 The commission system now:
-- ✅ Displays correct currency (PKR)
-- ✅ Shows actual commission percentage from each bill
-- ✅ Calculates and displays commission amounts accurately
-- ✅ Tracks pending vs paid commissions
-- ✅ Provides complete audit trail
+
+-   ✅ Displays correct currency (PKR)
+-   ✅ Shows actual commission percentage from each bill
+-   ✅ Calculates and displays commission amounts accurately
+-   ✅ Tracks pending vs paid commissions
+-   ✅ Provides complete audit trail
 
 **Just visit the Commission Dashboard to see all your commission data!**
 

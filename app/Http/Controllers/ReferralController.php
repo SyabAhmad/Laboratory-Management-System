@@ -112,11 +112,12 @@ class ReferralController extends Controller
         ]);
 
         $referral = Referrals::find($request->id);
-        $referral->name = $validated['name1'];
-        $referral->email = $validated['email1'] ?? null;
-        $referral->phone = $validated['phone1'] ?? null;
-        $referral->commission_percentage = $validated['commission_percentage1'] ?? 0;
-        $referral->update();
+        $referral->update([
+            'name' => $validated['name1'],
+            'email' => $validated['email1'] ?? null,
+            'phone' => $validated['phone1'] ?? null,
+            'commission_percentage' => $validated['commission_percentage1'] ?? 0,
+        ]);
 
         return response()->json($referral);
     }

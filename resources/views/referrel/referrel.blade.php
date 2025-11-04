@@ -330,6 +330,7 @@
                         $('#name1').val(result.name);
                         $('#email1').val(result.email);
                         $('#phone1').val(result.phone);
+                        $('#commission_percentage1').val(result.commission_percentage);
                         $('#ReferrelEditmodel').modal('show');
                     },
                     error: function(error) {
@@ -351,6 +352,7 @@
                 var email1 = $('#email1').val();
                 var name1 = $('#name1').val();
                 var phone1 = $('#phone1').val();
+                var commission_percentage1 = $('#commission_percentage1').val();
                 var _token = $('input[name=_token]').val();
                 $.ajax({
                     type: "PUT",
@@ -360,6 +362,7 @@
                         'name1': name1,
                         'email1': email1,
                         'phone1': phone1,
+                        'commission_percentage1': commission_percentage1,
                         '_token': _token
                     },
                     dataType: "json",
