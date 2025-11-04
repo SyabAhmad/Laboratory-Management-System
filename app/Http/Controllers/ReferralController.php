@@ -252,21 +252,34 @@ class ReferralController extends Controller
     /**
      * Mark commission as paid
      */
-    public function markCommissionPaid($commissionId)
+    public function markCommissionPaid(ReferralCommission $commission)
     {
         try {
-            $commission = ReferralCommission::findOrFail($commissionId);
-            $commission->update(['status' => 'paid']);
+            Log::info('Attempting to mark commission as paid', ['commissionId' => $commission->id]);
+            
+            // Update the status
+            $updated = $commission->update(['status' => 'paid']);
+            
+            Log::info('Commission updated successfully', [
+                'commissionId' => $commission->id,
+                'updated' => $updated,
+                'newStatus' => $commission->status
+            ]);
 
             return response()->json([
                 'success' => true,
-                'message' => 'Commission marked as paid',
-            ]);
+                'message' => 'Commission marked as paid successfully',
+                'commission' => $commission
+            ], 200);
         } catch (\Exception $e) {
-            Log::error('Failed to mark commission as paid: ' . $e->getMessage());
+            Log::error('Failed to mark commission as paid', [
+                'commissionId' => $commission->id ?? null,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to update commission status',
+                'message' => 'Failed to update commission status: ' . $e->getMessage(),
             ], 500);
         }
     }

@@ -180,27 +180,48 @@
         document.querySelectorAll('.mark-paid-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 const commissionId = this.getAttribute('data-commission-id');
+                console.log('Mark paid button clicked for commission ID:', commissionId);
+                
                 if (confirm('Mark this commission as paid?')) {
-                    fetch(`{{ route('referrals.mark-commission-paid', '') }}/${commissionId}`, {
+                    const url = `{{ route('referrals.mark-commission-paid', '__ID__') }}`.replace('__ID__', commissionId);
+                    console.log('Sending POST to:', url);
+                    
+                    fetch(url, {
                         method: 'POST',
                         headers: {
                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                            'Content-Type': 'application/json'
-                        }
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({})
                     })
-                    .then(response => response.json())
+                    .then(response => {
+                        console.log('Response status:', response.status);
+                        return response.json();
+                    })
                     .then(data => {
+                        console.log('Response data:', data);
                         if (data.success) {
-                            Swal.fire('Success', data.message, 'success').then(() => {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success',
+                                text: data.message,
+                                confirmButtonClass: 'btn btn-primary'
+                            }).then(() => {
                                 location.reload();
                             });
                         } else {
-                            Swal.fire('Error', data.message, 'error');
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: data.message || 'Failed to update commission status',
+                                confirmButtonClass: 'btn btn-primary'
+                            });
                         }
                     })
                     .catch(error => {
-                        console.error('Error:', error);
-                        Swal.fire('Error', 'Failed to update commission status', 'error');
+                        console.error('Fetch error:', error);
+                        Swal.fire('Error', 'Failed to update commission status. Check console for details.', 'error');
                     });
                 }
             });
