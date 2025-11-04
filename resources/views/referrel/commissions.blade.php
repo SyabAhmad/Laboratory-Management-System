@@ -114,7 +114,7 @@
                                             <td>{{ $commission->created_at->format('d-m-Y') }}</td>
                                             <td>
                                                 @if($commission->patient)
-                                                    <a href="{{ route('patients.show', $commission->patient->id) }}" class="text-primary">
+                                                    <a href="{{ route('patients.profile', $commission->patient->id) }}" class="text-primary">
                                                         {{ $commission->patient->name }}
                                                     </a>
                                                 @else

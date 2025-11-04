@@ -162,7 +162,7 @@
                                                                 @endif
                                                             </td>
                                                             <td>
-                                                                <a href="{{ route('patients.show', $patient->id) }}" class="btn btn-sm btn-outline-primary">
+                                                                <a href="{{ route('patients.profile', $patient->id) }}" class="btn btn-sm btn-outline-primary">
                                                                     <i class="fas fa-eye"></i> View
                                                                 </a>
                                                             </td>
@@ -187,7 +187,7 @@
                                                                 @endif
                                                             </td>
                                                             <td>
-                                                                <a href="{{ route('patients.show', $patient->id) }}" class="btn btn-sm btn-outline-primary">
+                                                                <a href="{{ route('patients.profile', $patient->id) }}" class="btn btn-sm btn-outline-primary">
                                                                     <i class="fas fa-eye"></i> View
                                                                 </a>
                                                             </td>
