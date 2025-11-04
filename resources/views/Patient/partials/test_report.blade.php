@@ -150,6 +150,49 @@
         </table>
     </div>
 
+    <!-- Test Notes Section (if any notes exist) -->
+    @php
+        $billNotes = [];
+        // Collect notes from the bill's all_test JSON if available
+        if (isset($bill) && $bill->all_test) {
+            $allTests = json_decode($bill->all_test, true);
+            if (is_array($allTests)) {
+                foreach ($allTests as $test) {
+                    if (!empty($test['notes'])) {
+                        $dept = $test['department'] ?? 'General';
+                        if (!isset($billNotes[$dept])) {
+                            $billNotes[$dept] = [];
+                        }
+                        $billNotes[$dept][] = [
+                            'test_name' => $test['test_name'] ?? '',
+                            'notes' => $test['notes']
+                        ];
+                    }
+                }
+            }
+        }
+    @endphp
+
+    @if (!empty($billNotes))
+        <div style="background: linear-gradient(135deg, rgba(255, 250, 205, 0.8), rgba(255, 248, 220, 0.8)); border: 2px solid #f39c12; border-radius: 6px; padding: 15px; margin-bottom: 20px;">
+            <div style="font-weight: bold; color: #d68910; font-size: 12px; margin-bottom: 10px; border-bottom: 1px solid #f39c12; padding-bottom: 8px;">
+                <i class="fas fa-sticky-note" style="margin-right: 8px;"></i>Clinical Notes & Remarks
+            </div>
+            @foreach ($billNotes as $department => $notesList)
+                <div style="margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px dashed #f39c12;">
+                    <div style="font-weight: bold; color: #d68910; font-size: 11px; margin-bottom: 6px;">
+                        <i class="fas fa-building" style="margin-right: 5px;"></i>{{ $department }}
+                    </div>
+                    @foreach ($notesList as $note)
+                        <div style="margin-left: 15px; font-size: 10px; line-height: 1.4; margin-bottom: 6px; color: #333;">
+                            <span style="font-weight: 600; color: #555;">{{ $note['test_name'] }}:</span> {{ $note['notes'] }}
+                        </div>
+                    @endforeach
+                </div>
+            @endforeach
+        </div>
+    @endif
+
     <!-- Footer -->
     <div style="background: linear-gradient(135deg, rgba(248, 250, 252, 0.8), rgba(255, 255, 255, 0.8)); border: 1px solid #e0e0e0; border-radius: 6px; padding: 15px; margin-top: 25px; display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: #333;">
         <div style="flex: 1; text-align: left;">

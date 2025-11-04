@@ -250,14 +250,19 @@ class BillsController extends Controller
                 ], 404);
             }
 
+            // Get test notes if provided
+            $testNotes = $request->input('notes', []);
+
             // Prepare all_test JSON array
             $allTestArr = [];
             $testNames = [];
-            foreach ($tests as $test) {
+            foreach ($tests as $index => $test) {
                 $allTestArr[] = [
                     'id' => $test->id,
                     'test_name' => $test->cat_name,
                     'test_price' => $test->price,
+                    'department' => $test->department ?? null,
+                    'notes' => $testNotes[$index] ?? '',
                 ];
                 $testNames[] = $test->cat_name;
             }

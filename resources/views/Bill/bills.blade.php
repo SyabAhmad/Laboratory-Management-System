@@ -224,13 +224,14 @@
                                                 <th class="border-0 fw-semibold">#</th>
                                                 <th class="border-0 fw-semibold">Test Name</th>
                                                 <th class="border-0 fw-semibold">Price (PKR)</th>
-                                                <th class="border-0 fw-semibold">Action</th>
+                                                <th class="border-0 fw-semibold">Notes</th>
+                                                <th class="border-0 fw-semibold"></th>Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             @if (!isset($registeredTests) || $registeredTests->count() === 0)
                                                 <tr class="no-tests-row">
-                                                    <td colspan="4" class="text-center py-5">
+                                                    <td colspan="5" class="text-center py-5">
                                                         <div class="text-muted">
                                                             <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
                                                             <h6>No tests selected yet</h6>
@@ -302,6 +303,35 @@
                                 <input type="hidden" id="grandtotal" name="gtotal" value="0.00">
                                 <input type="hidden" id="total_" name="total_" value="0.00">
                                 <input type="hidden" id="return" name="return" value="0.00">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modal for Test Notes -->
+                    <div class="modal fade" id="testNotesModal" tabindex="-1">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header bg-primary text-white">
+                                    <h6 class="modal-title">
+                                        <i class="fas fa-sticky-note me-2"></i>Add Test Notes
+                                    </h6>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="mb-3">
+                                        <label for="notesTestName" class="form-label fw-semibold">Test Name</label>
+                                        <input type="text" class="form-control" id="notesTestName" readonly>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="testNotes" class="form-label fw-semibold">Notes / Remarks</label>
+                                        <textarea class="form-control" id="testNotes" rows="4" placeholder="Add clinical notes, special instructions, or remarks for this test..."></textarea>
+                                        <small class="text-muted d-block mt-2">These notes will appear on the test report</small>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="button" class="btn btn-primary" id="saveTestNotes">Save Notes</button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -386,9 +416,16 @@
                         ${parseFloat(test.price).toFixed(2)}
                         <input type="hidden" name="price[]" value="${parseFloat(test.price).toFixed(2)}">
                     </td>
+                    <td class="notes-cell">
+                        <small class="text-muted notes-preview">No notes</small>
+                        <input type="hidden" name="notes[]" value="">
+                    </td>
                     <td>
+                        <button type="button" class="btn btn-primary btn-sm btn-sm edit-notes-btn" data-test-id="${test.id}" data-test-name="${test.name}" title="Add notes">
+                            <i class="fas fa-edit"></i>
+                        </button>
                         <button type="button" class="btn btn-danger btn-sm remove-test">
-                            <i class="fas fa-trash"></i> Remove
+                            <i class="fas fa-trash"></i>
                         </button>
                     </td>
                 </tr>
@@ -505,7 +542,14 @@
                             ${price}
                             <input type="hidden" name="price[]" value="${price}">
                         </td>
+                        <td class="notes-cell">
+                            <small class="text-muted notes-preview">No notes</small>
+                            <input type="hidden" name="notes[]" value="">
+                        </td>
                         <td>
+                            <button type="button" class="btn btn-primary btn-sm edit-notes-btn" data-test-id="${id}" data-test-name="${name}" title="Add notes">
+                                <i class="fas fa-edit"></i>
+                            </button>
                             <button type="button" class="btn btn-danger btn-sm remove-test">
                                 <i class="fas fa-trash"></i> Remove
                             </button>
@@ -532,13 +576,50 @@
                 // Show "no tests" message if table is empty
                 if ($('#selectedTests tbody tr[data-id]').length === 0) {
                     $('#selectedTests tbody').html(
-                        '<tr class="no-tests-row"><td colspan="4" class="text-center text-muted">No tests in bill yet</td></tr>'
+                        '<tr class="no-tests-row"><td colspan="5" class="text-center text-muted">No tests in bill yet</td></tr>'
                     );
                 }
 
                 updateTotals();
                 renumberSelectedTests();
                 syncAddButtons();
+            });
+
+            // Edit test notes
+            $(document).on('click', '.edit-notes-btn', function() {
+                const $row = $(this).closest('tr');
+                const testId = $row.data('id');
+                const testName = $(this).data('test-name');
+                const currentNotes = $row.find('input[name="notes[]"]').val();
+
+                // Open modal
+                $('#notesTestName').val(testName);
+                $('#testNotes').val(currentNotes);
+                $('#testNotes').data('test-id', testId);
+
+                const modal = new bootstrap.Modal(document.getElementById('testNotesModal'));
+                modal.show();
+            });
+
+            // Save test notes
+            $('#saveTestNotes').on('click', function() {
+                const testId = $('#testNotes').data('test-id');
+                const notes = $('#testNotes').val().trim();
+
+                // Find the row and update the notes
+                const $row = $(`#selectedTests tbody tr[data-id="${testId}"]`);
+                $row.find('input[name="notes[]"]').val(notes);
+
+                // Update preview text
+                const preview = notes.length > 0 ? notes.substring(0, 50) + (notes.length > 50 ? '...' : '') : 'No notes';
+                $row.find('.notes-preview').text(preview).attr('title', notes);
+
+                // Close modal
+                bootstrap.Modal.getInstance(document.getElementById('testNotesModal')).hide();
+
+                // Clear modal fields
+                $('#testNotes').val('');
+                $('#notesTestName').val('');
             });
 
             // Live total updates
