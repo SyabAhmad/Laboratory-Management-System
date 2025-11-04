@@ -150,6 +150,28 @@
         </table>
     </div>
 
+    <!-- Test Category Notes Section (Lab Test Category Notes) -->
+    @php
+        $categoryNotes = null;
+        // Fetch notes from LabTestCat based on test name
+        try {
+            $labTestCategory = \App\Models\LabTestCat::where('cat_name', $testEntry['name'])->first();
+            $categoryNotes = $labTestCategory ? $labTestCategory->notes : null;
+        } catch (\Exception $e) {
+            $categoryNotes = null;
+        }
+    @endphp
+    @if($categoryNotes)
+        <div style="background: linear-gradient(135deg, rgba(255, 193, 7, 0.1), rgba(255, 235, 59, 0.1)); border: 2px solid #ffc107; border-radius: 6px; padding: 15px; margin-bottom: 20px;">
+            <div style="font-weight: bold; color: #f57f17; margin-bottom: 8px; font-size: 12px; border-bottom: 1px solid #ffc107; padding-bottom: 8px;">
+                <i class="fas fa-sticky-note" style="margin-right: 8px;"></i>Test Notes & Clinical Remarks
+            </div>
+            <div style="font-size: 11px; color: #333; line-height: 1.5; white-space: pre-wrap;">
+                {{ $categoryNotes }}
+            </div>
+        </div>
+    @endif
+
     <!-- Test Notes Section (if any notes exist) -->
     @php
         $billNotes = [];
