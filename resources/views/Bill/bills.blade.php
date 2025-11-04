@@ -225,7 +225,7 @@
                                                 <th class="border-0 fw-semibold">Test Name</th>
                                                 <th class="border-0 fw-semibold">Price (PKR)</th>
                                                 <th class="border-0 fw-semibold">Notes</th>
-                                                <th class="border-0 fw-semibold"></th>Action</th>
+                                                <th class="border-0 fw-semibold">Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
