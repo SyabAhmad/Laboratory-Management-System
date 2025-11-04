@@ -118,6 +118,13 @@
                             </div>
                         </div>
 
+                        <div class="form-group row">
+                            <label for="notes" class="col-sm-4 col-form-label">Notes / Description</label>
+                            <div class="col-sm-7">
+                                <textarea class="form-control" id="notes" name="notes" rows="3" placeholder="Add notes, clinical remarks, or test description..."></textarea>
+                                <small class="text-muted d-block mt-1">These notes will appear on patient details and test reports</small>
+                            </div>
+                        </div>
 
                         <div class="form-group row mb-0">
                             <div class="col-sm-8 offset-sm-4">
@@ -183,6 +190,13 @@
                             </div>
                         </div>
 
+                        <div class="form-group row">
+                            <label for="notes1" class="col-sm-3 col-form-label">Notes / Description</label>
+                            <div class="col-sm-9">
+                                <textarea class="form-control" id="notes1" name="notes1" rows="3" placeholder="Add notes, clinical remarks, or test description..."></textarea>
+                                <small class="text-muted d-block mt-1">These notes will appear on patient details and test reports</small>
+                            </div>
+                        </div>
 
                         <div class="text-center pb-2">
                             <button type="button" class="btn btn-secondary"
@@ -296,6 +310,7 @@
                         $('#cat_name1').val(labtest.cat_name);
                         $('#department1').val(labtest.department);
                         $('#price1').val(labtest.price);
+                        $('#notes1').val(labtest.notes);
                         $('.modal-demo2').modal('show');
                     },
                     error: function(error) {
