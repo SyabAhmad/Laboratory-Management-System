@@ -21,6 +21,7 @@ class LabTestCat extends Model
         'department',
         'price',
         'status',
+        'notes',
     ];
 
     public function parameters()

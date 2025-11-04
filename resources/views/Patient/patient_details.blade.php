@@ -22,30 +22,30 @@
         <div class="card print-card" style="border-radius: 8px; overflow: hidden;">
             <div class="card-body p-4">
                 <!-- Header Section with Logo and Lab Name -->
-                <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 20px; border-bottom: 2px solid black; padding-bottom: 15px;">
+                <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 20px; border-bottom: 2px solid #8d2d36; padding-bottom: 15px;">
                     <tr>
                         <!-- Left: Logo -->
                         <td width="15%" valign="top" align="center" style="padding-right: 15px;">
                             <img src="{{ asset('assets/images/logo.png') }}" alt="Logo"
-                                style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid black; display: block; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid #8d2d36; display: block; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                         </td>
                         <!-- Center: Lab Name & Info -->
                         <td style="padding: 0 15px;">
-                            <div style="font-weight: bold; font-size: 20px; margin: 0; line-height: 1.1; color: black; text-align: center;">
+                            <div style="font-weight: bold; font-size: 20px; margin: 0; line-height: 1.1; color: #8d2d36; text-align: center;">
                                 NEW MODERN CLINICAL LABORATORY
                             </div>
-                            <div style="font-size: 11px; margin: 5px 0 0 0; font-weight: 600; color: black; text-align: center;">
+                            <div style="font-size: 11px; margin: 5px 0 0 0; font-weight: 600; color: #8d2d36; text-align: center;">
                                 (KP HCC) REG: 03663 SWAT
                             </div>
-                            <div style="font-size: 10px; color: #555; margin: 5px 0 0 0; line-height: 1.3; text-align: center;">
+                            <div style="font-size: 10px; color: #8d2d36; margin: 5px 0 0 0; line-height: 1.3; text-align: center;">
                                 Bacha Khan, BS Pathology (KMU)<br>
                                 DMLT KPK Peshawar
                             </div>
                         </td>
                         <!-- Right: Contact Info -->
                         <td width="30%" valign="top" align="right"
-                            style="font-size: 10px; color: #333; line-height: 1.4; padding-left: 15px; border-left: 2px solid black;">
-                            <div style="font-weight: bold; color: black; margin-bottom: 5px;">Contact Information</div>
+                            style="font-size: 10px; color: #333; line-height: 1.4; padding-left: 15px; border-left: 2px solid #8d2d36;">
+                            <div style="font-weight: bold; color: #8d2d36; margin-bottom: 5px;">Contact Information</div>
                             <strong>Tel:</strong><br>
                             0302-8080191<br>
                             0313-9797790<br><br>
@@ -57,7 +57,7 @@
                 </table>
 
                 <!-- Patient Information Section -->
-                <div style="background: linear-gradient(135deg, rgba(248, 250, 252, 0.8), rgba(255, 255, 255, 0.8)); border: 1px solid #e0e0e0; border-radius: 6px; padding: 15px; margin-bottom: 20px;">
+                <div style="background: linear-gradient(135deg, rgba(248, 250, 252, 0.8), rgba(255, 255, 255, 0.8)); border: 1px solid #8d2d36; border-radius: 6px; padding: 15px; margin-bottom: 20px;">
                     <table width="100%" cellpadding="6" cellspacing="0" style="font-size: 11px; border-collapse: collapse;">
                         <tr>
                             <td width="25%" style="font-weight: bold; color: black; padding-bottom: 8px;">
@@ -109,7 +109,7 @@
                         @endphp
 
                         <!-- Test Title -->
-                        <div style="background: linear-gradient(135deg, black, rgba(37, 99, 235, 0.8)); color: white; padding: 12px 15px; border-radius: 6px; margin: 20px 0; font-weight: bold; font-size: 14px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        <div style="background: #8d2d36; color: white; padding: 12px 15px; border-radius: 6px; margin: 20px 0; font-weight: bold; font-size: 14px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                             <i class="fas fa-flask" style="margin-right: 8px;"></i>{{ $testName }}
                         </div>
 
@@ -207,8 +207,8 @@
                             $categoryNotes = $labTestCategory ? $labTestCategory->notes : null;
                         @endphp
                         @if($categoryNotes)
-                            <div style="background: linear-gradient(135deg, rgba(255, 193, 7, 0.1), rgba(255, 235, 59, 0.1)); border: 1px solid #ffc107; border-radius: 6px; padding: 12px 15px; margin-bottom: 20px; border-left: 4px solid #ffc107;">
-                                <div style="font-weight: bold; color: #f57f17; margin-bottom: 8px; font-size: 12px;">
+                            <div style="border: 1px solid #8d2d36; border-radius: 6px; padding: 12px 15px; margin-bottom: 20px; border-left: 4px solid #8d2d36;">
+                                <div style="font-weight: bold; color: #8d2d36; margin-bottom: 8px; font-size: 12px;">
                                     <i class="fas fa-sticky-note" style="margin-right: 6px;"></i>Test Notes & Remarks
                                 </div>
                                 <div style="font-size: 11px; color: #333; line-height: 1.5; white-space: pre-wrap;">
@@ -224,14 +224,14 @@
             <!-- Doctor Signature Section -->
             <div style="background: linear-gradient(135deg, rgba(248, 250, 252, 0.8), rgba(255, 255, 255, 0.8)); border: 1px solid #e0e0e0; border-radius: 6px; padding: 15px; margin-top: 25px; display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: #333;">
                 <div style="flex: 1; text-align: left;">
-                    <div style="background: rgba(255, 255, 255, 0.8); padding: 10px; border-radius: 4px; border-left: 3px solid black;">
+                    <div style="background: rgba(255, 255, 255, 0.8); padding: 10px; border-radius: 4px; border-left: 3px solid #8d2d36;">
                         <strong style="color: black;">Please Note:</strong><br>
-                        <i class="fas fa-info-circle" style="margin-right: 5px; color: black;"></i>Test(s) are performed on the state-of-the-art ARCHITECT MODULAR Ci4100 from Abbott Diagnostics, U.S.A.<br>
-                        <i class="fas fa-signature" style="margin-right: 5px; color: black;"></i>This is a digitally signed report and does not require manual signature.
+                        <i class="fas fa-info-circle" style="margin-right: 5px; color: #8d2d36;"></i>Test(s) are performed on the state-of-the-art ARCHITECT MODULAR Ci4100 from Abbott Diagnostics, U.S.A.<br>
+                        <i class="fas fa-signature" style="margin-right: 5px; color: #8d2d36;"></i>This is a digitally signed report and does not require manual signature.
                     </div>
                 </div>
                 <div style="text-align: right; white-space: nowrap;">
-                    <div style="background: rgba(255, 255, 255, 0.8); padding: 10px; border-radius: 4px; border-right: 3px solid black;">
+                    <div style="background: rgba(255, 255, 255, 0.8); padding: 10px; border-radius: 4px; border-right: 3px solid #8d2d36;">
                         <div style="font-weight: bold; color: black; margin-bottom: 5px;">
                             <i class="fas fa-user-md" style="margin-right: 5px;"></i>This is a digitally signed report by
                         </div>
