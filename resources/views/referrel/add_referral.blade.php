@@ -36,6 +36,17 @@
                     </div>
                 </div>
 
+                <div class="row g-3 mt-2">
+                    <div class="col-md-4">
+                        <label for="commission_percentage" class="form-label">Commission Percentage <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="commission_percentage" name="commission_percentage" min="0" max="100" step="0.01" value="0" required>
+                            <span class="input-group-text">%</span>
+                        </div>
+                        <small class="form-text text-muted">Commission percentage to be earned on each test/bill (0-100)</small>
+                    </div>
+                </div>
+
                 <div class="d-flex justify-content-between flex-wrap gap-2 mt-4">
                     <button type="button" class="btn btn-outline-secondary" onclick="window.history.back();">
                         <i class="bi bi-x-circle me-1"></i> Cancel

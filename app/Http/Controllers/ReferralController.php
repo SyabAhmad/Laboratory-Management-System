@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Referrals;
+use App\Models\Bills;
+use App\Models\ReferralCommission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Yajra\DataTables\Facades\DataTables;
 
 class ReferralController extends Controller
@@ -51,11 +54,20 @@ class ReferralController extends Controller
      */
     public function store(Request $request)
     {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'nullable|email|max:255',
+            'phone' => 'nullable|string|max:20',
+            'commission_percentage' => 'nullable|numeric|min:0|max:100',
+        ]);
+
         $referral = new Referrals;
-        $referral->name = $request->name;
-        $referral->email = $request->email;
-        $referral->phone = $request->phone;
+        $referral->name = $validated['name'];
+        $referral->email = $validated['email'] ?? null;
+        $referral->phone = $validated['phone'] ?? null;
+        $referral->commission_percentage = $validated['commission_percentage'] ?? 0;
         $referral->save();
+
         return response()->json($referral);
     }
 
@@ -91,11 +103,21 @@ class ReferralController extends Controller
      */
     public function update(Request $request)
     {
+        $validated = $request->validate([
+            'id' => 'required|exists:referrals,id',
+            'name1' => 'required|string|max:255',
+            'email1' => 'nullable|email|max:255',
+            'phone1' => 'nullable|string|max:20',
+            'commission_percentage1' => 'nullable|numeric|min:0|max:100',
+        ]);
+
         $referral = Referrals::find($request->id);
-        $referral->name = $request->name1;
-        $referral->email = $request->email1;
-        $referral->phone = $request->phone1;
+        $referral->name = $validated['name1'];
+        $referral->email = $validated['email1'] ?? null;
+        $referral->phone = $validated['phone1'] ?? null;
+        $referral->commission_percentage = $validated['commission_percentage1'] ?? 0;
         $referral->update();
+
         return response()->json($referral);
     }
 
@@ -149,6 +171,141 @@ class ReferralController extends Controller
     {
         $referrals = Referrals::all();
         return view('Reports.patientlist', compact('referrals'));
+    }
+
+    /**
+     * Create or update referral commission based on bill
+     * Called after a bill is created/updated
+     */
+    public function createCommissionFromBill(Bills $bill)
+    {
+        try {
+            // Check if patient has a referral
+            if (!$bill->patient || !$bill->patient->referred_by) {
+                return null;
+            }
+
+            // Find referral by name
+            $referral = Referrals::where('name', $bill->patient->referred_by)->first();
+
+            if (!$referral || $referral->commission_percentage <= 0) {
+                return null;
+            }
+
+            $billAmount = $bill->total_price ?? $bill->amount;
+            $commissionAmount = $billAmount * ($referral->commission_percentage / 100);
+
+            // Check if commission already exists for this bill
+            $existingCommission = ReferralCommission::where('bill_id', $bill->id)->first();
+
+            if ($existingCommission) {
+                // Update existing commission
+                $existingCommission->update([
+                    'bill_amount' => $billAmount,
+                    'commission_percentage' => $referral->commission_percentage,
+                    'commission_amount' => $commissionAmount,
+                ]);
+                return $existingCommission;
+            }
+
+            // Create new commission record
+            $commission = ReferralCommission::create([
+                'referral_id' => $referral->id,
+                'bill_id' => $bill->id,
+                'patient_id' => $bill->patient_id,
+                'bill_amount' => $billAmount,
+                'commission_percentage' => $referral->commission_percentage,
+                'commission_amount' => $commissionAmount,
+                'status' => 'pending',
+                'notes' => 'Commission for test(s): ' . ($bill->all_test ? implode(', ', array_map(function($t) { return $t->test_name ?? ''; }, json_decode($bill->all_test, true) ?? [])) : 'N/A'),
+            ]);
+
+            return $commission;
+        } catch (\Exception $e) {
+            Log::error('Failed to create referral commission: ' . $e->getMessage(), [
+                'bill_id' => $bill->id,
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return null;
+        }
+    }
+
+    /**
+     * Get all commissions for a referral
+     */
+    public function commissions($referralId)
+    {
+        try {
+            $referral = Referrals::findOrFail($referralId);
+            $commissions = $referral->commissions()->orderBy('created_at', 'desc')->paginate(15);
+
+            $stats = ReferralCommission::getCommissionStats($referralId);
+
+            return view('referrel.commissions', compact('referral', 'commissions', 'stats'));
+        } catch (\Exception $e) {
+            Log::error('Failed to fetch commissions: ' . $e->getMessage());
+            return redirect()->route('referrels.list')->with('error', 'Unable to load commissions');
+        }
+    }
+
+    /**
+     * Mark commission as paid
+     */
+    public function markCommissionPaid($commissionId)
+    {
+        try {
+            $commission = ReferralCommission::findOrFail($commissionId);
+            $commission->update(['status' => 'paid']);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Commission marked as paid',
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Failed to mark commission as paid: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update commission status',
+            ], 500);
+        }
+    }
+
+    /**
+     * Get commission summary/dashboard
+     */
+    public function commissionDashboard()
+    {
+        try {
+            $referrals = Referrals::with('commissions')->get();
+
+            $stats = [
+                'total_earned' => ReferralCommission::sum('commission_amount'),
+                'pending' => ReferralCommission::where('status', 'pending')->sum('commission_amount'),
+                'paid' => ReferralCommission::where('status', 'paid')->sum('commission_amount'),
+                'total_commissions' => ReferralCommission::count(),
+            ];
+
+            // Get top referrals with actual commission data from referral_commissions table
+            $topReferrals = Referrals::with('commissions')
+                ->withCount('commissions')
+                ->withSum('commissions', 'commission_amount')
+                ->orderBy('commissions_sum_commission_amount', 'desc')
+                ->limit(10)
+                ->get()
+                ->map(function ($referral) {
+                    // Get the actual commission percentage from the first commission record for this referral
+                    $firstCommission = $referral->commissions->first();
+                    if ($firstCommission && $firstCommission->commission_percentage > 0) {
+                        $referral->commission_percentage = $firstCommission->commission_percentage;
+                    }
+                    return $referral;
+                });
+
+            return view('referrel.commission_dashboard', compact('referrals', 'stats', 'topReferrals'));
+        } catch (\Exception $e) {
+            Log::error('Failed to load commission dashboard: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Unable to load commission dashboard');
+        }
     }
 
 

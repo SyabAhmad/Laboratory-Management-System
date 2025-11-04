@@ -8,6 +8,8 @@ use App\Models\Patients;
 use App\Models\MainCompanys;
 use App\Models\Payments;
 use App\Models\TestReport;
+use App\Models\Referrals;
+use App\Models\ReferralCommission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -301,6 +303,13 @@ class BillsController extends Controller
                 }
                 $bill->save();
 
+                // Create or update referral commission if applicable
+                try {
+                    $this->createOrUpdateReferralCommission($bill);
+                } catch (\Exception $e) {
+                    Log::warning('Failed to create referral commission: ' . $e->getMessage());
+                }
+
                 // If payment provided, create a payments record and update company balance
                 if ($paid > 0) {
                     $payment = new Payments();
@@ -344,7 +353,7 @@ class BillsController extends Controller
     public function show($id)
     {
         try {
-            $bills = Bills::with('patient')->findOrFail($id);
+            $bills = Bills::with('patient', 'referralCommission')->findOrFail($id);
             // Get test IDs from all_test JSON (array of objects with id or test_name)
             $testIds = [];
             $all_test = json_decode($bills->all_test, true);
@@ -359,7 +368,11 @@ class BillsController extends Controller
             if (!empty($testIds)) {
                 $tests = \App\Models\LabTestCat::whereIn('id', $testIds)->get();
             }
-            return view('Bill.billdetails', compact('bills', 'tests'));
+            
+            // Get referral commission details
+            $commissionDetails = $bills->getReferralCommissionDetails();
+            
+            return view('Bill.billdetails', compact('bills', 'tests', 'commissionDetails'));
         } catch (\Exception $e) {
             Log::error('Error in BillsController@show: ' . $e->getMessage());
             return redirect()->route('billing')
@@ -626,4 +639,72 @@ class BillsController extends Controller
             'test_report_id' => $testReport->id,
         ]);
     }
+
+    /**
+     * Create or update referral commission based on bill
+     * Called after bill is created/updated with a referred patient
+     */
+    private function createOrUpdateReferralCommission(Bills $bill)
+    {
+        try {
+            // Check if patient has a referral
+            if (!$bill->patient || !$bill->patient->referred_by) {
+                return null;
+            }
+
+            // Find referral by name
+            $referral = Referrals::where('name', $bill->patient->referred_by)->first();
+
+            if (!$referral || $referral->commission_percentage <= 0) {
+                return null;
+            }
+
+            $billAmount = $bill->total_price ?? $bill->amount;
+            $commissionAmount = $billAmount * ($referral->commission_percentage / 100);
+
+            // Check if commission already exists for this bill
+            $existingCommission = ReferralCommission::where('bill_id', $bill->id)->first();
+
+            if ($existingCommission) {
+                // Update existing commission
+                $existingCommission->update([
+                    'bill_amount' => $billAmount,
+                    'commission_percentage' => $referral->commission_percentage,
+                    'commission_amount' => $commissionAmount,
+                ]);
+                Log::info('Referral commission updated for bill ' . $bill->id);
+                return $existingCommission;
+            }
+
+            // Create new commission record
+            $testNames = [];
+            if ($bill->all_test) {
+                $allTests = json_decode($bill->all_test, true);
+                if (is_array($allTests)) {
+                    $testNames = array_column($allTests, 'test_name');
+                }
+            }
+
+            $commission = ReferralCommission::create([
+                'referral_id' => $referral->id,
+                'bill_id' => $bill->id,
+                'patient_id' => $bill->patient_id,
+                'bill_amount' => $billAmount,
+                'commission_percentage' => $referral->commission_percentage,
+                'commission_amount' => $commissionAmount,
+                'status' => 'pending',
+                'notes' => 'Commission for test(s): ' . implode(', ', $testNames),
+            ]);
+
+            Log::info('Referral commission created for bill ' . $bill->id . ' with amount: ' . $commissionAmount);
+            return $commission;
+        } catch (\Exception $e) {
+            Log::error('Failed to create referral commission: ' . $e->getMessage(), [
+                'bill_id' => $bill->id,
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return null;
+        }
+    }
 }
+
