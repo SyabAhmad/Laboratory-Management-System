@@ -333,6 +333,7 @@
                 let cat_name1 = $('#cat_name1').val();
                 let department1 = $('#department1').val();
                 let price1 = $('#price1').val();
+                let notes1 = $('#notes1').val();
                 let _token = $('input[name=_token]').val();
 
                 $.ajax({
@@ -343,6 +344,7 @@
                         cat_name1: cat_name1,
                         department1: department1,
                         price1: price1,
+                        notes1: notes1,
                         _token: _token,
                     },
                     dataType: "json",
