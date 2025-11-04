@@ -404,7 +404,9 @@
 
         function appendRegisteredTest(test, counter) {
             $('.no-tests-row').remove();
-            $('#selectedTests tbody').append(`
+            
+            // Build the row HTML
+            let rowHtml = `
                 <tr data-id="${test.id}" class="registered-test">
                     <td>${counter}</td>
                     <td>
@@ -417,7 +419,7 @@
                         <input type="hidden" name="price[]" value="${parseFloat(test.price).toFixed(2)}">
                     </td>
                     <td class="notes-cell">
-                        <small class="text-muted notes-preview">No notes</small>
+                        <small class="text-muted notes-preview">Loading notes...</small>
                         <input type="hidden" name="notes[]" value="">
                     </td>
                     <td>
@@ -429,8 +431,33 @@
                         </button>
                     </td>
                 </tr>
-            `);
+            `;
+            
+            $('#selectedTests tbody').append(rowHtml);
+            
+            // Fetch category notes from server if not already provided
+            if (!test.notes && test.name) {
+                $.ajax({
+                    url: '{{ route("labtest.edit", "") }}/' + test.id,
+                    method: 'GET',
+                    dataType: 'json',
+                    success: function(labtest) {
+                        if (labtest && labtest.notes) {
+                            const $row = $(`#selectedTests tbody tr[data-id="${test.id}"]`);
+                            const notesPreview = labtest.notes.substring(0, 50) + (labtest.notes.length > 50 ? '...' : '');
+                            $row.find('.notes-preview').text(notesPreview);
+                            $row.find('input[name="notes[]"]').val(labtest.notes);
+                        }
+                    }
+                });
+            } else if (test.notes) {
+                const $row = $(`#selectedTests tbody tr[data-id="${test.id}"]`);
+                const notesPreview = test.notes.substring(0, 50) + (test.notes.length > 50 ? '...' : 'No notes');
+                $row.find('.notes-preview').text(notesPreview || 'No notes');
+                $row.find('input[name="notes[]"]').val(test.notes || '');
+            }
         }
+
 
         $(document).ready(function() {
             let testCounter = $('#selectedTests tbody tr').length + 1;

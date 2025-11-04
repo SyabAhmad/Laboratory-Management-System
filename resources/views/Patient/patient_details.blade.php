@@ -200,6 +200,22 @@
                                 <i class="mdi mdi-file-pdf"></i> Download Test PDF
                             </a>
                         </div>
+
+                        <!-- Test Category Notes Section -->
+                        @php
+                            $labTestCategory = \App\Models\LabTestCat::where('cat_name', $testName)->first();
+                            $categoryNotes = $labTestCategory ? $labTestCategory->notes : null;
+                        @endphp
+                        @if($categoryNotes)
+                            <div style="background: linear-gradient(135deg, rgba(255, 193, 7, 0.1), rgba(255, 235, 59, 0.1)); border: 1px solid #ffc107; border-radius: 6px; padding: 12px 15px; margin-bottom: 20px; border-left: 4px solid #ffc107;">
+                                <div style="font-weight: bold; color: #f57f17; margin-bottom: 8px; font-size: 12px;">
+                                    <i class="fas fa-sticky-note" style="margin-right: 6px;"></i>Test Notes & Remarks
+                                </div>
+                                <div style="font-size: 11px; color: #333; line-height: 1.5; white-space: pre-wrap;">
+                                    {{ $categoryNotes }}
+                                </div>
+                            </div>
+                        @endif
                     @empty
                     @endforelse
                 @endif
