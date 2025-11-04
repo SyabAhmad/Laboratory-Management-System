@@ -250,6 +250,126 @@ class ReferralController extends Controller
     }
 
     /**
+     * Get commissions grouped by month
+     */
+    public function commissionsMonthly($referralId)
+    {
+        try {
+            $referral = Referrals::findOrFail($referralId);
+            
+            // Get all commissions for this referral
+            $allCommissions = $referral->commissions()->orderBy('created_at', 'desc')->get();
+            
+            // Group by month
+            $monthlyData = [];
+            foreach ($allCommissions as $commission) {
+                $monthKey = $commission->created_at->format('Y-m'); // e.g., 2025-11
+                $monthLabel = $commission->created_at->format('F Y'); // e.g., November 2025
+                
+                if (!isset($monthlyData[$monthKey])) {
+                    $monthlyData[$monthKey] = [
+                        'month_key' => $monthKey,
+                        'month_label' => $monthLabel,
+                        'commissions' => [],
+                        'total_amount' => 0,
+                        'pending_amount' => 0,
+                        'paid_amount' => 0,
+                        'pending_count' => 0,
+                        'paid_count' => 0,
+                        'status' => 'mixed' // pending, paid, or mixed
+                    ];
+                }
+                
+                $monthlyData[$monthKey]['commissions'][] = $commission;
+                $monthlyData[$monthKey]['total_amount'] += $commission->commission_amount;
+                
+                if ($commission->status === 'pending') {
+                    $monthlyData[$monthKey]['pending_amount'] += $commission->commission_amount;
+                    $monthlyData[$monthKey]['pending_count'] += 1;
+                } else if ($commission->status === 'paid') {
+                    $monthlyData[$monthKey]['paid_amount'] += $commission->commission_amount;
+                    $monthlyData[$monthKey]['paid_count'] += 1;
+                }
+            }
+            
+            // Determine month status
+            foreach ($monthlyData as &$month) {
+                if ($month['pending_count'] > 0 && $month['paid_count'] == 0) {
+                    $month['status'] = 'pending';
+                } else if ($month['pending_count'] == 0 && $month['paid_count'] > 0) {
+                    $month['status'] = 'paid';
+                } else if ($month['pending_count'] > 0 && $month['paid_count'] > 0) {
+                    $month['status'] = 'partial';
+                }
+            }
+            
+            // Reverse to show newest first
+            $monthlyData = array_reverse($monthlyData);
+            
+            $stats = ReferralCommission::getCommissionStats($referralId);
+
+            return view('referrel.commissions_monthly', compact('referral', 'monthlyData', 'stats'));
+        } catch (\Exception $e) {
+            Log::error('Failed to fetch monthly commissions: ' . $e->getMessage());
+            return redirect()->route('referrels.list')->with('error', 'Unable to load commissions');
+        }
+    }
+
+    /**
+     * Mark all commissions in a month as paid
+     */
+    public function markMonthPaid($referralId, $monthKey)
+    {
+        try {
+            Log::info('Marking month as paid', ['referralId' => $referralId, 'monthKey' => $monthKey]);
+            
+            $referral = Referrals::findOrFail($referralId);
+            
+            // Parse the month key (YYYY-MM)
+            $startDate = \Carbon\Carbon::createFromFormat('Y-m', $monthKey)->startOfMonth();
+            $endDate = $startDate->copy()->endOfMonth();
+            
+            // Get all pending commissions for this referral in this month
+            $monthCommissions = $referral->commissions()
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->where('status', 'pending')
+                ->get();
+            
+            Log::info('Found commissions to update', ['count' => $monthCommissions->count()]);
+            
+            $totalAmount = 0;
+            foreach ($monthCommissions as $commission) {
+                $commission->update(['status' => 'paid']);
+                $totalAmount += $commission->commission_amount;
+            }
+            
+            Log::info('Month marked as paid successfully', [
+                'referralId' => $referralId,
+                'monthKey' => $monthKey,
+                'commissionCount' => $monthCommissions->count(),
+                'totalAmount' => $totalAmount
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => "All commissions for {$startDate->format('F Y')} marked as paid",
+                'total_amount' => $totalAmount,
+                'commission_count' => $monthCommissions->count()
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error('Failed to mark month as paid', [
+                'referralId' => $referralId,
+                'monthKey' => $monthKey,
+                'error' => $e->getMessage()
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update commissions: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
      * Mark commission as paid
      */
     public function markCommissionPaid(ReferralCommission $commission)

@@ -57,8 +57,16 @@
     <div class="row mb-4">
         <div class="col-12">
             <div class="card">
-                <div class="card-header bg-light">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">Referral Details</h5>
+                    <div>
+                        <a href="{{ route('referrals.commissions-monthly', $referral->id) }}" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-calendar"></i> Monthly View
+                        </a>
+                        <a href="{{ route('referrels.list') }}" class="btn btn-sm btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Back
+                        </a>
+                    </div>
                 </div>
                 <div class="card-body">
                     <div class="row">
@@ -86,9 +94,9 @@
             <div class="card">
                 <div class="card-header">
                     <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">Commission Details</h5>
-                        <a href="{{ route('referrels.list') }}" class="btn btn-secondary btn-sm">
-                            <i class="fas fa-arrow-left"></i> Back to Referrals
+                        <h5 class="mb-0">Individual Commission Records</h5>
+                        <a href="{{ route('referrals.commissions-monthly', $referral->id) }}" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-calendar"></i> View Monthly Summary
                         </a>
                     </div>
                 </div>
