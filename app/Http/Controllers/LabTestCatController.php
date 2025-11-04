@@ -40,12 +40,14 @@ class LabTestCatController extends Controller
             'cat_name'   => 'required|string|max:191',
             'department' => 'nullable|string|max:191',
             'price'      => 'nullable|numeric',
+            'notes'      => 'nullable|string',
         ]);
 
         $labtest = LabTestCat::create([
             'cat_name'   => $request->input('cat_name'),
             'department' => $request->input('department'),
             'price'      => $request->input('price', 0),
+            'notes'      => $request->input('notes'),
             'status'     => 1,
         ]);
 
@@ -89,12 +91,14 @@ class LabTestCatController extends Controller
             'cat_name1'   => 'required|string|max:191',
             'department1' => 'nullable|string|max:191',
             'price1'      => 'nullable|numeric',
+            'notes1'      => 'nullable|string',
         ]);
 
         $labtest = LabTestCat::find($validated['id']);
         $labtest->cat_name   = $request->input('cat_name1');
         $labtest->department = $request->input('department1');
         $labtest->price      = $validated['price1'] ?? $labtest->price;
+        $labtest->notes      = $request->input('notes1');
         $labtest->save();
 
         return response()->json(['success' => 'Data updated successfully.', 'data' => $labtest]);

@@ -65,6 +65,12 @@
                                         Referral List
                                     </a>
                                 </li>
+                                <li>
+                                    <a href="{{ route('commissions.dashboard') }}">
+                                        <i class="fas fa-chart-line"></i>
+                                        Commission Dashboard
+                                    </a>
+                                </li>
                             </ul>
                         </li>
 

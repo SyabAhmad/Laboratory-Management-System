@@ -88,6 +88,21 @@
                             </div>
                         </div>
 
+                        <div class="form-group row">
+                            <label for="commission" class="col-sm-4 col-form-label">Commission Percentage<span
+                                    class="text-danger">*</span></label>
+                            <div class="col-sm-7">
+                                <div class="input-group">
+                                    <input type="number" required class="form-control" id="commission_percentage" 
+                                        name="commission_percentage" min="0" max="100" step="0.01" value="0" placeholder="0.00">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">%</span>
+                                    </div>
+                                </div>
+                                <small class="form-text text-muted">Commission percentage earned on each test (0-100)</small>
+                            </div>
+                        </div>
+
                         <div class="form-group row mb-0">
                             <div class="col-sm-8 offset-sm-4">
                                 <button type="submit" class="btn btn-primary waves-effect waves-light mr-1">
@@ -146,6 +161,21 @@
                             <div class="col-sm-7">
                                 <input type="text" class="form-control" id="phone1" name="phone1"
                                     placeholder="Phone Number">
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="commission" class="col-sm-4 col-form-label">Commission Percentage<span
+                                    class="text-danger">*</span></label>
+                            <div class="col-sm-7">
+                                <div class="input-group">
+                                    <input type="number" required class="form-control" id="commission_percentage1" 
+                                        name="commission_percentage1" min="0" max="100" step="0.01" placeholder="0.00">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">%</span>
+                                    </div>
+                                </div>
+                                <small class="form-text text-muted">Commission percentage earned on each test (0-100)</small>
                             </div>
                         </div>
 
@@ -300,6 +330,7 @@
                         $('#name1').val(result.name);
                         $('#email1').val(result.email);
                         $('#phone1').val(result.phone);
+                        $('#commission_percentage1').val(result.commission_percentage);
                         $('#ReferrelEditmodel').modal('show');
                     },
                     error: function(error) {
@@ -321,6 +352,7 @@
                 var email1 = $('#email1').val();
                 var name1 = $('#name1').val();
                 var phone1 = $('#phone1').val();
+                var commission_percentage1 = $('#commission_percentage1').val();
                 var _token = $('input[name=_token]').val();
                 $.ajax({
                     type: "PUT",
@@ -330,6 +362,7 @@
                         'name1': name1,
                         'email1': email1,
                         'phone1': phone1,
+                        'commission_percentage1': commission_percentage1,
                         '_token': _token
                     },
                     dataType: "json",

@@ -160,6 +160,28 @@
                                     <td class="font-weight-bold">Net Amount:</td>
                                     <td class="text-right font-weight-bold h5 text-success" id="display_net_amount">{{ number_format($bills->total_price, 2) }}</td>
                                 </tr>
+                                
+                                {{-- Referral Commission Section --}}
+                                @if ($commissionDetails && $commissionDetails['referral_name'])
+                                    <tr class="border-top bg-light">
+                                        <td colspan="2" class="font-weight-bold text-info">
+                                            <i class="mdi mdi-percent"></i> Referral Commission
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Referral Name:</td>
+                                        <td class="text-right">{{ $commissionDetails['referral_name'] ?? 'N/A' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Commission Percentage:</td>
+                                        <td class="text-right">{{ number_format($commissionDetails['commission_percentage'], 2) }}%</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="font-weight-bold">Commission Amount:</td>
+                                        <td class="text-right font-weight-bold text-info">{{ number_format($commissionDetails['commission_amount'], 2) }} PKR</td>
+                                    </tr>
+                                @endif
+                                
                                 <tr>
                                     <td>Payment Method:</td>
                                     <td class="text-right" id="display_payment_type">{{ $bills->payment_type }}</td>

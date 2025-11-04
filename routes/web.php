@@ -82,6 +82,13 @@ Route::middleware(['auth:sanctum', 'verified'])
         Route::put('/referrals/update', "App\Http\Controllers\ReferralController@update")->name('referrals.update');
         Route::delete('/referrals/{id}', 'App\Http\Controllers\ReferralController@destroy')->name('referrals.destroy');
         Route::get('/referrals/patients', 'App\Http\Controllers\ReferralController@patients')->name('referrals.patients');
+        
+        // Referral Commission Routes
+        Route::get('/referrals/{referralId}/commissions', 'App\Http\Controllers\ReferralController@commissions')->name('referrals.commissions');
+        Route::get('/referrals/{referralId}/commissions/monthly', 'App\Http\Controllers\ReferralController@commissionsMonthly')->name('referrals.commissions-monthly');
+        Route::post('/referrals/{referralId}/commissions/month/{monthKey}/mark-paid', 'App\Http\Controllers\ReferralController@markMonthPaid')->name('referrals.mark-month-paid');
+        Route::post('/referrals/commission/{commission}/mark-paid', 'App\Http\Controllers\ReferralController@markCommissionPaid')->name('referrals.mark-commission-paid');
+        Route::get('/commissions/dashboard', 'App\Http\Controllers\ReferralController@commissionDashboard')->name('commissions.dashboard');
 
         // Lab Test Category Routes
         Route::get('/labtest', 'App\Http\Controllers\LabTestCatController@index')->name('labtest.index');

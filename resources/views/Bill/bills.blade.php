@@ -122,6 +122,28 @@
                             readonly>
                     </div>
 
+                    {{-- Referral Commission Information --}}
+                    @if ($patient->referred_by)
+                        @php
+                            $referral = App\Models\Referrals::where('name', $patient->referred_by)->first();
+                            $commissionPercentage = $referral ? $referral->commission_percentage : 0;
+                        @endphp
+                        <div class="col-12 mt-3">
+                            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Referral Information:</strong>
+                                <div class="mt-2">
+                                    <span class="d-block"><strong>Referred By:</strong> {{ $patient->referred_by }}</span>
+                                    @if ($referral)
+                                        <span class="d-block"><strong>Commission Rate:</strong> {{ number_format($commissionPercentage, 2) }}%</span>
+                                        <small class="d-block text-muted mt-1">Commission will be automatically calculated and added when this bill is saved.</small>
+                                    @endif
+                                </div>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        </div>
+                    @endif
+
                     {{-- <!-- Payment Type -->
                     <div class="col-md-6">
                         <label for="paidby" class="form-label fw-semibold">Payment Type</label>
@@ -186,54 +208,6 @@
                         </div>
                     @endif
 
-                    <!-- Additional Tests Section -->
-                    <div class="col-12 mt-4">
-                        <div class="card border-0 shadow-sm">
-                            <div class="card-header bg-primary text-white">
-                                <h6 class="mb-0">
-                                    <i class="fas fa-flask me-2"></i>Add Additional Tests (Optional)
-                                </h6>
-                            </div>
-                            <div class="card-body p-0">
-                                <div class="table-responsive">
-                                    <table class="table table-hover align-middle mb-0">
-                                        <thead class="table-light">
-                                            <tr>
-                                                <th class="border-0 fw-semibold">#</th>
-                                                <th class="border-0 fw-semibold">Test Name</th>
-                                                <th class="border-0 fw-semibold">Department</th>
-                                                <th class="border-0 fw-semibold">Price (PKR)</th>
-                                                <th class="border-0 fw-semibold">Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach ($tests as $test)
-                                                <tr class="table-row-hover">
-                                                    <td class="fw-semibold">{{ $loop->iteration }}</td>
-                                                    <td>
-                                                        <div class="d-flex align-items-center">
-                                                            <i class="fas fa-vial text-primary me-2"></i>
-                                                            {{ $test->cat_name }}
-                                                        </div>
-                                                    </td>
-                                                    <td><span class="badge bg-light text-dark">{{ $test->department }}</span></td>
-                                                    <td class="fw-semibold text-primary">{{ number_format($test->price, 2) }}</td>
-                                                    <td>
-                                                        <button type="button" class="btn btn-sm btn-outline-primary add-test-btn"
-                                                            data-id="{{ $test->id }}" data-name="{{ $test->cat_name }}"
-                                                            data-price="{{ $test->price }}" data-dept="{{ $test->department }}">
-                                                            <i class="fas fa-plus me-1"></i>Add
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- Selected Tests for Bill -->
                     <div class="col-12 mt-4">
                         <div class="card border-0 shadow-sm">
@@ -250,13 +224,14 @@
                                                 <th class="border-0 fw-semibold">#</th>
                                                 <th class="border-0 fw-semibold">Test Name</th>
                                                 <th class="border-0 fw-semibold">Price (PKR)</th>
+                                                <th class="border-0 fw-semibold">Notes</th>
                                                 <th class="border-0 fw-semibold">Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             @if (!isset($registeredTests) || $registeredTests->count() === 0)
                                                 <tr class="no-tests-row">
-                                                    <td colspan="4" class="text-center py-5">
+                                                    <td colspan="5" class="text-center py-5">
                                                         <div class="text-muted">
                                                             <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
                                                             <h6>No tests selected yet</h6>
@@ -332,6 +307,35 @@
                         </div>
                     </div>
 
+                    <!-- Modal for Test Notes -->
+                    <div class="modal fade" id="testNotesModal" tabindex="-1">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header bg-primary text-white">
+                                    <h6 class="modal-title">
+                                        <i class="fas fa-sticky-note me-2"></i>Add Test Notes
+                                    </h6>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="mb-3">
+                                        <label for="notesTestName" class="form-label fw-semibold">Test Name</label>
+                                        <input type="text" class="form-control" id="notesTestName" readonly>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="testNotes" class="form-label fw-semibold">Notes / Remarks</label>
+                                        <textarea class="form-control" id="testNotes" rows="4" placeholder="Add clinical notes, special instructions, or remarks for this test..."></textarea>
+                                        <small class="text-muted d-block mt-2">These notes will appear on the test report</small>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="button" class="btn btn-primary" id="saveTestNotes">Save Notes</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Submit Button -->
                     <div class="col-12 text-end mt-4">
                         <a href="{{ route('patients.list') }}" class="btn btn-secondary btn-lg px-4">
@@ -400,7 +404,9 @@
 
         function appendRegisteredTest(test, counter) {
             $('.no-tests-row').remove();
-            $('#selectedTests tbody').append(`
+            
+            // Build the row HTML
+            let rowHtml = `
                 <tr data-id="${test.id}" class="registered-test">
                     <td>${counter}</td>
                     <td>
@@ -412,14 +418,46 @@
                         ${parseFloat(test.price).toFixed(2)}
                         <input type="hidden" name="price[]" value="${parseFloat(test.price).toFixed(2)}">
                     </td>
+                    <td class="notes-cell">
+                        <small class="text-muted notes-preview">Loading notes...</small>
+                        <input type="hidden" name="notes[]" value="">
+                    </td>
                     <td>
+                        <button type="button" class="btn btn-primary btn-sm btn-sm edit-notes-btn" data-test-id="${test.id}" data-test-name="${test.name}" title="Add notes">
+                            <i class="fas fa-edit"></i>
+                        </button>
                         <button type="button" class="btn btn-danger btn-sm remove-test">
-                            <i class="fas fa-trash"></i> Remove
+                            <i class="fas fa-trash"></i>
                         </button>
                     </td>
                 </tr>
-            `);
+            `;
+            
+            $('#selectedTests tbody').append(rowHtml);
+            
+            // Fetch category notes from server if not already provided
+            if (!test.notes && test.name) {
+                $.ajax({
+                    url: '{{ route("labtest.edit", "") }}/' + test.id,
+                    method: 'GET',
+                    dataType: 'json',
+                    success: function(labtest) {
+                        if (labtest && labtest.notes) {
+                            const $row = $(`#selectedTests tbody tr[data-id="${test.id}"]`);
+                            const notesPreview = labtest.notes.substring(0, 50) + (labtest.notes.length > 50 ? '...' : '');
+                            $row.find('.notes-preview').text(notesPreview);
+                            $row.find('input[name="notes[]"]').val(labtest.notes);
+                        }
+                    }
+                });
+            } else if (test.notes) {
+                const $row = $(`#selectedTests tbody tr[data-id="${test.id}"]`);
+                const notesPreview = test.notes.substring(0, 50) + (test.notes.length > 50 ? '...' : 'No notes');
+                $row.find('.notes-preview').text(notesPreview || 'No notes');
+                $row.find('input[name="notes[]"]').val(test.notes || '');
+            }
         }
+
 
         $(document).ready(function() {
             let testCounter = $('#selectedTests tbody tr').length + 1;
@@ -531,7 +569,14 @@
                             ${price}
                             <input type="hidden" name="price[]" value="${price}">
                         </td>
+                        <td class="notes-cell">
+                            <small class="text-muted notes-preview">No notes</small>
+                            <input type="hidden" name="notes[]" value="">
+                        </td>
                         <td>
+                            <button type="button" class="btn btn-primary btn-sm edit-notes-btn" data-test-id="${id}" data-test-name="${name}" title="Add notes">
+                                <i class="fas fa-edit"></i>
+                            </button>
                             <button type="button" class="btn btn-danger btn-sm remove-test">
                                 <i class="fas fa-trash"></i> Remove
                             </button>
@@ -558,13 +603,50 @@
                 // Show "no tests" message if table is empty
                 if ($('#selectedTests tbody tr[data-id]').length === 0) {
                     $('#selectedTests tbody').html(
-                        '<tr class="no-tests-row"><td colspan="4" class="text-center text-muted">No tests in bill yet</td></tr>'
+                        '<tr class="no-tests-row"><td colspan="5" class="text-center text-muted">No tests in bill yet</td></tr>'
                     );
                 }
 
                 updateTotals();
                 renumberSelectedTests();
                 syncAddButtons();
+            });
+
+            // Edit test notes
+            $(document).on('click', '.edit-notes-btn', function() {
+                const $row = $(this).closest('tr');
+                const testId = $row.data('id');
+                const testName = $(this).data('test-name');
+                const currentNotes = $row.find('input[name="notes[]"]').val();
+
+                // Open modal
+                $('#notesTestName').val(testName);
+                $('#testNotes').val(currentNotes);
+                $('#testNotes').data('test-id', testId);
+
+                const modal = new bootstrap.Modal(document.getElementById('testNotesModal'));
+                modal.show();
+            });
+
+            // Save test notes
+            $('#saveTestNotes').on('click', function() {
+                const testId = $('#testNotes').data('test-id');
+                const notes = $('#testNotes').val().trim();
+
+                // Find the row and update the notes
+                const $row = $(`#selectedTests tbody tr[data-id="${testId}"]`);
+                $row.find('input[name="notes[]"]').val(notes);
+
+                // Update preview text
+                const preview = notes.length > 0 ? notes.substring(0, 50) + (notes.length > 50 ? '...' : '') : 'No notes';
+                $row.find('.notes-preview').text(preview).attr('title', notes);
+
+                // Close modal
+                bootstrap.Modal.getInstance(document.getElementById('testNotesModal')).hide();
+
+                // Clear modal fields
+                $('#testNotes').val('');
+                $('#notesTestName').val('');
             });
 
             // Live total updates
