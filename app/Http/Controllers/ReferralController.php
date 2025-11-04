@@ -8,6 +8,7 @@ use App\Models\ReferralCommission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 use Yajra\DataTables\Facades\DataTables;
 
 class ReferralController extends Controller
@@ -326,7 +327,7 @@ class ReferralController extends Controller
             $referral = Referrals::findOrFail($referralId);
             
             // Parse the month key (YYYY-MM)
-            $startDate = \Carbon\Carbon::createFromFormat('Y-m', $monthKey)->startOfMonth();
+            $startDate = Carbon::createFromFormat('Y-m', $monthKey)->startOfMonth();
             $endDate = $startDate->copy()->endOfMonth();
             
             // Get all pending commissions for this referral in this month
