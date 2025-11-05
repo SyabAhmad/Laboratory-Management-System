@@ -28,7 +28,8 @@
                                         </div>
                                         <div class="section-body">
                                             <div class="form-group mb-4">
-                                                <label for="name" class="form-label">Full Name <span class="text-danger">*</span></label>
+                                                <label for="name" class="form-label">Full Name <span
+                                                        class="text-danger">*</span></label>
                                                 <input type="text"
                                                     class="form-control modern-input @error('name') is-invalid @enderror"
                                                     id="name" name="name" value="{{ old('name') }}" required
@@ -38,7 +39,8 @@
                                                 @enderror
                                             </div>
                                             <div class="form-group mb-4">
-                                                <label for="mobile_phone" class="form-label">Mobile Number <span class="text-danger">*</span></label>
+                                                <label for="mobile_phone" class="form-label">Mobile Number <span
+                                                        class="text-danger">*</span></label>
                                                 <input type="text"
                                                     class="form-control modern-input @error('mobile_phone') is-invalid @enderror"
                                                     id="mobile_phone" name="mobile_phone" value="{{ old('mobile_phone') }}"
@@ -49,20 +51,27 @@
                                             </div>
                                             <div class="row">
                                                 <div class="col-md-6 mb-4">
-                                                    <label for="gender" class="form-label">Gender <span class="text-danger">*</span></label>
-                                                    <select class="form-control modern-input @error('gender') is-invalid @enderror"
+                                                    <label for="gender" class="form-label">Gender <span
+                                                            class="text-danger">*</span></label>
+                                                    <select
+                                                        class="form-control modern-input @error('gender') is-invalid @enderror"
                                                         id="gender" name="gender" required>
                                                         <option value="">Choose gender</option>
-                                                        <option value="Male" {{ old('gender') == 'Male' ? 'selected' : '' }}>Male</option>
-                                                        <option value="Female" {{ old('gender') == 'Female' ? 'selected' : '' }}>Female</option>
-                                                        <option value="Other" {{ old('gender') == 'Other' ? 'selected' : '' }}>Other</option>
+                                                        <option value="Male"
+                                                            {{ old('gender') == 'Male' ? 'selected' : '' }}>Male</option>
+                                                        <option value="Female"
+                                                            {{ old('gender') == 'Female' ? 'selected' : '' }}>Female
+                                                        </option>
+                                                        <option value="Other"
+                                                            {{ old('gender') == 'Other' ? 'selected' : '' }}>Other</option>
                                                     </select>
                                                     @error('gender')
                                                         <span class="invalid-feedback">{{ $message }}</span>
                                                     @enderror
                                                 </div>
                                                 <div class="col-md-6 mb-4">
-                                                    <label for="age" class="form-label">Age <span class="text-danger">*</span></label>
+                                                    <label for="age" class="form-label">Age <span
+                                                            class="text-danger">*</span></label>
                                                     <input type="number"
                                                         class="form-control modern-input @error('age') is-invalid @enderror"
                                                         id="age" name="age" value="{{ old('age') }}" required
@@ -74,16 +83,25 @@
                                             </div>
                                             <div class="form-group mb-0">
                                                 <label for="blood_group" class="form-label">Blood Group</label>
-                                                <select class="form-control modern-input" id="blood_group" name="blood_group">
+                                                <select class="form-control modern-input" id="blood_group"
+                                                    name="blood_group">
                                                     <option value="">Choose blood group</option>
-                                                    <option value="A+" {{ old('blood_group') == 'A+' ? 'selected' : '' }}>A+</option>
-                                                    <option value="A-" {{ old('blood_group') == 'A-' ? 'selected' : '' }}>A-</option>
-                                                    <option value="B+" {{ old('blood_group') == 'B+' ? 'selected' : '' }}>B+</option>
-                                                    <option value="B-" {{ old('blood_group') == 'B-' ? 'selected' : '' }}>B-</option>
-                                                    <option value="O+" {{ old('blood_group') == 'O+' ? 'selected' : '' }}>O+</option>
-                                                    <option value="O-" {{ old('blood_group') == 'O-' ? 'selected' : '' }}>O-</option>
-                                                    <option value="AB+" {{ old('blood_group') == 'AB+' ? 'selected' : '' }}>AB+</option>
-                                                    <option value="AB-" {{ old('blood_group') == 'AB-' ? 'selected' : '' }}>AB-</option>
+                                                    <option value="A+"
+                                                        {{ old('blood_group') == 'A+' ? 'selected' : '' }}>A+</option>
+                                                    <option value="A-"
+                                                        {{ old('blood_group') == 'A-' ? 'selected' : '' }}>A-</option>
+                                                    <option value="B+"
+                                                        {{ old('blood_group') == 'B+' ? 'selected' : '' }}>B+</option>
+                                                    <option value="B-"
+                                                        {{ old('blood_group') == 'B-' ? 'selected' : '' }}>B-</option>
+                                                    <option value="O+"
+                                                        {{ old('blood_group') == 'O+' ? 'selected' : '' }}>O+</option>
+                                                    <option value="O-"
+                                                        {{ old('blood_group') == 'O-' ? 'selected' : '' }}>O-</option>
+                                                    <option value="AB+"
+                                                        {{ old('blood_group') == 'AB+' ? 'selected' : '' }}>AB+</option>
+                                                    <option value="AB-"
+                                                        {{ old('blood_group') == 'AB-' ? 'selected' : '' }}>AB-</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -97,17 +115,18 @@
                                         </div>
                                         <div class="section-body">
                                             <div class="form-group mb-4">
-                                                <label for="address" class="form-label">Address <span class="text-danger">*</span></label>
-                                                <textarea class="form-control modern-input @error('address') is-invalid @enderror"
-                                                    id="address" name="address" rows="3" required
-                                                    placeholder="Enter complete address">{{ old('address') }}</textarea>
+                                                <label for="address" class="form-label">Address <span
+                                                        class="text-danger">*</span></label>
+                                                <textarea class="form-control modern-input @error('address') is-invalid @enderror" id="address" name="address"
+                                                    rows="3" required placeholder="Enter complete address">{{ old('address') }}</textarea>
                                                 @error('address')
                                                     <span class="invalid-feedback">{{ $message }}</span>
                                                 @enderror
                                             </div>
                                             <div class="row">
                                                 <div class="col-md-6 mb-4">
-                                                    <label for="receiving_date" class="form-label">Receiving Date <span class="text-danger">*</span></label>
+                                                    <label for="receiving_date" class="form-label">Receiving Date <span
+                                                            class="text-danger">*</span></label>
                                                     <input type="date"
                                                         class="form-control modern-input @error('receiving_date') is-invalid @enderror"
                                                         id="receiving_date" name="receiving_date"
@@ -117,7 +136,8 @@
                                                     @enderror
                                                 </div>
                                                 <div class="col-md-6 mb-4">
-                                                    <label for="reporting_date" class="form-label">Reporting Date <span class="text-danger">*</span></label>
+                                                    <label for="reporting_date" class="form-label">Reporting Date <span
+                                                            class="text-danger">*</span></label>
                                                     <input type="date"
                                                         class="form-control modern-input @error('reporting_date') is-invalid @enderror"
                                                         id="reporting_date" name="reporting_date"
@@ -130,13 +150,15 @@
                                             <div class="row">
                                                 <div class="col-md-6 mb-4">
                                                     <label for="referred_by" class="form-label">Referred By</label>
-                                                    <select class="form-control modern-input" id="referred_by" name="referred_by">
+                                                    <select class="form-control modern-input" id="referred_by"
+                                                        name="referred_by">
                                                         <option value="">Select Referral</option>
                                                         @php
                                                             $referrals = DB::table('referrals')->orderBy('name')->get();
                                                         @endphp
-                                                        @foreach($referrals as $referral)
-                                                            <option value="{{ $referral->name }}" {{ old('referred_by') == $referral->name ? 'selected' : '' }}>
+                                                        @foreach ($referrals as $referral)
+                                                            <option value="{{ $referral->name }}"
+                                                                {{ old('referred_by') == $referral->name ? 'selected' : '' }}>
                                                                 {{ $referral->name }}
                                                             </option>
                                                         @endforeach
@@ -144,8 +166,8 @@
                                                 </div>
                                                 <div class="col-md-6 mb-0">
                                                     <label for="note" class="form-label">Note</label>
-                                                    <textarea class="form-control modern-input" id="note" name="note"
-                                                        rows="3" placeholder="Additional notes">{{ old('note') }}</textarea>
+                                                    <textarea class="form-control modern-input" id="note" name="note" rows="3"
+                                                        placeholder="Additional notes">{{ old('note') }}</textarea>
                                                 </div>
                                             </div>
                                         </div>
@@ -167,6 +189,11 @@
                                                     ->get();
                                             @endphp
                                             @if ($testCategories->count() > 0)
+                                                <div class="form-group mb-4">
+                                                    <label for="testSearch" class="form-label">Search Tests</label>
+                                                    <input type="text" class="form-control modern-input"
+                                                        id="testSearch" placeholder="Type to search tests...">
+                                                </div>
                                                 <div class="test-grid">
                                                     @foreach ($testCategories as $category)
                                                         <div class="test-item">
@@ -176,13 +203,17 @@
                                                                     id="test_{{ $category->id }}"
                                                                     value="{{ $category->cat_name }}"
                                                                     data-price="{{ $category->price }}">
-                                                                <label class="custom-control-label" for="test_{{ $category->id }}">
+                                                                <label class="custom-control-label"
+                                                                    for="test_{{ $category->id }}">
                                                                     <div class="test-content">
                                                                         <i class="fas fa-flask test-icon"></i>
                                                                         <div class="test-details">
-                                                                            <span class="test-name">{{ $category->cat_name }}</span>
+                                                                            <span
+                                                                                class="test-name">{{ $category->cat_name }}</span>
                                                                             @if ($category->price)
-                                                                                <span class="test-price">{{ number_format($category->price, 2) }} PKR</span>
+                                                                                <span
+                                                                                    class="test-price">{{ number_format($category->price, 2) }}
+                                                                                    PKR</span>
                                                                             @endif
                                                                         </div>
                                                                     </div>
@@ -195,8 +226,10 @@
                                             @else
                                                 <div class="alert alert-warning modern-alert">
                                                     <i class="fas fa-exclamation-triangle"></i>
-                                                    <strong>No test categories available.</strong> Please add test categories first from the
-                                                    <a href="{{ route('labtest.index') }}" class="alert-link">Lab Test Category</a> section.
+                                                    <strong>No test categories available.</strong> Please add test
+                                                    categories first from the
+                                                    <a href="{{ route('labtest.index') }}" class="alert-link">Lab Test
+                                                        Category</a> section.
                                                 </div>
                                             @endif
                                             <div class="form-text mt-3">
@@ -345,11 +378,11 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
-        .modern-checkbox .custom-control-input:checked ~ .custom-control-label {
+        .modern-checkbox .custom-control-input:checked~.custom-control-label {
             background: transparent;
         }
 
-        .modern-checkbox .custom-control-input:checked ~ .custom-control-label .test-item {
+        .modern-checkbox .custom-control-input:checked~.custom-control-label .test-item {
             border-color: var(--primary);
             background: rgba(37, 99, 235, 0.05);
         }
@@ -435,9 +468,9 @@
 
         .btn-primary-modern:hover {
             transform: translateY(-2px);
-            box-shadow:  0 4px 15px rgba(37, 99, 235, 0.3);
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            
+
         }
 
         .form-text {
@@ -556,6 +589,26 @@
 
                 // Initialize on page load
                 updateTestCategory();
+
+                // Search functionality
+                var searchInput = document.getElementById('testSearch');
+                var testItems = document.querySelectorAll('.test-item');
+
+                if (searchInput) {
+                    searchInput.addEventListener('input', function() {
+                        var searchTerm = this.value.toLowerCase().trim();
+
+                        testItems.forEach(function(item) {
+                            var testName = item.querySelector('.test-name').textContent
+                                .toLowerCase();
+                            if (testName.includes(searchTerm)) {
+                                item.style.display = 'block';
+                            } else {
+                                item.style.display = 'none';
+                            }
+                        });
+                    });
+                }
             });
         })();
     </script>

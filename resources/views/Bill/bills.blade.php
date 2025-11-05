@@ -11,14 +11,16 @@
                         <div class="d-flex justify-content-between align-items-center flex-wrap">
                             <div>
                                 <!-- <h2 class="mb-2 text-white fw-bold">
-                                    <i class="fas fa-file-invoice-dollar me-3"></i>Patient Billing System
-                                </h2>
-                                <p class="text-white-50 mb-0 fs-5">Create and manage patient bills efficiently</p> -->
+                                                                                        <i class="fas fa-file-invoice-dollar me-3"></i>Patient Billing System
+                                                                                    </h2>
+                                                                                    <p class="text-white-50 mb-0 fs-5">Create and manage patient bills efficiently</p> -->
                             </div>
                             <nav aria-label="breadcrumb" class="mt-3 mt-md-0">
                                 <ol class="breadcrumb bg-transparent p-0 m-0">
-                                    <li class="breadcrumb-item"><a href="{{ route('dashboard') }}" class="text-white-75"><i class="fas fa-home me-1"></i>Home</a></li>
-                                    <li class="breadcrumb-item"><a href="{{ route('patients.list') }}" class="text-white-75">Patients</a></li>
+                                    <li class="breadcrumb-item"><a href="{{ route('dashboard') }}" class="text-white-75"><i
+                                                class="fas fa-home mr-1"></i>Home</a></li>
+                                    <li class="breadcrumb-item"><a href="{{ route('patients.list') }}"
+                                            class="text-white-75">Patients</a></li>
                                     <li class="breadcrumb-item active text-white" aria-current="page">Billing</li>
                                 </ol>
                             </nav>
@@ -26,23 +28,23 @@
                     </div>
                 </div>
                 <div class="d-flex justify-content-between align-items-center flex-wrap bg-primary p-4 rounded shadow-sm">
-                            <div>
-                                <h2 class="mb-2 text-white fw-bold">
-                                    <i class="fas fa-file-invoice-dollar me-3"></i>Patient Billing System
-                                </h2>
-                                <p class="text-white-50 mb-0 fs-5">Create and manage patient bills efficiently</p>
-                            </div>
-                            <!-- <nav aria-label="breadcrumb" class="mt-3 mt-md-0">
-                                <ol class="breadcrumb bg-transparent p-0 m-0">
-                                    <li class="breadcrumb-item"><a href="{{ route('dashboard') }}" class="text-white-75"><i class="fas fa-home me-1"></i>Home</a></li>
-                                    <li class="breadcrumb-item"><a href="{{ route('patients.list') }}" class="text-white-75">Patients</a></li>
-                                    <li class="breadcrumb-item active text-white" aria-current="page">Billing</li>
-                                </ol>
-                            </nav> -->
-                        </div>
-                
+                    <div>
+                        <h2 class="mb-2 text-white fw-bold">
+                            <i class="fas fa-file-invoice-dollar mr-3"></i>Patient Billing System
+                        </h2>
+                        <p class="text-white-50 mb-0 fs-5">Create and manage patient bills efficiently</p>
+                    </div>
+                    <!-- <nav aria-label="breadcrumb" class="mt-3 mt-md-0">
+                                                                                    <ol class="breadcrumb bg-transparent p-0 m-0">
+                                                                                        <li class="breadcrumb-item"><a href="{{ route('dashboard') }}" class="text-white-75"><i class="fas fa-home me-1"></i>Home</a></li>
+                                                                                        <li class="breadcrumb-item"><a href="{{ route('patients.list') }}" class="text-white-75">Patients</a></li>
+                                                                                        <li class="breadcrumb-item active text-white" aria-current="page">Billing</li>
+                                                                                    </ol>
+                                                                                </nav> -->
+                </div>
+
             </div>
-            
+
         </div>
 
         @php
@@ -69,14 +71,14 @@
                         <div class="card border-0 shadow-sm">
                             <div class="card-header bg-light">
                                 <h6 class="mb-0 text-primary">
-                                    <i class="fas fa-user-circle me-2"></i>Patient Information
+                                    <i class="fas fa-user-circle mr-2"></i>Patient Information
                                 </h6>
                             </div>
                             <div class="card-body">
                                 <div class="row g-3">
                                     <div class="col-md-3">
                                         <div class="d-flex align-items-center">
-                                            <i class="fas fa-id-card text-muted me-2"></i>
+                                            <i class="fas fa-id-card text-muted mr-2"></i>
                                             <div>
                                                 <small class="text-muted d-block">Patient ID</small>
                                                 <strong>{{ $patient->patient_id }}</strong>
@@ -85,7 +87,7 @@
                                     </div>
                                     <div class="col-md-3">
                                         <div class="d-flex align-items-center">
-                                            <i class="fas fa-user text-muted me-2"></i>
+                                            <i class="fas fa-user text-muted mr-2"></i>
                                             <div>
                                                 <small class="text-muted d-block">Name</small>
                                                 <strong>{{ $patient->name }}</strong>
@@ -94,7 +96,7 @@
                                     </div>
                                     <div class="col-md-3">
                                         <div class="d-flex align-items-center">
-                                            <i class="fas fa-birthday-cake text-muted me-2"></i>
+                                            <i class="fas fa-birthday-cake text-muted mr-2"></i>
                                             <div>
                                                 <small class="text-muted d-block">Age / Gender</small>
                                                 <strong>{{ $patient->age }} / {{ $patient->gender }}</strong>
@@ -103,7 +105,7 @@
                                     </div>
                                     <div class="col-md-3">
                                         <div class="d-flex align-items-center">
-                                            <i class="fas fa-phone text-muted me-2"></i>
+                                            <i class="fas fa-phone text-muted mr-2"></i>
                                             <div>
                                                 <small class="text-muted d-block">Phone</small>
                                                 <strong>{{ $patient->mobile_phone }}</strong>
@@ -128,7 +130,7 @@
                             $referral = App\Models\Referrals::where('name', $patient->referred_by)->first();
                             $commissionPercentage = $referral ? $referral->commission_percentage : 0;
                         @endphp
-                        <div class="col-12 mt-3">
+                        {{-- <div class="col-12 mt-3">
                             <div class="alert alert-info alert-dismissible fade show" role="alert">
                                 <i class="fas fa-info-circle me-2"></i>
                                 <strong>Referral Information:</strong>
@@ -141,7 +143,7 @@
                                 </div>
                                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                             </div>
-                        </div>
+                        </div> --}}
                     @endif
 
                     {{-- <!-- Payment Type -->
@@ -158,16 +160,18 @@
                     @if (isset($registeredTests) && $registeredTests->count() > 0)
                         <div class="col-12 mt-4">
                             <div class="card border-0 shadow-sm">
-                                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                                <div
+                                    class="card-header bg-success text-white d-flex justify-content-between align-items-center">
                                     <div>
                                         <h6 class="mb-0">
-                                            <i class="fas fa-check-circle me-2"></i>Registered Tests for This Patient
+                                            <i class="fas fa-check-circle mr-2"></i>Registered Tests for This Patient
                                         </h6>
-                                        <small class="text-white-50">These tests will be automatically added to the bill</small>
+                                        <small class="text-white-50">These tests will be automatically added to the
+                                            bill</small>
                                     </div>
                                     <button type="button" id="refreshRegisteredTests" class="btn btn-light btn-sm"
                                         data-fetch-url="{{ route('billing.registeredTests', $patient->id) }}">
-                                        <i class="fas fa-sync-alt me-1"></i> Refresh
+                                        <i class="fas fa-sync-alt mr-1"></i> Refresh
                                     </button>
                                 </div>
                                 <div class="card-body p-0">
@@ -184,20 +188,25 @@
                                             </thead>
                                             <tbody id="registeredTestsList">
                                                 @foreach ($registeredTests as $test)
-                                                    <tr data-test-id="{{ $test->id }}" data-test-name="{{ $test->cat_name }}"
+                                                    <tr data-test-id="{{ $test->id }}"
+                                                        data-test-name="{{ $test->cat_name }}"
                                                         data-test-price="{{ $test->price }}"
                                                         data-test-dept="{{ $test->department ?? 'N/A' }}"
                                                         class="table-row-hover">
                                                         <td class="fw-semibold">{{ $loop->iteration }}</td>
                                                         <td>
                                                             <div class="d-flex align-items-center">
-                                                                <i class="fas fa-flask text-success me-2"></i>
+                                                                <i class="fas fa-flask text-success mr-2"></i>
                                                                 {{ $test->cat_name }}
                                                             </div>
                                                         </td>
-                                                        <td><span class="badge bg-light text-dark">{{ $test->department ?? 'N/A' }}</span></td>
-                                                        <td class="fw-semibold text-success">{{ number_format($test->price, 2) }}</td>
-                                                        <td><span class="badge bg-success"><i class="fas fa-check me-1"></i>Auto-added</span></td>
+                                                        <td><span
+                                                                class="badge bg-light text-dark">{{ $test->department ?? 'N/A' }}</span>
+                                                        </td>
+                                                        <td class="fw-semibold text-success">
+                                                            {{ number_format($test->price, 2) }}</td>
+                                                        <td><span class="badge bg-success"><i
+                                                                    class="fas fa-check mr-1"></i>Auto-added</span></td>
                                                     </tr>
                                                 @endforeach
                                             </tbody>
@@ -213,7 +222,7 @@
                         <div class="card border-0 shadow-sm">
                             <div class="card-header bg-info text-white">
                                 <h6 class="mb-0">
-                                    <i class="fas fa-clipboard-list me-2"></i>Tests in Current Bill
+                                    <i class="fas fa-clipboard-list mr-2"></i>Tests in Current Bill
                                 </h6>
                             </div>
                             <div class="card-body p-0">
@@ -235,7 +244,8 @@
                                                         <div class="text-muted">
                                                             <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
                                                             <h6>No tests selected yet</h6>
-                                                            <p class="mb-0">Add tests from the sections above to create your bill</p>
+                                                            <p class="mb-0">Add tests from the sections above to create
+                                                                your bill</p>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -252,7 +262,7 @@
                         <div class="card border-0 shadow-sm">
                             <div class="card-header bg-warning text-dark py-3">
                                 <h6 class="mb-0 fw-bold">
-                                    <i class="fas fa-calculator me-2 ml-2"></i>   Bill Summary & Payment
+                                    <i class="fas fa-calculator mr-2 ml-2"></i> Bill Summary & Payment
                                 </h6>
                             </div>
                             <div class="card-body py-4">
@@ -260,18 +270,23 @@
                                     <div class="col-md-12">
                                         <div class="row g-4">
                                             <div class="col-12">
-                                                <div class="d-flex justify-content-between align-items-center p-4 bg-light rounded shadow-sm">
+                                                <div
+                                                    class="d-flex justify-content-between align-items-center p-4 bg-light rounded shadow-sm">
                                                     <span class="fw-semibold fs-6">Subtotal:</span>
-                                                    <span class="fs-4 fw-bold text-primary" id="subtotal-display">PKR 0.00</span>
+                                                    <span class="fs-4 fw-bold text-primary" id="subtotal-display">PKR
+                                                        0.00</span>
                                                 </div>
                                             </div>
                                             <div class="col-12">
-                                                <label for="discount" class="form-label fw-semibold mb-2">Discount (PKR)</label>
-                                                <input type="number" step="0.01" class="form-control form-control-lg py-3" id="discount"
+                                                <label for="discount" class="form-label fw-semibold mb-2">Discount
+                                                    (PKR)</label>
+                                                <input type="number" step="0.01"
+                                                    class="form-control form-control-lg py-3" id="discount"
                                                     name="discount" value="0" placeholder="0.00">
                                             </div>
                                             <div class="col-12 mt-4">
-                                                <div class="d-flex justify-content-between align-items-center p-4 bg-success text-white rounded shadow-sm">
+                                                <div
+                                                    class="d-flex justify-content-between align-items-center p-4 bg-success text-white rounded shadow-sm">
                                                     <span class="fw-semibold fs-6">Total Amount:</span>
                                                     <span class="fs-4 fw-bold" id="total-display">PKR 0.00</span>
                                                 </div>
@@ -281,21 +296,24 @@
                                     <div class="col-md-12">
                                         <div class="row g-4 mt-4">
                                             <div class="col-12 ">
-                                                <label for="pay_" class="form-label fw-semibold mb-2">Amount Paid (PKR)</label>
-                                                <input type="number" step="0.01" class="form-control form-control-lg py-3" id="pay_"
+                                                <label for="pay_" class="form-label fw-semibold mb-2">Amount Paid
+                                                    (PKR)</label>
+                                                <input type="number" step="0.01"
+                                                    class="form-control form-control-lg py-3" id="pay_"
                                                     name="pay" value="0" placeholder="0.00">
                                             </div>
                                             <div class="col-12 mt-4">
-                                                <div class="d-flex justify-content-between align-items-center p-4 bg-info text-white rounded shadow-sm">
+                                                <div
+                                                    class="d-flex justify-content-between align-items-center p-4 bg-info text-white rounded shadow-sm">
                                                     <span class="fw-semibold fs-6">Due / Return:</span>
                                                     <span class="fs-4 fw-bold" id="due-display">PKR 0.00</span>
                                                 </div>
                                             </div>
                                             <!-- <div class="col-12">
-                                                <label for="abbroval_code" class="form-label fw-semibold mb-2">Approval Code (Optional)</label>
-                                                <input type="text" class="form-control py-3" id="abbroval_code" name="abbroval_code"
-                                                    placeholder="Enter approval code if applicable">
-                                            </div> -->
+                                                                                                    <label for="abbroval_code" class="form-label fw-semibold mb-2">Approval Code (Optional)</label>
+                                                                                                    <input type="text" class="form-control py-3" id="abbroval_code" name="abbroval_code"
+                                                                                                        placeholder="Enter approval code if applicable">
+                                                                                                </div> -->
                                         </div>
                                     </div>
                                 </div>
@@ -313,9 +331,10 @@
                             <div class="modal-content">
                                 <div class="modal-header bg-primary text-white">
                                     <h6 class="modal-title">
-                                        <i class="fas fa-sticky-note me-2"></i>Add Test Notes
+                                        <i class="fas fa-sticky-note mr-2"></i>Add Test Notes
                                     </h6>
-                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                    <button type="button" class="btn-close btn-close-white"
+                                        data-bs-dismiss="modal"></button>
                                 </div>
                                 <div class="modal-body">
                                     <div class="mb-3">
@@ -324,12 +343,15 @@
                                     </div>
                                     <div class="mb-3">
                                         <label for="testNotes" class="form-label fw-semibold">Notes / Remarks</label>
-                                        <textarea class="form-control" id="testNotes" rows="4" placeholder="Add clinical notes, special instructions, or remarks for this test..."></textarea>
-                                        <small class="text-muted d-block mt-2">These notes will appear on the test report</small>
+                                        <textarea class="form-control" id="testNotes" rows="4"
+                                            placeholder="Add clinical notes, special instructions, or remarks for this test..."></textarea>
+                                        <small class="text-muted d-block mt-2">These notes will appear on the test
+                                            report</small>
                                     </div>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Cancel</button>
                                     <button type="button" class="btn btn-primary" id="saveTestNotes">Save Notes</button>
                                 </div>
                             </div>
@@ -339,10 +361,10 @@
                     <!-- Submit Button -->
                     <div class="col-12 text-end mt-4">
                         <a href="{{ route('patients.list') }}" class="btn btn-secondary btn-lg px-4">
-                            <i class="fas fa-arrow-left me-2"></i> Back to Patients
+                            <i class="fas fa-arrow-left mr-2"></i> Back to Patients
                         </a>
                         <button type="submit" class="btn btn-success btn-lg px-4 ms-3">
-                            <i class="fas fa-save me-2"></i> Save Bill
+                            <i class="fas fa-save mr-2"></i> Save Bill
                         </button>
                     </div>
                 </form>
@@ -404,7 +426,7 @@
 
         function appendRegisteredTest(test, counter) {
             $('.no-tests-row').remove();
-            
+
             // Build the row HTML
             let rowHtml = `
                 <tr data-id="${test.id}" class="registered-test">
@@ -432,19 +454,20 @@
                     </td>
                 </tr>
             `;
-            
+
             $('#selectedTests tbody').append(rowHtml);
-            
+
             // Fetch category notes from server if not already provided
             if (!test.notes && test.name) {
                 $.ajax({
-                    url: '{{ route("labtest.edit", "") }}/' + test.id,
+                    url: '{{ route('labtest.edit', '') }}/' + test.id,
                     method: 'GET',
                     dataType: 'json',
                     success: function(labtest) {
                         if (labtest && labtest.notes) {
                             const $row = $(`#selectedTests tbody tr[data-id="${test.id}"]`);
-                            const notesPreview = labtest.notes.substring(0, 50) + (labtest.notes.length > 50 ? '...' : '');
+                            const notesPreview = labtest.notes.substring(0, 50) + (labtest.notes.length > 50 ?
+                                '...' : '');
                             $row.find('.notes-preview').text(notesPreview);
                             $row.find('input[name="notes[]"]').val(labtest.notes);
                         }
@@ -488,7 +511,7 @@
                 const button = $(this);
 
                 button.prop('disabled', true).html(
-                    '<span class="spinner-border spinner-border-sm me-1"></span> Refreshing');
+                    '<span class="spinner-border spinner-border-sm mr-1"></span> Refreshing');
 
                 $.get(url)
                     .done(function(response) {
@@ -532,7 +555,7 @@
                     })
                     .always(function() {
                         button.prop('disabled', false).html(
-                            '<i class="fas fa-sync-alt me-1"></i> Refresh registered tests');
+                            '<i class="fas fa-sync-alt mr-1"></i> Refresh registered tests');
                         ensureNoTestsMessage();
                     });
             });
@@ -638,7 +661,8 @@
                 $row.find('input[name="notes[]"]').val(notes);
 
                 // Update preview text
-                const preview = notes.length > 0 ? notes.substring(0, 50) + (notes.length > 50 ? '...' : '') : 'No notes';
+                const preview = notes.length > 0 ? notes.substring(0, 50) + (notes.length > 50 ? '...' :
+                    '') : 'No notes';
                 $row.find('.notes-preview').text(preview).attr('title', notes);
 
                 // Close modal
