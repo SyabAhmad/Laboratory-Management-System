@@ -544,6 +544,16 @@
                             input.name = 'test_category[]'; // Note the [] — this makes it an array in PHP
                             input.value = checkboxes[i].value;
                             container.appendChild(input);
+                            
+                            // Also send the price
+                            var priceInput = document.createElement('input');
+                            priceInput.type = 'hidden';
+                            priceInput.name = 'test_prices[]';
+                            var priceValue = checkboxes[i].getAttribute('data-price') || '0';
+                            priceInput.value = priceValue;
+                            container.appendChild(priceInput);
+                            
+                            console.log('Added test:', checkboxes[i].value, 'with price:', priceValue);
                         }
                     }
 

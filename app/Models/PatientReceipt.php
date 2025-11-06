@@ -48,7 +48,44 @@ class PatientReceipt extends Model
     }
 
     /**
-     * Create receipt from patient registration
+     * Create receipt from patient registration with prices from form
+     */
+    public static function createFromPatientWithPrices($patient, $tests = [], $prices = [], $printedBy = null)
+    {
+        $receipt = new self();
+        $receipt->patient_id = $patient->id;
+        $receipt->receipt_number = self::generateReceiptNumber();
+        $receipt->printed_by = $printedBy;
+        
+        // Process tests and calculate total
+        $totalAmount = 0;
+        $testDetails = [];
+        
+        if (!empty($tests) && is_array($tests)) {
+            foreach ($tests as $index => $testName) {
+                // Get price from the form data (already validated)
+                $price = (float)(($prices[$index] ?? 0));
+                
+                $totalAmount += $price;
+                
+                $testDetails[] = [
+                    'test_name' => $testName,
+                    'price' => $price,
+                    'paid_status' => 'unpaid',
+                    'discount' => 0,
+                ];
+            }
+        }
+        
+        $receipt->total_amount = $totalAmount;
+        $receipt->tests = $testDetails;
+        $receipt->status = 'draft';
+        
+        return $receipt;
+    }
+
+    /**
+     * Create receipt from patient registration (fallback method)
      */
     public static function createFromPatient($patient, $tests = [], $printedBy = null)
     {
@@ -62,21 +99,44 @@ class PatientReceipt extends Model
         $testDetails = [];
         
         if (!empty($tests) && is_array($tests)) {
-            foreach ($tests as $testName) {
-                // Get test price from LabTest
-                $labTest = LabTest::where('test_name', $testName)->first();
+            foreach ($tests as $testIdentifier) {
+                $price = 0;
+                $testName = $testIdentifier;
                 
-                if ($labTest) {
-                    $price = $labTest->price ?? 0;
-                    $totalAmount += $price;
+                // Try to find in LabTestCat (test categories/packages) first
+                $testCategory = LabTestCat::where('cat_name', $testIdentifier)->first();
+                
+                if ($testCategory) {
+                    $price = (float)($testCategory->price ?? 0);
+                    $testName = $testCategory->cat_name;
+                } else {
+                    // Try as individual test in LabTest
+                    $labTest = LabTest::where('test_name', $testIdentifier)->first();
                     
-                    $testDetails[] = [
-                        'test_name' => $testName,
-                        'price' => $price,
-                        'paid_status' => 'unpaid',
-                        'discount' => 0,
-                    ];
+                    if (!$labTest) {
+                        // Try partial match in LabTestCat
+                        $labTest = LabTestCat::where('cat_name', 'LIKE', '%' . $testIdentifier . '%')->first();
+                    }
+                    
+                    if (!$labTest) {
+                        // Try partial match in LabTest
+                        $labTest = LabTest::where('test_name', 'LIKE', '%' . $testIdentifier . '%')->first();
+                    }
+                    
+                    if ($labTest) {
+                        $price = (float)($labTest->price ?? 0);
+                        $testName = $labTest->cat_name ?? $labTest->test_name ?? $testIdentifier;
+                    }
                 }
+                
+                $totalAmount += $price;
+                
+                $testDetails[] = [
+                    'test_name' => $testName,
+                    'price' => $price,
+                    'paid_status' => 'unpaid',
+                    'discount' => 0,
+                ];
             }
         }
         

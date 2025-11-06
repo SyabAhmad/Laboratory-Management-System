@@ -312,10 +312,17 @@ class PatientsController extends Controller
                     return $isPaid ? 'Paid' : 'Unpaid';
                 })
                 ->addColumn('action', function ($row) {
-                    $btn  = '<a href="' . route('patients.edit', $row->id) . '" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>';
-                    $btn .= '&nbsp;&nbsp;<a href="' . route("patients.profile", $row->id) . '" class="btn btn-info btn-sm detailsview" data-id="' . $row->id . '"><i class="fas fa-eye"></i></a>';
-                    $btn .= '&nbsp;&nbsp;<a href="javascript:void(0);" data-id="' . $row->id . '" class="btn btn-danger btn-sm deletebtn"><i class="fas fa-trash"></i></a>';
-                    $btn .= '&nbsp;&nbsp;<a href="' . route("billing.create", ['id' => $row->id]) . '" class="btn btn-success btn-sm"><i class="fas fa-file-invoice-dollar"></i> Bill</a>';
+                    $btn  = '<a href="' . route('patients.edit', $row->id) . '" class="btn btn-warning btn-sm" title="Edit"><i class="fas fa-edit"></i></a>';
+                    $btn .= '&nbsp;&nbsp;<a href="' . route("patients.profile", $row->id) . '" class="btn btn-info btn-sm detailsview" data-id="' . $row->id . '" title="View Details"><i class="fas fa-eye"></i></a>';
+                    
+                    // Add Download Slip button if receipt exists
+                    $receipt = PatientReceipt::where('patient_id', $row->id)->latest()->first();
+                    if ($receipt) {
+                        $btn .= '&nbsp;&nbsp;<a href="' . route('patients.print-receipt', $receipt->id) . '" class="btn btn-success btn-sm" title="Download Slip" onclick="return openPrintModal(event, this)"><i class="fas fa-download"></i> Slip</a>';
+                    }
+                    
+                    $btn .= '&nbsp;&nbsp;<a href="javascript:void(0);" data-id="' . $row->id . '" class="btn btn-danger btn-sm deletebtn" title="Delete"><i class="fas fa-trash"></i></a>';
+                    $btn .= '&nbsp;&nbsp;<a href="' . route("billing.create", ['id' => $row->id]) . '" class="btn btn-success btn-sm" title="Create Bill"><i class="fas fa-file-invoice-dollar"></i> Bill</a>';
                     return $btn;
                 })
 
@@ -346,8 +353,15 @@ class PatientsController extends Controller
                 ->addIndexColumn()
                 ->addColumn('age', fn($r) => $r->age)
                 ->addColumn('action', function ($row) {
-                    $btn  = '<a href="' . route('patients.edit', $row->id) . '" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>';
-                    $btn .= '&nbsp;&nbsp;<a href="' . route("patients.profile", $row->id) . '" class="btn btn-info btn-sm detailsview" data-id="' . $row->id . '"><i class="fas fa-eye"></i></a>';
+                    $btn  = '<a href="' . route('patients.edit', $row->id) . '" class="btn btn-warning btn-sm" title="Edit"><i class="fas fa-edit"></i></a>';
+                    $btn .= '&nbsp;&nbsp;<a href="' . route("patients.profile", $row->id) . '" class="btn btn-info btn-sm detailsview" data-id="' . $row->id . '" title="View Details"><i class="fas fa-eye"></i></a>';
+                    
+                    // Add Download Slip button if receipt exists
+                    $receipt = PatientReceipt::where('patient_id', $row->id)->latest()->first();
+                    if ($receipt) {
+                        $btn .= '&nbsp;&nbsp;<a href="' . route('patients.print-receipt', $receipt->id) . '" class="btn btn-success btn-sm" title="Download Slip" onclick="return openPrintModal(event, this)"><i class="fas fa-download"></i> Slip</a>';
+                    }
+                    
                     return $btn;
                 })
                 ->rawColumns(['action'])
@@ -385,6 +399,8 @@ class PatientsController extends Controller
             'reporting_date' => 'required|date',
             'test_category'   => 'required|array|min:1',
             'test_category.*' => 'string|max:255',
+            'test_prices'     => 'array',
+            'test_prices.*'   => 'numeric',
         ]);
 
         $patient = new Patients;
@@ -410,21 +426,28 @@ class PatientsController extends Controller
         $patient->registerd_by = Auth::user() ? Auth::user()->name : null;
         $patient->save();
 
-        // 🔹 Generate patient receipt/token
-        $receipt = PatientReceipt::createFromPatient(
+        // 🔹 Generate patient receipt/token with prices
+        $testPrices = $request->test_prices ?? [];
+        
+        // Debug: Log what we're receiving
+        \Log::info('Receipt Creation Debug', [
+            'test_category' => $request->test_category,
+            'test_prices' => $testPrices,
+            'test_category_count' => count($request->test_category ?? []),
+            'test_prices_count' => count($testPrices),
+        ]);
+        
+        $receipt = PatientReceipt::createFromPatientWithPrices(
             $patient,
             $request->test_category,
+            $testPrices,
             Auth::user() ? Auth::user()->name : null
         );
         $receipt->save();
 
-        // Return with patient ID for CBC machine and receipt info
-        return redirect()->route('patients.list')
-            ->with('success', 'Patient registered successfully')
-            ->with('patient_id', $patient->id)
-            ->with('patient_name', $patient->name)
-            ->with('receipt_number', $receipt->receipt_number)
-            ->with('show_patient_id_modal', true);
+        // 🔹 Redirect to print receipt page (auto-opens print preview)
+        return redirect()->route('patients.print-receipt', $receipt->id)
+            ->with('success', 'Patient registered successfully! Print preview will open.');
     }
 
     // Search patients

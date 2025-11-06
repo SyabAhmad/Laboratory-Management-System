@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Patient Receipt - {{ $receipt->receipt_number }}</title>
+    <title>Patient Slip - {{ $receipt->receipt_number }}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
     <style type="text/css">
         * {
             margin: 0;
@@ -23,248 +25,203 @@
 
         body {
             font-family: 'Courier New', Arial, sans-serif;
-            line-height: 1.4;
+            line-height: 1.2;
             color: #333;
             background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
         }
 
-        .receipt-container {
-            max-width: 80mm;
-            width: 100%;
-            margin: 10mm auto;
+        /* Thermal Printer Slip - 2 1/4 inches (57.15mm) width */
+        .slip-wrapper {
+            width: 57.15mm;
+            margin: 0 auto;
             background-color: white;
-            padding: 5mm;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            page-break-after: always;
+            padding: 0;
+            page-break-after: avoid;
+            break-inside: avoid;
         }
 
-        /* Header */
-        .receipt-header {
-            text-align: center;
-            border-bottom: 2px solid #333;
-            padding-bottom: 5mm;
-            margin-bottom: 5mm;
-        }
-
-        .hospital-name {
-            font-size: 14px;
-            font-weight: bold;
-            color: #8d2d36;
-            margin-bottom: 2mm;
-        }
-
-        .hospital-info {
-            font-size: 9px;
-            color: #555;
-            line-height: 1.3;
-        }
-
-        .divider {
-            border: none;
-            border-bottom: 1px dashed #999;
-            margin: 3mm 0;
-        }
-
-        /* Patient Details */
-        .patient-details {
-            font-size: 10px;
-            margin-bottom: 5mm;
-        }
-
-        .detail-row {
-            display: flex;
-            margin: 2mm 0;
-            justify-content: space-between;
-        }
-
-        .detail-label {
-            font-weight: bold;
-            width: 45%;
-        }
-
-        .detail-value {
-            width: 55%;
-            text-align: left;
-        }
-
-        /* Tests Table */
-        .tests-section {
-            margin-bottom: 5mm;
-        }
-
-        .section-title {
-            font-weight: bold;
-            font-size: 11px;
-            background-color: #f0f0f0;
-            padding: 2mm;
-            margin-bottom: 2mm;
-            text-align: center;
-        }
-
-        .tests-table {
+        .slip {
             width: 100%;
-            font-size: 9px;
-            border-collapse: collapse;
+            padding: 2mm;
+            font-size: 7px;
+            line-height: 1.0;
+            border: 1px dashed #999;
         }
 
-        .tests-table th {
-            background-color: #8d2d36;
-            color: white;
-            padding: 2mm;
-            text-align: left;
-            border: 1px solid #999;
+        .slip-header {
+            text-align: center;
+            border-bottom: 1px solid #333;
+            margin-bottom: 2mm;
+            padding-bottom: 1mm;
+        }
+
+        .slip-title {
             font-weight: bold;
+            font-size: 9px;
+            color: #8d2d36;
+            margin-bottom: 0.2mm;
         }
 
-        .tests-table td {
-            padding: 2mm;
-            border: 1px solid #ddd;
+        .slip-subtitle {
+            font-size: 6px;
+            color: #666;
+            margin-bottom: 0.2mm;
         }
 
-        .tests-table tr:nth-child(even) {
-            background-color: #f9f9f9;
+        .slip-marker {
+            font-size: 5px;
+            color: #999;
+        }
+
+        /* Patient Information Section */
+        .slip-patient {
+            margin-bottom: 2mm;
+            padding-bottom: 1mm;
+            border-bottom: 1px dashed #ddd;
+        }
+
+        .patient-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 0.6mm 0;
+            font-size: 7px;
+        }
+
+        .patient-label {
+            font-weight: bold;
+            width: 30%;
+        }
+
+        .patient-value {
+            width: 70%;
+            text-align: left;
+            word-break: break-word;
+        }
+
+        /* Token/Slip Number */
+        .slip-token {
+            text-align: center;
+            border: 1px solid #8d2d36;
+            padding: 1mm;
+            margin: 1mm 0;
+            background-color: #fafafa;
+        }
+
+        .token-label {
+            font-size: 5px;
+            color: #666;
+            margin-bottom: 0.3mm;
+        }
+
+        .token-number {
+            font-size: 9px;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 0.5px;
+            color: #333;
+        }
+
+        /* Tests Section with Prices */
+        .slip-tests {
+            border-top: 1px dashed #ddd;
+            border-bottom: 1px dashed #ddd;
+            padding: 0.8mm 0;
+            margin: 1mm 0;
+            font-size: 6px;
+        }
+
+        .tests-header {
+            font-weight: bold;
+            margin-bottom: 0.6mm;
+            font-size: 7px;
+        }
+
+        .test-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 0.5mm 0;
+            padding: 0.2mm 0;
         }
 
         .test-name {
             flex: 1;
+            margin-right: 1mm;
+            font-size: 6px;
         }
 
         .test-price {
             text-align: right;
-            width: 20%;
-        }
-
-        .test-status {
-            text-align: center;
-            width: 25%;
-            font-size: 8px;
             font-weight: bold;
+            min-width: 15mm;
+            font-size: 6px;
         }
 
-        .status-paid {
-            color: #28a745;
-            background-color: #e8f5e9;
-            padding: 1mm 2mm;
-            border-radius: 2px;
-        }
-
-        .status-unpaid {
-            color: #dc3545;
-            background-color: #ffebee;
-            padding: 1mm 2mm;
-            border-radius: 2px;
-        }
-
-        /* Total Section */
-        .total-section {
-            border: 2px solid #8d2d36;
-            padding: 3mm;
-            margin-bottom: 5mm;
-            text-align: center;
+        /* Total Amount */
+        .slip-total {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.8mm 0;
+            margin-top: 0.8mm;
+            font-weight: bold;
+            font-size: 7px;
         }
 
         .total-label {
-            font-size: 10px;
             font-weight: bold;
-            color: #333;
         }
 
         .total-amount {
-            font-size: 16px;
-            font-weight: bold;
-            color: #8d2d36;
-            margin-top: 2mm;
-        }
-
-        .amount-in-words {
             font-size: 8px;
-            color: #666;
-            margin-top: 1mm;
-            font-style: italic;
+            color: #8d2d36;
         }
 
-        /* Barcode */
-        .barcode-section {
+        /* Barcode Section */
+        .slip-barcode {
             text-align: center;
-            margin-bottom: 5mm;
+            margin-top: 1.5mm;
+            padding-top: 0.8mm;
+            border-top: 1px dashed #ddd;
         }
 
-        .barcode-number {
-            font-family: 'Courier New', monospace;
-            font-size: 12px;
-            font-weight: bold;
-            letter-spacing: 2px;
-            margin-bottom: 2mm;
-        }
-
-        .barcode-image {
-            margin: 3mm 0;
-        }
-
-        .barcode-image svg {
+        #barcode {
             max-width: 100%;
             height: auto;
         }
 
-        /* Footer */
-        .receipt-footer {
-            border-top: 2px solid #333;
-            padding-top: 3mm;
-            font-size: 9px;
-            text-align: center;
+        .barcode-text {
+            font-size: 5px;
             color: #666;
-        }
-
-        .footer-note {
-            font-size: 8px;
-            margin: 2mm 0;
-            line-height: 1.3;
-        }
-
-        .printed-info {
-            font-size: 8px;
-            margin-top: 2mm;
-            font-weight: bold;
-        }
-
-        .receipt-number-box {
-            background-color: #f0f0f0;
-            padding: 3mm;
-            margin: 3mm 0;
-            border: 1px solid #999;
-            text-align: center;
-        }
-
-        .receipt-number-label {
-            font-size: 8px;
-            color: #666;
-        }
-
-        .receipt-number {
-            font-size: 12px;
-            font-weight: bold;
+            margin-top: 0.3mm;
             font-family: 'Courier New', monospace;
-            letter-spacing: 1px;
-            color: #333;
-            margin-top: 1mm;
+        }
+
+        /* Footer */
+        .slip-footer {
+            padding-top: 0.8mm;
+            margin-top: 0.8mm;
+            font-size: 5px;
+            text-align: center;
+            color: #666;
         }
 
         /* Print Controls */
         .print-controls {
             text-align: center;
-            margin-top: 20px;
-            padding: 20px;
+            margin-bottom: 20px;
+            padding: 15px;
             background-color: #f9f9f9;
             border-radius: 5px;
         }
 
         .btn {
-            padding: 10px 20px;
+            padding: 8px 16px;
             margin: 5px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: bold;
         }
 
@@ -285,187 +242,199 @@
         .btn-close:hover {
             background-color: #5a6268;
         }
-
-        @media (max-width: 768px) {
-            .receipt-container {
-                max-width: 100%;
-                margin: 0;
-                box-shadow: none;
-            }
-        }
     </style>
 </head>
 <body>
     <div class="no-print print-controls">
         <button class="btn btn-print" onclick="window.print()">
-            <i class="fas fa-print"></i> Print Receipt
+            <i class="fas fa-print"></i> Print Slip
         </button>
-        <button class="btn btn-close" onclick="window.history.back()">
+        <!-- <button class="btn btn-close" onclick="universalClose()">
             <i class="fas fa-times"></i> Close
-        </button>
+        </button> -->
     </div>
 
-    <div class="receipt-container">
-        <!-- Header -->
-        <div class="receipt-header">
-            <div class="hospital-name">NEW MODERN CLINICAL LABORATORY</div>
-            <div class="hospital-info">
-                (KP HCC) REG: 03663 SWAT<br>
-                Bacha Khan, BS Pathology (KMU)<br>
-                DMLT KPK Peshawar<br>
-                <strong>Tel:</strong> 0302-8080191, 0313-9797790<br>
-                Kabal Road, Near Township Chowk, Kanju Swat
-            </div>
-        </div>
-
-        <hr class="divider">
-
-        <!-- Receipt Number -->
-        <div class="receipt-number-box">
-            <div class="receipt-number-label">RECEIPT / TOKEN NUMBER</div>
-            <div class="receipt-number">{{ $receipt->getFormattedReceiptNumber() }}</div>
-        </div>
-
-        <!-- Patient Details -->
-        <div class="patient-details">
-            <div class="section-title">PATIENT INFORMATION</div>
-
-            <div class="detail-row">
-                <span class="detail-label">Patient ID:</span>
-                <span class="detail-value">{{ $patient->patient_id }}</span>
+    <div class="slip-wrapper">
+        <div class="slip">
+            <!-- Header -->
+            <div class="slip-header">
+                <div class="slip-title">NEW MODERN LAB</div>
+                <div class="slip-subtitle">Patient Registration Slip</div>
+                <div class="slip-marker">[ 2 1/4 inch ]</div>
             </div>
 
-            <div class="detail-row">
-                <span class="detail-label">Patient Name:</span>
-                <span class="detail-value">{{ $patient->name }}</span>
-            </div>
-
-            <div class="detail-row">
-                <span class="detail-label">Father Name:</span>
-                <span class="detail-value">{{ $patient->father_name ?? 'N/A' }}</span>
-            </div>
-
-            <div class="detail-row">
-                <span class="detail-label">Age:</span>
-                <span class="detail-value">{{ $patient->age }} Years</span>
-            </div>
-
-            <div class="detail-row">
-                <span class="detail-label">Gender:</span>
-                <span class="detail-value">{{ ucfirst($patient->gender) }}</span>
-            </div>
-
-            <div class="detail-row">
-                <span class="detail-label">Contact:</span>
-                <span class="detail-value">{{ $patient->mobile_phone }}</span>
-            </div>
-
-            <div class="detail-row">
-                <span class="detail-label">Address:</span>
-                <span class="detail-value">{{ $patient->address ?? 'N/A' }}</span>
-            </div>
-
-            <div class="detail-row">
-                <span class="detail-label">Date:</span>
-                <span class="detail-value">{{ $receipt->created_at->format('d-M-Y H:i A') }}</span>
-            </div>
-
-            @if($patient->referred_by)
-                <div class="detail-row">
-                    <span class="detail-label">Referred By:</span>
-                    <span class="detail-value">{{ $patient->referred_by }}</span>
+            <!-- Patient Information (from database) -->
+            <div class="slip-patient">
+                <div class="patient-row">
+                    <span class="patient-label">Patient #:</span>
+                    <span class="patient-value">{{ $patient->patient_id ?? 'N/A' }}</span>
                 </div>
-            @endif
-        </div>
+                <div class="patient-row">
+                    <span class="patient-label">Name:</span>
+                    <span class="patient-value">{{ substr($patient->name ?? 'N/A', 0, 18) }}</span>
+                </div>
+                <div class="patient-row">
+                    <span class="patient-label">Age:</span>
+                    <span class="patient-value">{{ $patient->age ?? 'N/A' }} Years</span>
+                </div>
+                <div class="patient-row">
+                    <span class="patient-label">Date:</span>
+                    <span class="patient-value">{{ $receipt->created_at->format('d-M-Y') }}</span>
+                </div>
+            </div>
 
-        <hr class="divider">
+            <!-- Token/Slip Number -->
+            <div class="slip-token">
+                <div class="token-label">SLIP / TOKEN NUMBER</div>
+                <div class="token-number">{{ $receipt->receipt_number }}</div>
+            </div>
 
-        <!-- Required Tests -->
-        <div class="tests-section">
-            <div class="section-title">REQUIRED TESTS</div>
-
-            <table class="tests-table">
-                <thead>
-                    <tr>
-                        <th style="width: 50%;">Test Name</th>
-                        <th style="width: 25%; text-align: right;">Price</th>
-                        <th style="width: 25%; text-align: center;">Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($receipt->tests as $test)
-                        <tr>
-                            <td class="test-name">{{ $test['test_name'] ?? 'N/A' }}</td>
-                            <td class="test-price">Rs. {{ number_format($test['price'] ?? 0, 2) }}</td>
-                            <td class="test-status">
-                                @if(strtolower($test['paid_status'] ?? 'unpaid') === 'paid')
-                                    <span class="status-paid">PAID</span>
-                                @else
-                                    <span class="status-unpaid">UNPAID</span>
-                                @endif
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="3" style="text-align: center; color: #999;">No tests registered</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-
-        <hr class="divider">
-
-        <!-- Total Section -->
-        <div class="total-section">
-            <div class="total-label">TOTAL AMOUNT PAYABLE</div>
-            <div class="total-amount">Rs. {{ number_format($receipt->total_amount, 2) }}</div>
-            <div class="amount-in-words">
+            <!-- Tests with Prices (from database) -->
+            <div class="slip-tests">
+                <div class="tests-header">Tests Registered:</div>
                 @php
-                    $amount = intval($receipt->total_amount);
-                    $words = $this->numberToWords($amount);
+                    $displayTests = [];
+                    
+                    // Use receipt tests if available
+                    if (!empty($receipt->tests) && is_array($receipt->tests)) {
+                        $displayTests = $receipt->tests;
+                    } else {
+                        // Fallback: get from patient's test_category JSON
+                        $patientTests = json_decode($patient->test_category ?? '[]', true);
+                        if (!empty($patientTests)) {
+                            foreach ($patientTests as $testName) {
+                                $displayTests[] = [
+                                    'test_name' => $testName,
+                                    'price' => 0
+                                ];
+                            }
+                        }
+                    }
                 @endphp
-                {{ $words ?? 'Amount' }} Only
+                
+                @forelse($displayTests as $test)
+                    <div class="test-item">
+                        @if(is_array($test))
+                            <span class="test-name">{{ substr($test['test_name'] ?? '', 0, 14) }}</span>
+                            <span class="test-price">
+                                @if(isset($test['price']) && $test['price'] > 0)
+                                    Rs. {{ number_format($test['price'], 0) }}
+                                @else
+                                    -
+                                @endif
+                            </span>
+                        @else
+                            <span class="test-name">{{ substr($test, 0, 14) }}</span>
+                            <span class="test-price">-</span>
+                        @endif
+                    </div>
+                @empty
+                    <div class="test-item">
+                        <span class="test-name">No tests</span>
+                        <span class="test-price">-</span>
+                    </div>
+                @endforelse
             </div>
-        </div>
 
-        <!-- Barcode -->
-        <div class="barcode-section">
-            <div class="barcode-number">
-                {{ str_split($receipt->receipt_number, 4)[0] ?? '' }}
-                {{ str_split($receipt->receipt_number, 4)[1] ?? '' }}
-                {{ str_split($receipt->receipt_number, 4)[2] ?? '' }}
-            </div>
-            <svg class="barcode-image" jsbarcode-format="CODE128" jsbarcode-value="{{ $receipt->receipt_number }}" jsbarcode-textmargin="0" jsbarcode-height="50"></svg>
-        </div>
-
-        <hr class="divider">
-
-        <!-- Footer -->
-        <div class="receipt-footer">
-            <div class="footer-note">
-                ✓ Please keep this receipt for your records<br>
-                ✓ All tests must be completed within the reporting date<br>
-                ✓ Results will be available after specified date
+            <!-- Total Amount -->
+            <div class="slip-total">
+                <span class="total-label">TOTAL AMOUNT:</span>
+                <span class="total-amount">Rs. {{ number_format($receipt->total_amount ?? 0, 0) }}</span>
             </div>
 
-            <div class="printed-info">
-                Printed by: {{ $receipt->printed_by ?? 'System' }}<br>
-                {{ now()->format('d-M-Y H:i A') }}
+            <!-- Barcode (generates from receipt number) -->
+            <div class="slip-barcode">
+                <svg id="barcode"></svg>
+                <div class="barcode-text">{{ $receipt->receipt_number }}</div>
+            </div>
+
+            <!-- Footer -->
+            <div class="slip-footer">
+                Keep this slip for your records
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
     <script>
-        // Generate barcode
-        JsBarcode(".barcode-image", "{{ $receipt->receipt_number }}", {
+        // Generate barcode from receipt number
+        JsBarcode("#barcode", "{{ $receipt->receipt_number }}", {
             format: "CODE128",
-            width: 2,
-            height: 50,
+            width: 1.2,
+            height: 20,
             displayValue: false,
             margin: 0
         });
+
+        // Universal close handler
+        function universalClose() {
+            try {
+                // Try jQuery first (most common)
+                if (typeof jQuery !== 'undefined') {
+                    jQuery('.modal').modal('hide');
+                    jQuery('.modal-backdrop').remove();
+                    jQuery('body').removeClass('modal-open');
+                    setTimeout(() => {
+                        window.location.href = '{{ route("patients.list") }}';
+                    }, 300);
+                    return;
+                }
+                
+                // Try Bootstrap 5
+                if (window.bootstrap && window.bootstrap.Modal) {
+                    const modals = document.querySelectorAll('.modal.show');
+                    modals.forEach(modal => {
+                        const bsModal = bootstrap.Modal.getInstance(modal);
+                        if (bsModal) {
+                            bsModal.hide();
+                        }
+                    });
+                }
+                
+                // Remove modal manually
+                const modals = document.querySelectorAll('.modal');
+                modals.forEach(modal => modal.style.display = 'none');
+                
+                const backdrops = document.querySelectorAll('.modal-backdrop');
+                backdrops.forEach(backdrop => backdrop.remove());
+                
+                document.body.classList.remove('modal-open');
+                
+                // Send message to parent if in iframe
+                if (window.parent && window.parent !== window) {
+                    window.parent.postMessage({action: 'closeModal'}, '*');
+                }
+                
+            } catch (e) {
+                console.log('Close error:', e);
+            }
+            
+            // Always redirect as fallback
+            setTimeout(() => {
+                window.location.href = '{{ route("patients.list") }}';
+            }, 500);
+        }
+        
+        // ESC key handler
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                universalClose();
+            }
+        });
+        
+        // Auto-close when modal hidden
+        document.addEventListener('hidden.bs.modal', function() {
+            setTimeout(() => {
+                window.location.href = '{{ route("patients.list") }}';
+            }, 300);
+        });
+        
+        if (typeof jQuery !== 'undefined') {
+            jQuery(document).on('hidden.bs.modal', function() {
+                setTimeout(() => {
+                    window.location.href = '{{ route("patients.list") }}';
+                }, 300);
+            });
+        }
     </script>
 </body>
 </html>
