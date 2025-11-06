@@ -439,5 +439,57 @@
                 });
             }
         };
+
+        // Handle close message from iframe
+        var handleCloseMessage = function(event) {
+            if (event.data && event.data.action === 'closeModal') {
+                var modalElement = document.getElementById('printModal');
+                if (modalElement) {
+                    var modal = bootstrap.Modal.getInstance(modalElement);
+                    if (modal) {
+                        modal.hide();
+                    }
+                }
+            }
+        };
+
+        // Open print preview in modal
+        window.openPrintModal = function(event, link) {
+            event.preventDefault();
+            const href = link ? link.href : event.currentTarget.href;
+            
+            // Create modal if not exists
+            if (!$('#printModal').length) {
+                $('body').append(`
+                    <div class="modal fade" id="printModal" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Print Preview - Patient Slip</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+                                    <iframe id="printFrame" style="width: 100%; height: 600px; border: none;"></iframe>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `);
+            }
+            
+            // Remove old listener if exists
+            window.removeEventListener('message', handleCloseMessage);
+            
+            // Add listener for close message from iframe
+            window.addEventListener('message', handleCloseMessage);
+            
+            // Load content in iframe
+            document.getElementById('printFrame').src = href;
+            
+            // Show modal
+            new bootstrap.Modal(document.getElementById('printModal')).show();
+            
+            return false;
+        };
     </script>
 @endsection

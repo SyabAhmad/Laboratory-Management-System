@@ -5,17 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Payments extends Model
+class Department extends Model
 {
     use HasFactory;
-   
-    protected $table = 'payments';
-    
+
     protected $fillable = [
-        'bill_id',
-        'amount',
-        'method',
-        'reference',
-        'note',
+        'name',
     ];
+
+    public $timestamps = true;
+
+    public function labTestCats()
+    {
+        return $this->hasMany(LabTestCat::class);
+    }
 }

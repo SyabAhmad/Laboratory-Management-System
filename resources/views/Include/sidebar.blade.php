@@ -119,10 +119,25 @@
                         </li>
 
                         <li>
-                            <a href="{{ route('labtest.index') }}">
+                            <a href="javascript: void(0);">
                                 <i class="fas fa-vial"></i>
-                                <span> Test Category </span>
+                                <span> Test & Department </span>
+                                <span class="menu-arrow"></span>
                             </a>
+                            <ul class="nav-second-level" aria-expanded="false">
+                                <li>
+                                    <a href="{{ route('labtest.index') }}">
+                                        <i class="fas fa-flask"></i>
+                                        Test Categories
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('departments.index') }}">
+                                        <i class="fas fa-building"></i>
+                                        Departments
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
 
                         <!-- <li>

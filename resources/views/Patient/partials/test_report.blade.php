@@ -1,3 +1,45 @@
+<style type="text/css">
+    @media print {
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        
+        /* Preserve all colors in print */
+        * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            color-adjust: exact !important;
+        }
+        
+        /* Burgundy backgrounds and borders must print */
+        div[style*="background-color: #8d2d36"],
+        div[style*="background-color:#8d2d36"],
+        table[style*="border-bottom: 2px solid #8d2d36"],
+        td[style*="border-left: 3px solid #8d2d36"],
+        td[style*="border-right: 3px solid #8d2d36"],
+        tr[style*="border-bottom: 2px solid #8d2d36"] {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            color-adjust: exact !important;
+        }
+        
+        /* Preserve table styling */
+        table {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            border-collapse: collapse !important;
+        }
+        
+        /* Preserve row colors */
+        tr[style*="background:"],
+        tr[style*="background-color"] {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+    }
+</style>
+
 <div
     style="font-family: Arial, sans-serif; font-size: 11px; line-height: 1.4; padding: 20px; max-width: 800px; margin: auto; background: #fff; border: 1px solid #e0e0e0; border-radius: 8px;">
 
@@ -37,28 +79,22 @@
     </table>
 
     <!-- Patient Info Section -->
-    <div style="background: linear-gradient(135deg, rgba(248, 250, 252, 0.8), rgba(255, 255, 255, 0.8)); border: 1px solid #8d2d36; border-radius: 6px; padding: 15px; margin-bottom: 20px;">
+    <div style="background-color: #f8fafb; border: 1px solid #8d2d36 !important; border-radius: 6px; padding: 15px; margin-bottom: 20px;">
         <table width="100%" cellpadding="6" cellspacing="0" style="font-size: 11px; border-collapse: collapse;">
             <tr>
                 <td width="25%" style="font-weight: bold; color: black; padding-bottom: 8px;">Patient Name:</td>
                 <td width="25%" style="padding-bottom: 8px; font-weight: 600;">{{ $patient->name }}</td>
                 <td width="25%" style="font-weight: bold; color: black; padding-bottom: 8px;">Visit Date:</td>
                 <td width="25%" style="padding-bottom: 8px;">
-                    @php
-                        $testDate = $testEntry['saved_data']['test_date'] ?? ($testEntry['saved_data']['reported_at'] ?? null);
-                        echo $testDate ? date('d-M-Y', strtotime($testDate)) : 'N/A';
-                    @endphp
+                    {{ $patient->receiving_date ? date('d-M-Y', strtotime($patient->receiving_date)) : 'N/A' }}
                 </td>
             </tr>
             <tr>
                 <td style="font-weight: bold; color: black; padding-bottom: 8px;">Age / Gender:</td>
-                <td style="padding-bottom: 8px; font-weight: 600;">{{ $patient->age }} yr(s) / {{ $patient->gender }}</td>
+                <td style="padding-bottom: 8px; font-weight: 600;">{{ $patient->age }} / {{ $patient->gender }}</td>
                 <td style="font-weight: bold; color: black; padding-bottom: 8px;">Report Date:</td>
                 <td style="padding-bottom: 8px;">
-                    @php
-                        $reportDate = $testEntry['saved_data']['reported_at'] ?? ($testEntry['saved_data']['test_date'] ?? null);
-                        echo $reportDate ? date('d-M-Y', strtotime($reportDate)) : 'N/A';
-                    @endphp
+                    {{ $patient->reporting_date ? date('d-M-Y', strtotime($patient->reporting_date)) : 'N/A' }}
                 </td>
             </tr>
             <tr>
@@ -69,15 +105,15 @@
     </div>
 
     <!-- Test Title Section -->
-    <div style="background: #8d2d36; color: white; padding: 12px 15px; border-radius: 6px; margin: 20px 0; font-weight: bold; font-size: 14px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-        <i class="fas fa-flask" style="margin-right: 8px;"></i>{{ $testEntry['name'] }}
+    <div style="background-color: #8d2d36; color: white; padding: 12px 15px; border-radius: 6px; margin: 20px 0; font-weight: bold; font-size: 14px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); page-break-inside: avoid;">
+        <span style="color: white; font-weight: bold;">{{ $testEntry['name'] }}</span>
     </div>
 
     <!-- Main Results Table -->
     <div style="border: 1px solid #e0e0e0; border-radius: 6px; overflow: hidden; margin-bottom: 20px;">
         <table width="100%" cellpadding="5" cellspacing="0" style="border-collapse: collapse; font-size: 11px;">
             <thead>
-                <tr style="background: linear-gradient(135deg, rgba(248, 250, 252, 0.9), rgba(255, 255, 255, 0.9)); border-bottom: 2px solid #8d2d36;">
+                <tr style="background-color: #f8fafb !important; border-bottom: 2px solid #8d2d36 !important;">
                     <th style="text-align: left; padding: 12px; font-weight: bold; width: 40%; color: black;">
                         <i class="fas fa-tag" style="margin-right: 5px;"></i>Test Name
                     </th>
@@ -196,7 +232,7 @@
     @endphp
 
     @if (!empty($billNotes))
-        <div style="background: linear-gradient(135deg, rgba(255, 250, 205, 0.8), rgba(255, 248, 220, 0.8)); border: 2px solid #f39c12; border-radius: 6px; padding: 15px; margin-bottom: 20px;">
+        <div style="background-color: #fffacd !important; border: 2px solid #f39c12 !important; border-radius: 6px; padding: 15px; margin-bottom: 20px;">
             <div style="font-weight: bold; color: #d68910; font-size: 12px; margin-bottom: 10px; border-bottom: 1px solid #f39c12; padding-bottom: 8px;">
                 <i class="fas fa-sticky-note" style="margin-right: 8px;"></i>Clinical Notes & Remarks
             </div>
@@ -216,16 +252,16 @@
     @endif
 
     <!-- Footer -->
-    <div style="background: linear-gradient(135deg, rgba(248, 250, 252, 0.8), rgba(255, 255, 255, 0.8)); border: 1px solid #e0e0e0; border-radius: 6px; padding: 15px; margin-top: 25px; display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: #333;">
+    <div style="background-color: #f8fafb !important; border: 1px solid #e0e0e0 !important; border-radius: 6px; padding: 15px; margin-top: 25px; display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: #333;">
         <div style="flex: 1; text-align: left;">
-            <div style="background: rgba(255, 255, 255, 0.8); padding: 10px; border-radius: 4px; border-left: 3px solid #8d2d36;">
+            <div style="background-color: #ffffff !important; padding: 10px; border-radius: 4px; border-left: 3px solid #8d2d36 !important;">
                 <strong style="color: black;">Please Note:</strong><br>
                 <i class="fas fa-info-circle" style="margin-right: 5px; color: black;"></i>Test(s) are performed on the state-of-the-art ARCHITECT MODULAR Ci4100 from Abbott Diagnostics, U.S.A.<br>
                 <i class="fas fa-signature" style="margin-right: 5px; color: black;"></i>This is a digitally signed report and does not require manual signature.
             </div>
         </div>
         <div style="text-align: right; white-space: nowrap;">
-            <div style="background: rgba(255, 255, 255, 0.8); padding: 10px; border-radius: 4px; border-right: 3px solid #8d2d36;">
+            <div style="background-color: #ffffff !important; padding: 10px; border-radius: 4px; border-right: 3px solid #8d2d36 !important;">
                 <div style="font-weight: bold; color: black; margin-bottom: 5px;">
                     <i class="fas fa-user-md" style="margin-right: 5px;"></i>This is a digitally signed report by
                 </div>

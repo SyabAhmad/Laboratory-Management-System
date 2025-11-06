@@ -74,6 +74,11 @@ Route::middleware(['auth:sanctum', 'verified'])
         Route::get('/patients/{id}/registered-tests', 'App\Http\Controllers\PatientsController@registeredTests')->name('patients.registered_tests');
         Route::get('/patients/{id}/fetch-cbc-results', [App\Http\Controllers\PatientsController::class, 'fetchCBCResults'])->name('patients.fetchCBCResults');
 
+        // Patient Receipt / Token Routes
+        Route::get('/patients/{patientId}/receipt', 'App\Http\Controllers\PatientsController@viewReceipt')->name('patients.receipt');
+        Route::get('/receipt/{receiptId}/print', 'App\Http\Controllers\PatientsController@printReceipt')->name('patients.print-receipt');
+        Route::get('/patients/{patientId}/receipt/latest', 'App\Http\Controllers\PatientsController@getLatestReceipt')->name('patients.receipt.latest');
+
         // Referrals Route
         Route::get('/referrals', 'App\Http\Controllers\ReferralController@index')->name('referrels.list');
         Route::get('/referrals/create', 'App\Http\Controllers\ReferralController@create')->name('referrals.create');
@@ -104,6 +109,14 @@ Route::middleware(['auth:sanctum', 'verified'])
         Route::delete('/labtest/{id}', 'App\Http\Controllers\LabTestCatController@destroy')->name('labtest.destroy');
         Route::get('/labtest/edit/{id}', 'App\Http\Controllers\LabTestCatController@edit')->name('labtest.edit');
         Route::put('/labtest/update', 'App\Http\Controllers\LabTestCatController@update')->name('labtest.update');
+
+        // Department Routes
+        Route::get('/departments', 'App\Http\Controllers\DepartmentController@index')->name('departments.index');
+        Route::post('/departments', 'App\Http\Controllers\DepartmentController@store')->name('departments.store');
+        Route::get('/departments/{id}/edit', 'App\Http\Controllers\DepartmentController@edit')->name('departments.edit');
+        Route::put('/departments/{id}', 'App\Http\Controllers\DepartmentController@update')->name('departments.update');
+        Route::delete('/departments/{id}', 'App\Http\Controllers\DepartmentController@destroy')->name('departments.destroy');
+        Route::get('/departments/get', 'App\Http\Controllers\DepartmentController@getDepartments')->name('departments.get');
 
         // Billing System Routes - MUST come before /billing
         Route::get('/billing/create/{id}', 'App\Http\Controllers\BillsController@create')->name('billing.create');
