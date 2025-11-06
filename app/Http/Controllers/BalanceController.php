@@ -38,7 +38,7 @@ class BalanceController extends Controller
             );
 
         // Fetch paid commissions from ReferralCommission with bill info
-        $commissions = \App\Models\ReferralCommission::where('status', 'paid')
+        $commissions = \App\Models\ReferralCommission::where('referral_commissions.status', 'paid')
             ->join('bills', 'referral_commissions.bill_id', '=', 'bills.id')
             ->join('patients', 'referral_commissions.patient_id', '=', 'patients.id')
             ->select(
