@@ -10,4 +10,12 @@ class Payments extends Model
     use HasFactory;
    
     protected $table = 'payments';
+    
+    protected $fillable = [
+        'bill_id',
+        'amount',
+        'method',
+        'reference',
+        'note',
+    ];
 }
