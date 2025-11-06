@@ -67,7 +67,10 @@
                                 </thead>
                                 <tbody>
                                     @forelse($transactions as $t)
-                                        <tr style="background-color: {{ $t->type === 'Commission' ? 'rgba(220, 53, 69, 0.05)' : 'rgba(40, 167, 69, 0.05)' }};">
+                                        <tr style="background-color: {{ 
+                                            $t->type === 'Commission' ? 'rgba(220, 53, 69, 0.05)' : 
+                                            ($t->type === 'Payment' ? 'rgba(40, 167, 69, 0.05)' : 'rgba(255, 193, 7, 0.05)')
+                                        }};">
                                             <td>{{ \Carbon\Carbon::parse($t->created_at)->format('M d, Y') }}</td>
                                             <td><strong>{{ $t->patient_name ?? '-' }}</strong></td>
                                             <td>{{ $t->reference ?? '-' }}</td>
@@ -76,14 +79,24 @@
                                                     <span class="badge badge-danger" style="font-size: 12px;">
                                                         <i class="fas fa-arrow-down"></i> Commission Paid
                                                     </span>
-                                                @else
+                                                @elseif($t->type === 'Payment')
                                                     <span class="badge badge-success" style="font-size: 12px;">
                                                         <i class="fas fa-arrow-up"></i> Payment Received
                                                     </span>
+                                                @else
+                                                    <span class="badge" style="background-color: #ffc107; color: #000; font-size: 12px;">
+                                                        <i class="fas fa-file-invoice"></i> Bill Created
+                                                    </span>
                                                 @endif
                                             </td>
-                                            <td style="font-weight: bold; font-size: 15px; {{ $t->type === 'Commission' ? 'color: #dc3545;' : 'color: #28a745;' }}">
-                                                {{ $t->type === 'Commission' ? '-' : '+' }}{{ number_format($t->amount, 2) }} PKR
+                                            <td style="font-weight: bold; font-size: 15px; {{ 
+                                                $t->type === 'Commission' ? 'color: #dc3545;' : 
+                                                ($t->type === 'Payment' ? 'color: #28a745;' : 'color: #ffc107;')
+                                            }}">
+                                                {{ 
+                                                    $t->type === 'Commission' ? '-' : 
+                                                    ($t->type === 'Payment' ? '+' : '')
+                                                }}{{ number_format($t->amount, 2) }} PKR
                                             </td>
                                             <td>
                                                 <small>{{ $t->note ?? '-' }}</small>

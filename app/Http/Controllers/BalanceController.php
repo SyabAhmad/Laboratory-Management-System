@@ -25,6 +25,17 @@ class BalanceController extends Controller
         $totalPaid = $totalPaymentsPaid + $totalCommissionsPaid;
         $outstanding = $totalBilled - $totalPaid;
 
+        // Fetch bills (all billed amounts)
+        $bills = \App\Models\Bills::join('patients', 'bills.patient_id', '=', 'patients.id')
+            ->select(
+                'bills.created_at',
+                \DB::raw('CONCAT("Bill #", bills.id) as reference'),
+                'bills.amount',
+                \DB::raw('NULL as note'),
+                'patients.name as patient_name',
+                \DB::raw('"Bill" as type')
+            );
+
         // Fetch transactions from Payments with patient info
         $payments = \App\Models\Payments::join('bills', 'payments.bill_id', '=', 'bills.id')
             ->join('patients', 'bills.patient_id', '=', 'patients.id')
@@ -50,8 +61,8 @@ class BalanceController extends Controller
                 \DB::raw('"Commission" as type')
             );
 
-        // Union the queries and order by created_at desc, limit to 100
-        $transactions = $payments->union($commissions)->orderBy('created_at', 'desc')->limit(100)->get();
+        // Union all queries and order by created_at desc, limit to 100
+        $transactions = $bills->union($payments)->union($commissions)->orderBy('created_at', 'desc')->limit(100)->get();
 
         return view('Balance.index', [
             'totalBilled' => $totalBilled,
