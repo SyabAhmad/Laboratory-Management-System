@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,6 +19,7 @@
                 margin: 0;
                 padding: 0;
             }
+
             .no-print {
                 display: none !important;
             }
@@ -244,6 +246,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="no-print print-controls">
         <button class="btn btn-print" onclick="window.print()">
@@ -260,7 +263,6 @@
             <div class="slip-header">
                 <div class="slip-title">NEW MODERN LAB</div>
                 <div class="slip-subtitle">Patient Registration Slip</div>
-                <div class="slip-marker">[ 2 1/4 inch ]</div>
             </div>
 
             <!-- Patient Information (from database) -->
@@ -294,30 +296,30 @@
                 <div class="tests-header">Tests Registered:</div>
                 @php
                     $displayTests = [];
-                    
+
                     // Use receipt tests if available
                     if (!empty($receipt->tests) && is_array($receipt->tests)) {
                         $displayTests = $receipt->tests;
                     } else {
                         // Fallback: get from patient's test_category JSON
-                        $patientTests = json_decode($patient->test_category ?? '[]', true);
-                        if (!empty($patientTests)) {
-                            foreach ($patientTests as $testName) {
-                                $displayTests[] = [
-                                    'test_name' => $testName,
-                                    'price' => 0
+    $patientTests = json_decode($patient->test_category ?? '[]', true);
+    if (!empty($patientTests)) {
+        foreach ($patientTests as $testName) {
+            $displayTests[] = [
+                'test_name' => $testName,
+                'price' => 0,
                                 ];
                             }
                         }
                     }
                 @endphp
-                
+
                 @forelse($displayTests as $test)
                     <div class="test-item">
-                        @if(is_array($test))
+                        @if (is_array($test))
                             <span class="test-name">{{ substr($test['test_name'] ?? '', 0, 14) }}</span>
                             <span class="test-price">
-                                @if(isset($test['price']) && $test['price'] > 0)
+                                @if (isset($test['price']) && $test['price'] > 0)
                                     Rs. {{ number_format($test['price'], 0) }}
                                 @else
                                     -
@@ -374,11 +376,11 @@
                     jQuery('.modal-backdrop').remove();
                     jQuery('body').removeClass('modal-open');
                     setTimeout(() => {
-                        window.location.href = '{{ route("patients.list") }}';
+                        window.location.href = '{{ route('patients.list') }}';
                     }, 300);
                     return;
                 }
-                
+
                 // Try Bootstrap 5
                 if (window.bootstrap && window.bootstrap.Modal) {
                     const modals = document.querySelectorAll('.modal.show');
@@ -389,52 +391,55 @@
                         }
                     });
                 }
-                
+
                 // Remove modal manually
                 const modals = document.querySelectorAll('.modal');
                 modals.forEach(modal => modal.style.display = 'none');
-                
+
                 const backdrops = document.querySelectorAll('.modal-backdrop');
                 backdrops.forEach(backdrop => backdrop.remove());
-                
+
                 document.body.classList.remove('modal-open');
-                
+
                 // Send message to parent if in iframe
                 if (window.parent && window.parent !== window) {
-                    window.parent.postMessage({action: 'closeModal'}, '*');
+                    window.parent.postMessage({
+                        action: 'closeModal'
+                    }, '*');
                 }
-                
+
             } catch (e) {
                 console.log('Close error:', e);
             }
-            
+
             // Always redirect as fallback
             setTimeout(() => {
-                window.location.href = '{{ route("patients.list") }}';
+                window.location.href = '{{ route('patients.list') }}';
             }, 500);
         }
-        
+
         // ESC key handler
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 universalClose();
             }
         });
-        
+
         // Auto-close when modal hidden
         document.addEventListener('hidden.bs.modal', function() {
             setTimeout(() => {
-                window.location.href = '{{ route("patients.list") }}';
+                window.location.href = '{{ route('patients.list') }}';
             }, 300);
         });
-        
+
         if (typeof jQuery !== 'undefined') {
             jQuery(document).on('hidden.bs.modal', function() {
                 setTimeout(() => {
-                    window.location.href = '{{ route("patients.list") }}';
+                    window.location.href = '{{ route('patients.list') }}';
                 }, 300);
             });
         }
     </script>
 </body>
+
 </html>

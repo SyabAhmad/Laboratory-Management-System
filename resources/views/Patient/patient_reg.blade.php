@@ -75,8 +75,9 @@
                                                         <div class="col-4">
                                                             <input type="number"
                                                                 class="form-control modern-input @error('age_years') is-invalid @enderror"
-                                                                id="age_years" name="age_years" value="{{ old('age_years') }}"
-                                                                placeholder="Years" min="0" max="150">
+                                                                id="age_years" name="age_years"
+                                                                value="{{ old('age_years') }}" placeholder="Years"
+                                                                min="0" max="150">
                                                             <small class="text-muted">Years</small>
                                                             @error('age_years')
                                                                 <span class="invalid-feedback">{{ $message }}</span>
@@ -85,8 +86,9 @@
                                                         <div class="col-4">
                                                             <input type="number"
                                                                 class="form-control modern-input @error('age_months') is-invalid @enderror"
-                                                                id="age_months" name="age_months" value="{{ old('age_months') }}"
-                                                                placeholder="Months" min="0" max="11">
+                                                                id="age_months" name="age_months"
+                                                                value="{{ old('age_months') }}" placeholder="Months"
+                                                                min="0" max="11">
                                                             <small class="text-muted">Months</small>
                                                             @error('age_months')
                                                                 <span class="invalid-feedback">{{ $message }}</span>
@@ -95,15 +97,17 @@
                                                         <div class="col-4">
                                                             <input type="number"
                                                                 class="form-control modern-input @error('age_days') is-invalid @enderror"
-                                                                id="age_days" name="age_days" value="{{ old('age_days') }}"
-                                                                placeholder="Days" min="0" max="30">
+                                                                id="age_days" name="age_days"
+                                                                value="{{ old('age_days') }}" placeholder="Days"
+                                                                min="0" max="30">
                                                             <small class="text-muted">Days</small>
                                                             @error('age_days')
                                                                 <span class="invalid-feedback">{{ $message }}</span>
                                                             @enderror
                                                         </div>
                                                     </div>
-                                                    <input type="hidden" id="age" name="age" value="{{ old('age') }}">
+                                                    <input type="hidden" id="age" name="age"
+                                                        value="{{ old('age') }}">
                                                 </div>
                                             </div>
                                             <div class="form-group mb-0">
@@ -559,15 +563,15 @@
                     var years = document.getElementById('age_years').value || '0';
                     var months = document.getElementById('age_months').value || '0';
                     var days = document.getElementById('age_days').value || '0';
-                    
+
                     var ageParts = [];
                     if (years && years !== '0') ageParts.push(years + 'Y');
                     if (months && months !== '0') ageParts.push(months + 'M');
                     if (days && days !== '0') ageParts.push(days + 'D');
-                    
+
                     var ageString = ageParts.length > 0 ? ageParts.join(' ') : '0Y';
                     document.getElementById('age').value = ageString;
-                    
+
                     console.log('Combined age:', ageString);
                 }
 
@@ -594,7 +598,7 @@
                             input.name = 'test_category[]'; // Note the [] — this makes it an array in PHP
                             input.value = checkboxes[i].value;
                             container.appendChild(input);
-                            
+
                             // Also send the price
                             var priceInput = document.createElement('input');
                             priceInput.type = 'hidden';
@@ -602,7 +606,7 @@
                             var priceValue = checkboxes[i].getAttribute('data-price') || '0';
                             priceInput.value = priceValue;
                             container.appendChild(priceInput);
-                            
+
                             console.log('Added test:', checkboxes[i].value, 'with price:', priceValue);
                         }
                     }
@@ -624,12 +628,12 @@
                 form.addEventListener('submit', function(e) {
                     // Combine age fields before validation
                     combineAgeFields();
-                    
+
                     // Validate that at least one age field is filled
                     var years = document.getElementById('age_years').value || '0';
                     var months = document.getElementById('age_months').value || '0';
                     var days = document.getElementById('age_days').value || '0';
-                    
+
                     if (years === '0' && months === '0' && days === '0') {
                         e.preventDefault();
                         if (typeof Swal !== 'undefined') {
@@ -644,7 +648,7 @@
                         }
                         return false;
                     }
-                    
+
                     // Ensure hidden fields are up to date
                     var selected = updateTestCategory();
 

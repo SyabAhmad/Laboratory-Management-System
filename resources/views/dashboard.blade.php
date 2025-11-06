@@ -36,7 +36,7 @@
                                     </div>
                                     <div class="content-section">
                                         <h5 class="card-title dashboard-card-title">Add Patient</h5>
-                                        <p class="dashboard-card-text">Create new patient</p>
+                                        <p class="dashboard-card-text1">Create new patient</p>
                                     </div>
                                 </div>
                             </div>
@@ -92,7 +92,8 @@
                                     </div>
                                     <div class="content-section">
                                         <h5 class="card-title dashboard-card-title">Company Total Balance</h5>
-                                        <p class="dashboard-card-text1">{{ isset($totalBalance) ? number_format($totalBalance, 2) : '0.00' }}</p>
+                                        <p class="dashboard-card-text1">
+                                            {{ isset($totalBalance) ? number_format($totalBalance, 2) : '0.00' }}</p>
                                     </div>
                                 </div>
                             </div>
