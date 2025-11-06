@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Patients;
 use App\Models\User;
+use App\Models\PatientReceipt;
+use App\Models\LabTest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -408,11 +410,20 @@ class PatientsController extends Controller
         $patient->registerd_by = Auth::user() ? Auth::user()->name : null;
         $patient->save();
 
-        // Return with patient ID for CBC machine
+        // 🔹 Generate patient receipt/token
+        $receipt = PatientReceipt::createFromPatient(
+            $patient,
+            $request->test_category,
+            Auth::user() ? Auth::user()->name : null
+        );
+        $receipt->save();
+
+        // Return with patient ID for CBC machine and receipt info
         return redirect()->route('patients.list')
             ->with('success', 'Patient registered successfully')
             ->with('patient_id', $patient->id)
             ->with('patient_name', $patient->name)
+            ->with('receipt_number', $receipt->receipt_number)
             ->with('show_patient_id_modal', true);
     }
 
@@ -860,4 +871,61 @@ class PatientsController extends Controller
 
         return (string) $candidate;
     }
+
+    /**
+     * View patient receipt/token
+     */
+    public function viewReceipt($patientId)
+    {
+        $patient = Patients::findOrFail($patientId);
+        $receipt = PatientReceipt::where('patient_id', $patientId)
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        if (!$receipt) {
+            return redirect()->route('patients.list')->with('error', 'Receipt not found');
+        }
+
+        return view('Patient.receipt', compact('patient', 'receipt'));
+    }
+
+    /**
+     * Print patient receipt/token
+     */
+    public function printReceipt($receiptId)
+    {
+        $receipt = PatientReceipt::findOrFail($receiptId);
+        $patient = $receipt->patient;
+
+        // Mark as printed
+        $receipt->status = 'printed';
+        $receipt->save();
+
+        return view('Patient.partials.receipt_print', compact('patient', 'receipt'));
+    }
+
+    /**
+     * Get latest receipt for patient (for modal display)
+     */
+    public function getLatestReceipt($patientId)
+    {
+        $receipt = PatientReceipt::where('patient_id', $patientId)
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        if (!$receipt) {
+            return response()->json(['error' => 'Receipt not found'], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'receipt_number' => $receipt->receipt_number,
+            'formatted_receipt_number' => $receipt->getFormattedReceiptNumber(),
+            'total_amount' => $receipt->total_amount,
+            'tests' => $receipt->tests,
+            'status' => $receipt->status,
+            'created_at' => $receipt->created_at->format('d-M-Y H:i A'),
+        ]);
+    }
 }
+

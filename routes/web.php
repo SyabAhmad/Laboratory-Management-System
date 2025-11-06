@@ -74,6 +74,11 @@ Route::middleware(['auth:sanctum', 'verified'])
         Route::get('/patients/{id}/registered-tests', 'App\Http\Controllers\PatientsController@registeredTests')->name('patients.registered_tests');
         Route::get('/patients/{id}/fetch-cbc-results', [App\Http\Controllers\PatientsController::class, 'fetchCBCResults'])->name('patients.fetchCBCResults');
 
+        // Patient Receipt / Token Routes
+        Route::get('/patients/{patientId}/receipt', 'App\Http\Controllers\PatientsController@viewReceipt')->name('patients.receipt');
+        Route::get('/receipt/{receiptId}/print', 'App\Http\Controllers\PatientsController@printReceipt')->name('patients.print-receipt');
+        Route::get('/patients/{patientId}/receipt/latest', 'App\Http\Controllers\PatientsController@getLatestReceipt')->name('patients.receipt.latest');
+
         // Referrals Route
         Route::get('/referrals', 'App\Http\Controllers\ReferralController@index')->name('referrels.list');
         Route::get('/referrals/create', 'App\Http\Controllers\ReferralController@create')->name('referrals.create');
