@@ -3,11 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\MainCompanys;
+use App\Models\Payments;
+use App\Models\ReferralCommission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Models\Bills;
-use App\Models\Payments;
 
 class DashboardController extends Controller
 {
@@ -26,6 +27,19 @@ class DashboardController extends Controller
         
         // Calculate total balance from bills
         $totalBilled = Bills::sum('amount') ?? 0;
+        
+        // Calculate total paid from Payments table
+        $totalPaymentsPaid = Payments::sum('amount') ?? 0;
+        
+        // Calculate total paid from ReferralCommission (paid status)
+        $totalCommissionsPaid = ReferralCommission::where('status', 'paid')
+            ->sum('commission_amount') ?? 0;
+        
+        // Combined total paid
+        $totalPaid = $totalPaymentsPaid + $totalCommissionsPaid;
+        
+        // Outstanding balance
+        $outstandingBalance = $totalBilled - $totalPaid;
 
         // Prepare monthly billed and paid totals for last 12 months
         $end = Carbon::now()->endOfMonth();
@@ -47,14 +61,28 @@ class DashboardController extends Controller
             ->pluck('total', 'month')
             ->toArray();
 
-        // Query paid amounts from bills where status is 'paid'
-        $paidRows = DB::table('bills')
-            ->select(DB::raw("DATE_FORMAT(created_at, '%Y-%m') as month"), DB::raw('COALESCE(SUM(paid_amount),0) as total'))
-            ->where('status', 'paid')
+        // Query paid amounts from Payments table
+        $paidPaymentsRows = DB::table('payments')
+            ->select(DB::raw("DATE_FORMAT(created_at, '%Y-%m') as month"), DB::raw('COALESCE(SUM(amount),0) as total'))
             ->whereBetween('created_at', [$start->toDateTimeString(), $end->toDateTimeString()])
             ->groupBy('month')
             ->pluck('total', 'month')
             ->toArray();
+        
+        // Query paid commissions from ReferralCommission table
+        $paidCommissionsRows = DB::table('referral_commissions')
+            ->where('status', 'paid')
+            ->select(DB::raw("DATE_FORMAT(created_at, '%Y-%m') as month"), DB::raw('COALESCE(SUM(commission_amount),0) as total'))
+            ->whereBetween('created_at', [$start->toDateTimeString(), $end->toDateTimeString()])
+            ->groupBy('month')
+            ->pluck('total', 'month')
+            ->toArray();
+        
+        // Merge paid amounts (payments + commissions)
+        $paidRows = [];
+        foreach ($period as $month) {
+            $paidRows[$month] = ($paidPaymentsRows[$month] ?? 0) + ($paidCommissionsRows[$month] ?? 0);
+        }
 
         $labels = array_map(function($m){ return Carbon::createFromFormat('Y-m', $m)->format('M Y'); }, $period);
         $billedData = array_map(function($m) use ($billedRows){ return isset($billedRows[$m]) ? (float)$billedRows[$m] : 0; }, $period);
@@ -62,7 +90,9 @@ class DashboardController extends Controller
 
         return view('dashboard', [
             'company' => $company,
-            'totalBalance' => $totalBilled,
+            'totalBalance' => $outstandingBalance,
+            'totalBilled' => $totalBilled,
+            'totalPaid' => $totalPaid,
             'chartLabels' => $labels,
             'chartBilled' => $billedData,
             'chartPaid' => $paidData,

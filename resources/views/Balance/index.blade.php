@@ -58,7 +58,9 @@
                                 <thead class="thead-light">
                                     <tr>
                                         <th><i class="fas fa-calendar-alt"></i> Date</th>
+                                        <th><i class="fas fa-user"></i> Patient</th>
                                         <th><i class="fas fa-hashtag"></i> Reference</th>
+                                        <th><i class="fas fa-tag"></i> Type</th>
                                         <th><i class="fas fa-dollar-sign"></i> Amount</th>
                                         <th><i class="fas fa-sticky-note"></i> Note</th>
                                     </tr>
@@ -67,13 +69,21 @@
                                     @forelse($transactions as $t)
                                         <tr>
                                             <td>{{ \Carbon\Carbon::parse($t->created_at)->format('M d, Y') }}</td>
-                                            <td>{{ $t->reference ?? $t->id }}</td>
-                                            <td class="font-weight-bold">{{ number_format($t->amount, 2) }}</td>
+                                            <td><strong>{{ $t->patient_name ?? '-' }}</strong></td>
+                                            <td>{{ $t->reference ?? '-' }}</td>
+                                            <td>
+                                                @if($t->type === 'Commission')
+                                                    <span class="badge badge-info">Commission</span>
+                                                @else
+                                                    <span class="badge badge-success">Payment</span>
+                                                @endif
+                                            </td>
+                                            <td class="font-weight-bold">{{ number_format($t->amount, 2) }} PKR</td>
                                             <td>{{ $t->note ?? '-' }}</td>
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="4" class="text-center py-4">
+                                            <td colspan="6" class="text-center py-4">
                                                 <i class="fas fa-inbox fa-2x text-muted mb-2"></i>
                                                 <p class="text-muted">No transactions found.</p>
                                             </td>
