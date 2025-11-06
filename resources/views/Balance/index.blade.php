@@ -114,10 +114,71 @@
                             </table>
                         </div>
                         
-                        <!-- Pagination -->
-                        <div class="d-flex justify-content-center mt-4">
-                            {{ $transactions->links() }}
-                        </div>
+                        <!-- Pagination with Better Styling -->
+                        @if($transactions->hasPages())
+                            <nav aria-label="Page navigation" class="mt-4">
+                                <ul class="pagination justify-content-center mb-0">
+                                    {{-- Previous Page Link --}}
+                                    @if ($transactions->onFirstPage())
+                                        <li class="page-item disabled">
+                                            <span class="page-link">
+                                                <i class="fas fa-chevron-left"></i> Previous
+                                            </span>
+                                        </li>
+                                    @else
+                                        <li class="page-item">
+                                            <a class="page-link" href="{{ $transactions->previousPageUrl() }}" rel="prev">
+                                                <i class="fas fa-chevron-left"></i> Previous
+                                            </a>
+                                        </li>
+                                    @endif
+
+                                    {{-- Pagination Elements --}}
+                                    @foreach ($transactions->getUrlRange(1, $transactions->lastPage()) as $page => $url)
+                                        @if ($page == $transactions->currentPage())
+                                            <li class="page-item active">
+                                                <span class="page-link">
+                                                    {{ $page }}
+                                                    <span class="sr-only">(current)</span>
+                                                </span>
+                                            </li>
+                                        @else
+                                            <li class="page-item">
+                                                <a class="page-link" href="{{ $url }}">{{ $page }}</a>
+                                            </li>
+                                        @endif
+                                    @endforeach
+
+                                    {{-- Next Page Link --}}
+                                    @if ($transactions->hasMorePages())
+                                        <li class="page-item">
+                                            <a class="page-link" href="{{ $transactions->nextPageUrl() }}" rel="next">
+                                                Next <i class="fas fa-chevron-right"></i>
+                                            </a>
+                                        </li>
+                                    @else
+                                        <li class="page-item disabled">
+                                            <span class="page-link">
+                                                Next <i class="fas fa-chevron-right"></i>
+                                            </span>
+                                        </li>
+                                    @endif
+                                </ul>
+                            </nav>
+                            
+                            <!-- Pagination Info -->
+                            <div class="text-center mt-3">
+                                <small class="text-muted">
+                                    Showing 
+                                    <strong>{{ ($transactions->currentPage() - 1) * $transactions->perPage() + 1 }}</strong>
+                                    to 
+                                    <strong>{{ min($transactions->currentPage() * $transactions->perPage(), $transactions->total()) }}</strong>
+                                    of 
+                                    <strong>{{ $transactions->total() }}</strong>
+                                    transactions
+                                </small>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
