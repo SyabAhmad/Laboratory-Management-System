@@ -61,8 +61,8 @@ class BalanceController extends Controller
                 \DB::raw('"Commission" as type')
             );
 
-        // Union all queries and order by created_at desc, limit to 100
-        $transactions = $bills->union($payments)->union($commissions)->orderBy('created_at', 'desc')->limit(100)->get();
+        // Union all queries and order by created_at desc, paginate by 20 per page
+        $transactions = $bills->union($payments)->union($commissions)->orderBy('created_at', 'desc')->paginate(20);
 
         return view('Balance.index', [
             'totalBilled' => $totalBilled,

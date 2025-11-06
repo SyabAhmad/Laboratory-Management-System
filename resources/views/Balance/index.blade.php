@@ -113,6 +113,11 @@
                                 </tbody>
                             </table>
                         </div>
+                        
+                        <!-- Pagination -->
+                        <div class="d-flex justify-content-center mt-4">
+                            {{ $transactions->links() }}
+                        </div>
                     </div>
                 </div>
             </div>
