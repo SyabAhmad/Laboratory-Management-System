@@ -70,15 +70,40 @@
                                                     @enderror
                                                 </div>
                                                 <div class="col-md-6 mb-4">
-                                                    <label for="age" class="form-label">Age <span
-                                                            class="text-danger">*</span></label>
-                                                    <input type="number"
-                                                        class="form-control modern-input @error('age') is-invalid @enderror"
-                                                        id="age" name="age" value="{{ old('age') }}" required
-                                                        placeholder="Enter age" min="1" max="120">
-                                                    @error('age')
-                                                        <span class="invalid-feedback">{{ $message }}</span>
-                                                    @enderror
+                                                    <label class="form-label">Age <span class="text-danger">*</span></label>
+                                                    <div class="row">
+                                                        <div class="col-4">
+                                                            <input type="number"
+                                                                class="form-control modern-input @error('age_years') is-invalid @enderror"
+                                                                id="age_years" name="age_years" value="{{ old('age_years') }}"
+                                                                placeholder="Years" min="0" max="150">
+                                                            <small class="text-muted">Years</small>
+                                                            @error('age_years')
+                                                                <span class="invalid-feedback">{{ $message }}</span>
+                                                            @enderror
+                                                        </div>
+                                                        <div class="col-4">
+                                                            <input type="number"
+                                                                class="form-control modern-input @error('age_months') is-invalid @enderror"
+                                                                id="age_months" name="age_months" value="{{ old('age_months') }}"
+                                                                placeholder="Months" min="0" max="11">
+                                                            <small class="text-muted">Months</small>
+                                                            @error('age_months')
+                                                                <span class="invalid-feedback">{{ $message }}</span>
+                                                            @enderror
+                                                        </div>
+                                                        <div class="col-4">
+                                                            <input type="number"
+                                                                class="form-control modern-input @error('age_days') is-invalid @enderror"
+                                                                id="age_days" name="age_days" value="{{ old('age_days') }}"
+                                                                placeholder="Days" min="0" max="30">
+                                                            <small class="text-muted">Days</small>
+                                                            @error('age_days')
+                                                                <span class="invalid-feedback">{{ $message }}</span>
+                                                            @enderror
+                                                        </div>
+                                                    </div>
+                                                    <input type="hidden" id="age" name="age" value="{{ old('age') }}">
                                                 </div>
                                             </div>
                                             <div class="form-group mb-0">
@@ -529,6 +554,31 @@
                     return;
                 }
 
+                // Function to combine age fields into a single string
+                function combineAgeFields() {
+                    var years = document.getElementById('age_years').value || '0';
+                    var months = document.getElementById('age_months').value || '0';
+                    var days = document.getElementById('age_days').value || '0';
+                    
+                    var ageParts = [];
+                    if (years && years !== '0') ageParts.push(years + 'Y');
+                    if (months && months !== '0') ageParts.push(months + 'M');
+                    if (days && days !== '0') ageParts.push(days + 'D');
+                    
+                    var ageString = ageParts.length > 0 ? ageParts.join(' ') : '0Y';
+                    document.getElementById('age').value = ageString;
+                    
+                    console.log('Combined age:', ageString);
+                }
+
+                // Update age whenever any age field changes
+                ['age_years', 'age_months', 'age_days'].forEach(function(id) {
+                    var field = document.getElementById(id);
+                    if (field) {
+                        field.addEventListener('input', combineAgeFields);
+                    }
+                });
+
                 // Function to update hidden inputs with selected test values
                 function updateTestCategory() {
                     container.innerHTML = ''; // Clear previous hidden inputs
@@ -572,6 +622,29 @@
 
                 // Handle form submission
                 form.addEventListener('submit', function(e) {
+                    // Combine age fields before validation
+                    combineAgeFields();
+                    
+                    // Validate that at least one age field is filled
+                    var years = document.getElementById('age_years').value || '0';
+                    var months = document.getElementById('age_months').value || '0';
+                    var days = document.getElementById('age_days').value || '0';
+                    
+                    if (years === '0' && months === '0' && days === '0') {
+                        e.preventDefault();
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Age Required',
+                                text: 'Please enter patient age (years, months, or days)',
+                                confirmButtonColor: '#3085d6',
+                            });
+                        } else {
+                            alert('Please enter patient age');
+                        }
+                        return false;
+                    }
+                    
                     // Ensure hidden fields are up to date
                     var selected = updateTestCategory();
 

@@ -19,6 +19,7 @@ class LabTestCat extends Model
     protected $fillable = [
         'cat_name',
         'department',
+        'department_id',
         'price',
         'status',
         'notes',
@@ -27,5 +28,10 @@ class LabTestCat extends Model
     public function parameters()
     {
         return $this->hasMany(LabTestParameter::class, 'lab_test_cat_id');
+    }
+
+    public function departmentRelation()
+    {
+        return $this->belongsTo(Department::class, 'department_id');
     }
 }

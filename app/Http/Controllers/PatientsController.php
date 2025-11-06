@@ -445,9 +445,9 @@ class PatientsController extends Controller
         );
         $receipt->save();
 
-        // 🔹 Redirect to print receipt page (auto-opens print preview)
-        return redirect()->route('patients.print-receipt', $receipt->id)
-            ->with('success', 'Patient registered successfully! Print preview will open.');
+        // 🔹 Redirect back to patient list with success message
+        return redirect()->route('patients.list')
+            ->with('success', 'Patient registered successfully!');
     }
 
     // Search patients

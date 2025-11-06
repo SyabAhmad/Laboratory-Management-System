@@ -67,7 +67,7 @@
                             <td width="25%" style="font-weight: bold; color: black; padding-bottom: 8px;">
                                 <i class="fas fa-birthday-cake" style="margin-right: 5px;"></i>Age / Gender:
                             </td>
-                            <td width="25%" style="padding-bottom: 8px; font-weight: 600;">{{ $patient->age }} yr(s) / {{ $patient->gender }}</td>
+                            <td width="25%" style="padding-bottom: 8px; font-weight: 600;">{{ $patient->age }} / {{ $patient->gender }}</td>
                         </tr>
                         <tr>
                             <td style="font-weight: bold; color: black; padding-bottom: 8px;">

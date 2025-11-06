@@ -86,21 +86,15 @@
                 <td width="25%" style="padding-bottom: 8px; font-weight: 600;">{{ $patient->name }}</td>
                 <td width="25%" style="font-weight: bold; color: black; padding-bottom: 8px;">Visit Date:</td>
                 <td width="25%" style="padding-bottom: 8px;">
-                    @php
-                        $testDate = $testEntry['saved_data']['test_date'] ?? ($testEntry['saved_data']['reported_at'] ?? null);
-                        echo $testDate ? date('d-M-Y', strtotime($testDate)) : 'N/A';
-                    @endphp
+                    {{ $patient->receiving_date ? date('d-M-Y', strtotime($patient->receiving_date)) : 'N/A' }}
                 </td>
             </tr>
             <tr>
                 <td style="font-weight: bold; color: black; padding-bottom: 8px;">Age / Gender:</td>
-                <td style="padding-bottom: 8px; font-weight: 600;">{{ $patient->age }} yr(s) / {{ $patient->gender }}</td>
+                <td style="padding-bottom: 8px; font-weight: 600;">{{ $patient->age }} / {{ $patient->gender }}</td>
                 <td style="font-weight: bold; color: black; padding-bottom: 8px;">Report Date:</td>
                 <td style="padding-bottom: 8px;">
-                    @php
-                        $reportDate = $testEntry['saved_data']['reported_at'] ?? ($testEntry['saved_data']['test_date'] ?? null);
-                        echo $reportDate ? date('d-M-Y', strtotime($reportDate)) : 'N/A';
-                    @endphp
+                    {{ $patient->reporting_date ? date('d-M-Y', strtotime($patient->reporting_date)) : 'N/A' }}
                 </td>
             </tr>
             <tr>

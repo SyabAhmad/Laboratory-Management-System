@@ -24,6 +24,9 @@
             <div class="card-body">
                 <h4 class="text-center text-primary-custom">Lab Test Cat</h4>
                 <p class="text-right">
+                    <a href="{{ route('departments.index') }}" class="btn btn btn-secondary waves-effect waves-light">
+                        <i class="fas fa-building"></i> Manage Departments
+                    </a>
                     <button type="button" class="btn btn btn-primary-custom waves-effect waves-light" data-toggle="modal"
                         data-target=".bs-example-modal-lg"><i class="fas fa-plus"></i> Add Lab Test Category</button>
                 </p>
@@ -45,7 +48,15 @@
                                 <tr id="labtest{{ $item->id }}">
                                     <td>{{ $loop->iteration }}</td>
                                     <td class="text-wrap">{{ $item->cat_name }}</td>
-                                    <td class="text-wrap">{{ $item->department }}</td>
+                                    <td class="text-wrap">
+                                        @if($item->department_id && $item->departmentRelation)
+                                            {{ $item->departmentRelation->name }}
+                                        @elseif($item->department)
+                                            {{ $item->department }}
+                                        @else
+                                            N/A
+                                        @endif
+                                    </td>
                                     <td class="text-wrap">{{ number_format($item->price, 2) }}</td>
                                     <td>
                                         <a href="{{ route('labtest.parameters.create', $item->id) }}"
@@ -98,13 +109,11 @@
                             <label for="depertment" class="col-sm-4 col-form-label">Department<span
                                     class="text-danger">*</span></label>
                             <div class="col-sm-7">
-                                <select class="form-control" name="department" id="department">
+                                <select class="form-control" name="department_id" id="department">
                                     <option disabled selected value="">Select Department Name</option>
-                                    <option value="Laboratory">Laboratory</option>
-                                    <option value="Radiology">Radiology</option>
-                                    <option value="Electrocardiography">Electrocardiography</option>
-                                    <option value="Ultrasonography">Ultrasonography</option>
-                                    <option value="Electrocardiography">Electrocardiography</option>
+                                    @foreach($departments ?? [] as $dept)
+                                        <option value="{{ $dept->id }}">{{ $dept->name }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                         </div>
@@ -172,13 +181,11 @@
                             <label for="depertment" class="col-sm-3 col-form-label">Department<span
                                     class="text-danger">*</span></label>
                             <div class="col-sm-9">
-                                <select class="form-control" name="department1" id="department1">
+                                <select class="form-control" name="department_id1" id="department1">
                                     <option disabled selected value="">Select Department Name</option>
-                                    <option value="Laboratory">Laboratory</option>
-                                    <option value="Radiology">Radiology</option>
-                                    <option value="Electrocardiography">Electrocardiography</option>
-                                    <option value="Ultrasonography">Ultrasonography</option>
-                                    <option value="Hematology">Hematology</option>
+                                    @foreach($departments ?? [] as $dept)
+                                        <option value="{{ $dept->id }}">{{ $dept->name }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                         </div>
@@ -308,7 +315,7 @@
                     success: function(labtest) {
                         $('#id').val(labtest.id);
                         $('#cat_name1').val(labtest.cat_name);
-                        $('#department1').val(labtest.department);
+                        $('#department1').val(labtest.department_id);
                         $('#price1').val(labtest.price);
                         $('#notes1').val(labtest.notes);
                         $('.modal-demo2').modal('show');
@@ -331,7 +338,7 @@
 
                 let id = $('#id').val();
                 let cat_name1 = $('#cat_name1').val();
-                let department1 = $('#department1').val();
+                let department_id1 = $('#department1').val();
                 let price1 = $('#price1').val();
                 let notes1 = $('#notes1').val();
                 let _token = $('input[name=_token]').val();
@@ -342,7 +349,7 @@
                     data: {
                         id: id,
                         cat_name1: cat_name1,
-                        department1: department1,
+                        department_id1: department_id1,
                         price1: price1,
                         notes1: notes1,
                         _token: _token,

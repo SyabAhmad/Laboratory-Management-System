@@ -275,7 +275,7 @@
                 </div>
                 <div class="patient-row">
                     <span class="patient-label">Age:</span>
-                    <span class="patient-value">{{ $patient->age ?? 'N/A' }} Years</span>
+                    <span class="patient-value">{{ $patient->age ?? 'N/A' }}</span>
                 </div>
                 <div class="patient-row">
                     <span class="patient-label">Date:</span>
