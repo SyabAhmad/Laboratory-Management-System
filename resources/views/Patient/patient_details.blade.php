@@ -19,78 +19,117 @@
         </div>
         <!-- end page title -->
 
+        <!-- Print Header (visible only in print view) -->
+        <div class="print-header" style="display: none;">
+            <table width="100%" cellpadding="0" cellspacing="0" style="border-bottom: 3px solid #8d2d36; padding-bottom: 15px; margin-bottom: 20px;">
+                <tr>
+                    <!-- Left: Logo -->
+                    <td width="15%" valign="top" align="center" style="padding-right: 20px;">
+                        <img src="{{ asset('assets/images/logo.png') }}" alt="Logo"
+                            style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid #8d2d36; display: block;">
+                    </td>
+                    <!-- Center: Lab Name & Info -->
+                    <td style="padding: 0 20px;">
+                        <div style="font-weight: bold; font-size: 22px; margin: 0; line-height: 1.2; color: #8d2d36; text-align: center;">
+                            NEW MODERN CLINICAL LABORATORY
+                        </div>
+                        <div style="font-size: 14px; margin: 5px 0 0 0; font-weight: 600; color: #8d2d36; text-align: center;">
+                            (KP HCC) REG: 03663 SWAT
+                        </div>
+                        <div style="font-size: 12px; color: #8d2d36; margin: 5px 0 0 0; line-height: 1.3; text-align: center;">
+                            Bacha Khan, BS Pathology (KMU) | DMLT KPK Peshawar
+                        </div>
+                    </td>
+                    <!-- Right: Contact Info -->
+                    <td width="25%" valign="top" align="right"
+                        style="font-size: 12px; color: #333; line-height: 1.4; padding-left: 20px; border-left: 3px solid #8d2d36;">
+                        <div style="font-weight: bold; color: #8d2d36; margin-bottom: 8px; font-size: 14px;">Contact Information</div>
+                        <strong>Tel:</strong><br>
+                        0302-8080191<br>
+                        0313-9797790<br><br>
+                        <strong>Address:</strong><br>
+                        Kabal Road, Near Township Chowk<br>
+                        Kanju Swat
+                    </td>
+                </tr>
+            </table>
+        </div>
+
         <div class="card print-card" style="border-radius: 8px; overflow: hidden;">
             <div class="card-body p-4">
-                <!-- Header Section with Logo and Lab Name -->
-                <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 20px; border-bottom: 2px solid #8d2d36; padding-bottom: 15px;">
-                    <tr>
-                        <!-- Left: Logo -->
-                        <td width="15%" valign="top" align="center" style="padding-right: 15px;">
-                            <img src="{{ asset('assets/images/logo.png') }}" alt="Logo"
-                                style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid #8d2d36; display: block; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                        </td>
-                        <!-- Center: Lab Name & Info -->
-                        <td style="padding: 0 15px;">
-                            <div style="font-weight: bold; font-size: 20px; margin: 0; line-height: 1.1; color: #8d2d36; text-align: center;">
-                                NEW MODERN CLINICAL LABORATORY
-                            </div>
-                            <div style="font-size: 11px; margin: 5px 0 0 0; font-weight: 600; color: #8d2d36; text-align: center;">
-                                (KP HCC) REG: 03663 SWAT
-                            </div>
-                            <div style="font-size: 10px; color: #8d2d36; margin: 5px 0 0 0; line-height: 1.3; text-align: center;">
-                                Bacha Khan, BS Pathology (KMU)<br>
-                                DMLT KPK Peshawar
-                            </div>
-                        </td>
-                        <!-- Right: Contact Info -->
-                        <td width="30%" valign="top" align="right"
-                            style="font-size: 10px; color: #333; line-height: 1.4; padding-left: 15px; border-left: 2px solid #8d2d36;">
-                            <div style="font-weight: bold; color: #8d2d36; margin-bottom: 5px;">Contact Information</div>
-                            <strong>Tel:</strong><br>
-                            0302-8080191<br>
-                            0313-9797790<br><br>
-                            <strong>Address:</strong><br>
-                            Kabal Road, Near Township Chowk<br>
-                            Kanju Swat
-                        </td>
-                    </tr>
-                </table>
+                <!-- Screen Header (hidden in print) -->
+                <div class="screen-header no-print">
+                    <!-- Header Section with Logo and Lab Name -->
+                    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 20px; border-bottom: 2px solid #8d2d36; padding-bottom: 15px;">
+                        <tr>
+                            <!-- Left: Logo -->
+                            <td width="15%" valign="top" align="center" style="padding-right: 15px;">
+                                <img src="{{ asset('assets/images/logo.png') }}" alt="Logo"
+                                    style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid #8d2d36; display: block; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            </td>
+                            <!-- Center: Lab Name & Info -->
+                            <td style="padding: 0 15px;">
+                                <div style="font-weight: bold; font-size: 20px; margin: 0; line-height: 1.1; color: #8d2d36; text-align: center;">
+                                    NEW MODERN CLINICAL LABORATORY
+                                </div>
+                                <div style="font-size: 11px; margin: 5px 0 0 0; font-weight: 600; color: #8d2d36; text-align: center;">
+                                    (KP HCC) REG: 03663 SWAT
+                                </div>
+                                <div style="font-size: 10px; color: #8d2d36; margin: 5px 0 0 0; line-height: 1.3; text-align: center;">
+                                    Bacha Khan, BS Pathology (KMU)<br>
+                                    DMLT KPK Peshawar
+                                </div>
+                            </td>
+                            <!-- Right: Contact Info -->
+                            <td width="30%" valign="top" align="right"
+                                style="font-size: 10px; color: #333; line-height: 1.4; padding-left: 15px; border-left: 2px solid #8d2d36;">
+                                <div style="font-weight: bold; color: #8d2d36; margin-bottom: 5px;">Contact Information</div>
+                                <strong>Tel:</strong><br>
+                                0302-8080191<br>
+                                0313-9797790<br><br>
+                                <strong>Address:</strong><br>
+                                Kabal Road, Near Township Chowk<br>
+                                Kanju Swat
+                            </td>
+                        </tr>
+                    </table>
+                </div>
 
                 <!-- Patient Information Section -->
-                <div style="background: linear-gradient(135deg, rgba(248, 250, 252, 0.8), rgba(255, 255, 255, 0.8)); border: 1px solid #8d2d36; border-radius: 6px; padding: 15px; margin-bottom: 20px;">
-                    <table width="100%" cellpadding="6" cellspacing="0" style="font-size: 11px; border-collapse: collapse;">
+                <div style="background: linear-gradient(135deg, rgba(248, 250, 252, 0.8), rgba(255, 255, 255, 0.8)); border: 2px solid #8d2d36; border-radius: 8px; padding: 20px; margin-bottom: 25px;" class="patient-info-section">
+                    <table width="100%" cellpadding="8" cellspacing="0" style="font-size: 14px; border-collapse: collapse;">
                         <tr>
-                            <td width="25%" style="font-weight: bold; color: black; padding-bottom: 8px;">
-                                <i class="fas fa-user" style="margin-right: 5px;"></i>Patient Name:
+                            <td width="25%" style="font-weight: bold; color: black; padding-bottom: 10px; font-size: 14px;">
+                                <i class="fas fa-user" style="margin-right: 8px;"></i>Patient Name:
                             </td>
-                            <td width="25%" style="padding-bottom: 8px; font-weight: 600;">{{ $patient->name }}</td>
-                            <td width="25%" style="font-weight: bold; color: black; padding-bottom: 8px;">
-                                <i class="fas fa-birthday-cake" style="margin-right: 5px;"></i>Age / Gender:
+                            <td width="25%" style="padding-bottom: 10px; font-weight: 600; font-size: 14px;">{{ $patient->name }}</td>
+                            <td width="25%" style="font-weight: bold; color: black; padding-bottom: 10px; font-size: 14px;">
+                                <i class="fas fa-birthday-cake" style="margin-right: 8px;"></i>Age / Gender:
                             </td>
-                            <td width="25%" style="padding-bottom: 8px; font-weight: 600;">{{ $patient->age }} / {{ $patient->gender }}</td>
+                            <td width="25%" style="padding-bottom: 10px; font-weight: 600; font-size: 14px;">{{ $patient->age }} / {{ $patient->gender }}</td>
                         </tr>
                         <tr>
-                            <td style="font-weight: bold; color: black; padding-bottom: 8px;">
-                                <i class="fas fa-id-card" style="margin-right: 5px;"></i>Patient ID:
+                            <td style="font-weight: bold; color: black; padding-bottom: 10px; font-size: 14px;">
+                                <i class="fas fa-id-card" style="margin-right: 8px;"></i>Patient ID:
                             </td>
-                            <td style="padding-bottom: 8px; font-weight: 600;">{{ $patient->patient_id }}</td>
-                            <td style="font-weight: bold; color: black; padding-bottom: 8px;">
-                                <i class="fas fa-tint" style="margin-right: 5px;"></i>Blood Group:
+                            <td style="padding-bottom: 10px; font-weight: 600; font-size: 14px;">{{ $patient->patient_id }}</td>
+                            <td style="font-weight: bold; color: black; padding-bottom: 10px; font-size: 14px;">
+                                <i class="fas fa-tint" style="margin-right: 8px;"></i>Blood Group:
                             </td>
-                            <td style="padding-bottom: 8px; font-weight: 600;">{{ $patient->blood_group ?? 'N/A' }}</td>
+                            <td style="padding-bottom: 10px; font-weight: 600; font-size: 14px;">{{ $patient->blood_group ?? 'N/A' }}</td>
                         </tr>
                         <tr>
-                            <td style="font-weight: bold; color: black;">
-                                <i class="fas fa-user-md" style="margin-right: 5px;"></i>Referred By:
+                            <td style="font-weight: bold; color: black; font-size: 14px;">
+                                <i class="fas fa-user-md" style="margin-right: 8px;"></i>Referred By:
                             </td>
-                            <td style="font-weight: 600;">
+                            <td style="font-weight: 600; font-size: 14px;">
                                 @php $refName = optional($patient->referral)->name; @endphp
                                 {{ empty($patient->referred_by) || $patient->referred_by === 'none' || $refName === null ? 'Self' : $refName }}
                             </td>
-                            <td style="font-weight: bold; color: black;">
-                                <i class="fas fa-phone" style="margin-right: 5px;"></i>Mobile:
+                            <td style="font-weight: bold; color: black; font-size: 14px;">
+                                <i class="fas fa-phone" style="margin-right: 8px;"></i>Mobile:
                             </td>
-                            <td style="font-weight: 600;">{{ $patient->mobile_phone }}</td>
+                            <td style="font-weight: 600; font-size: 14px;">{{ $patient->mobile_phone }}</td>
                         </tr>
                     </table>
                 </div>
@@ -109,26 +148,26 @@
                         @endphp
 
                         <!-- Test Title -->
-                        <div style="background: #8d2d36; color: white; padding: 12px 15px; border-radius: 6px; margin: 20px 0; font-weight: bold; font-size: 14px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                            <i class="fas fa-flask" style="margin-right: 8px;"></i>{{ $testName }}
+                        <div style="background: #8d2d36; color: white; padding: 18px 20px; border-radius: 8px; margin: 25px 0; font-weight: bold; font-size: 18px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" class="test-title">
+                            <i class="fas fa-flask" style="margin-right: 12px;"></i>{{ $testName }}
                         </div>
 
                         <!-- Test Results Table -->
-                        <div style="border: 1px solid #e0e0e0; border-radius: 6px; overflow: hidden; margin-bottom: 20px;">
-                            <table width="100%" cellpadding="5" cellspacing="0" style="border-collapse: collapse; font-size: 11px;">
+                        <div style="border: 2px solid #e0e0e0; border-radius: 8px; overflow: hidden; margin-bottom: 25px;">
+                            <table width="100%" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-size: 13px;" class="test-table">
                                 <thead>
-                                    <tr style="background: linear-gradient(135deg, rgba(248, 250, 252, 0.9), rgba(255, 255, 255, 0.9)); border-bottom: 2px solid black;">
-                                        <th style="text-align: left; padding: 12px; font-weight: bold; width: 40%; color: black;">
-                                            <i class="fas fa-tag" style="margin-right: 5px;"></i>Test Name
+                                    <tr style="background: linear-gradient(135deg, rgba(248, 250, 252, 0.9), rgba(255, 255, 255, 0.9)); border-bottom: 3px solid black;">
+                                        <th style="text-align: left; padding: 15px; font-weight: bold; width: 40%; color: black; font-size: 14px;">
+                                            <i class="fas fa-tag" style="margin-right: 8px;"></i>Test Name
                                         </th>
-                                        <th style="text-align: left; padding: 12px; font-weight: bold; width: 20%; color: black;">
-                                            <i class="fas fa-chart-line" style="margin-right: 5px;"></i>Results
+                                        <th style="text-align: left; padding: 15px; font-weight: bold; width: 20%; color: black; font-size: 14px;">
+                                            <i class="fas fa-chart-line" style="margin-right: 8px;"></i>Results
                                         </th>
-                                        <th style="text-align: left; padding: 12px; font-weight: bold; width: 15%; color: black;">
-                                            <i class="fas fa-balance-scale" style="margin-right: 5px;"></i>Unit
+                                        <th style="text-align: left; padding: 15px; font-weight: bold; width: 15%; color: black; font-size: 14px;">
+                                            <i class="fas fa-balance-scale" style="margin-right: 8px;"></i>Unit
                                         </th>
-                                        <th style="text-align: left; padding: 12px; font-weight: bold; width: 25%; color: black;">
-                                            <i class="fas fa-ruler" style="margin-right: 5px;"></i>Reference Ranges
+                                        <th style="text-align: left; padding: 15px; font-weight: bold; width: 25%; color: black; font-size: 14px;">
+                                            <i class="fas fa-ruler" style="margin-right: 8px;"></i>Reference Ranges
                                         </th>
                                     </tr>
                                 </thead>
@@ -138,16 +177,16 @@
                                         @foreach ($analytes as $analyte)
                                             @php $rowCount++; @endphp
                                             <tr style="background: {{ $rowCount % 2 == 0 ? '#f9f9f9' : '#fff' }};">
-                                                <td style="padding: 10px; border-bottom: 1px solid #e0e0e0; font-weight: 500;">
+                                                <td style="padding: 12px; border-bottom: 1px solid #e0e0e0; font-weight: 500; font-size: 13px;">
                                                     {{ $analyte['name'] ?? ($analyte['code'] ?? 'Unknown') }}
                                                 </td>
-                                                <td style="padding: 10px; border-bottom: 1px solid #e0e0e0; font-weight: 700; color: black;">
+                                                <td style="padding: 12px; border-bottom: 1px solid #e0e0e0; font-weight: 700; color: black; font-size: 13px;">
                                                     {{ $analyte['value'] ?? '' }}
                                                 </td>
-                                                <td style="padding: 10px; border-bottom: 1px solid #e0e0e0;">
+                                                <td style="padding: 12px; border-bottom: 1px solid #e0e0e0; font-size: 13px;">
                                                     {{ $analyte['units'] ?? '' }}
                                                 </td>
-                                                <td style="padding: 10px; border-bottom: 1px solid #e0e0e0;">
+                                                <td style="padding: 12px; border-bottom: 1px solid #e0e0e0; font-size: 13px;">
                                                     {{ $analyte['ref_range'] ?? '' }}
                                                 </td>
                                             </tr>
@@ -175,17 +214,17 @@
                                             @endphp
                                             @if (!empty($value))
                                                 <tr style="background: {{ $rowCount % 2 == 0 ? '#f9f9f9' : '#fff' }};">
-                                                    <td style="padding: 10px; border-bottom: 1px solid #e0e0e0; font-weight: 500;">{{ $label }}</td>
-                                                    <td style="padding: 10px; border-bottom: 1px solid #e0e0e0; font-weight: 700; color: black;">{{ $value }}</td>
-                                                    <td style="padding: 10px; border-bottom: 1px solid #e0e0e0;">{{ $unit }}</td>
-                                                    <td style="padding: 10px; border-bottom: 1px solid #e0e0e0;">{{ $ref }}</td>
+                                                    <td style="padding: 12px; border-bottom: 1px solid #e0e0e0; font-weight: 500; font-size: 13px;">{{ $label }}</td>
+                                                    <td style="padding: 12px; border-bottom: 1px solid #e0e0e0; font-weight: 700; color: black; font-size: 13px;">{{ $value }}</td>
+                                                    <td style="padding: 12px; border-bottom: 1px solid #e0e0e0; font-size: 13px;">{{ $unit }}</td>
+                                                    <td style="padding: 12px; border-bottom: 1px solid #e0e0e0; font-size: 13px;">{{ $ref }}</td>
                                                 </tr>
                                             @endif
                                         @endforeach
                                     @else
                                         <tr>
-                                            <td colspan="4" style="padding: 12px; text-align: center; color: var(--text-body); background: #f9f9f9;">
-                                                <i class="fas fa-info-circle" style="margin-right: 5px;"></i>No test data recorded
+                                            <td colspan="4" style="padding: 15px; text-align: center; color: var(--text-body); background: #f9f9f9; font-size: 13px;">
+                                                <i class="fas fa-info-circle" style="margin-right: 8px;"></i>No test data recorded
                                             </td>
                                         </tr>
                                     @endif
@@ -222,22 +261,32 @@
             </div>
 
             <!-- Doctor Signature Section -->
-            <div style="background: linear-gradient(135deg, rgba(248, 250, 252, 0.8), rgba(255, 255, 255, 0.8)); border: 1px solid #e0e0e0; border-radius: 6px; padding: 15px; margin-top: 25px; display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: #333;">
+            <div style="background: linear-gradient(135deg, rgba(248, 250, 252, 0.8), rgba(255, 255, 255, 0.8)); border: 2px solid #e0e0e0; border-radius: 8px; padding: 20px; margin-top: 30px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: #333;">
                 <div style="flex: 1; text-align: left;">
-                    <div style="background: rgba(255, 255, 255, 0.8); padding: 10px; border-radius: 4px; border-left: 3px solid #8d2d36;">
+                    <div style="background: rgba(255, 255, 255, 0.8); padding: 15px; border-radius: 6px; border-left: 4px solid #8d2d36;">
                         <strong style="color: black;">Please Note:</strong><br>
                         <i class="fas fa-info-circle" style="margin-right: 5px; color: #8d2d36;"></i>Test(s) are performed on the state-of-the-art ARCHITECT MODULAR Ci4100 from Abbott Diagnostics, U.S.A.<br>
                         <i class="fas fa-signature" style="margin-right: 5px; color: #8d2d36;"></i>This is a digitally signed report and does not require manual signature.
                     </div>
                 </div>
                 <div style="text-align: right; white-space: nowrap;">
-                    <div style="background: rgba(255, 255, 255, 0.8); padding: 10px; border-radius: 4px; border-right: 3px solid #8d2d36;">
+                    <div style="background: rgba(255, 255, 255, 0.8); padding: 15px; border-radius: 6px; border-right: 4px solid #8d2d36;">
                         <div style="font-weight: bold; color: black; margin-bottom: 5px;">
                             <i class="fas fa-user-md" style="margin-right: 5px;"></i>This is a digitally signed report by
                         </div>
                         <strong style="font-size: 11px;">Bacha Khan</strong>
                     </div>
                 </div>
+            <!-- Print Footer (visible only in print view) -->
+            <div class="print-footer" style="display: none;">
+                <div style="background: black; color: white; padding: 8px 12px; font-size: 9px; text-align: center; margin-top: 20px;">
+                    <strong>📍</strong> Asad Abad Road, Near Township Chowk Kamla Swat |
+                    <strong>📞</strong> 0302-9050191 - 03139796050
+                </div>
+            </div>
+
+            <!-- Screen Footer (hidden in print) -->
+            <div class="screen-footer no-print">
             </div>
 
             <!-- Footer Section -->
@@ -301,49 +350,168 @@
 
     <style>
         @media print {
+            @page {
+                size: A4;
+                margin: 20mm 15mm 25mm 15mm; /* top, right, bottom, left */
+                @top-center {
+                    content: element(print-header);
+                }
+                @bottom-center {
+                    content: element(print-footer);
+                }
+            }
+
             .no-print {
                 display: none !important;
+            }
+
+            .screen-header,
+            .screen-footer {
+                display: none !important;
+            }
+
+            .print-header,
+            .print-footer {
+                display: block !important;
+            }
+
+            .print-header {
+                position: running(print-header);
+                width: 100%;
+            }
+
+            .print-footer {
+                position: running(print-footer);
+                width: 100%;
             }
 
             body {
                 margin: 0;
                 padding: 0;
+                width: 100%;
+                height: 100%;
+                font-size: 14px !important; /* Increased base font size */
             }
 
             .container-fluid {
                 padding: 0;
+                width: 100% !important;
+                max-width: none !important;
+                margin: 0 !important;
             }
 
             .print-card {
                 border: none !important;
                 box-shadow: none !important;
                 margin: 0 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                padding: 0 !important;
             }
 
             .card-body {
-                padding: 20px !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                width: 100% !important;
+                min-height: calc(297mm - 45mm); /* A4 height minus top/bottom margins */
             }
 
             .report-logo {
-                width: 80px !important;
+                width: 80px !important; /* Increased from 60px */
                 height: auto !important;
-            }
-
-            .report-footer {
-                margin: 0 !important;
             }
 
             table {
                 page-break-inside: auto;
+                width: 100% !important;
+                font-size: 13px !important; /* Increased table font */
             }
 
             tr {
                 page-break-inside: avoid;
                 page-break-after: auto;
             }
+
+            /* Ensure proper A4 sizing */
+            html, body {
+                size: A4;
+                width: 210mm;
+                min-height: 297mm;
+            }
+
+            /* Center content on A4 page */
+            .print-card {
+                width: 180mm;
+                margin: 0 auto;
+                display: block;
+            }
+
+            /* Larger headers in print */
+            .print-header div[style*="font-size: 16px"] {
+                font-size: 18px !important;
+            }
+
+            .print-header div[style*="font-size: 10px"] {
+                font-size: 12px !important;
+            }
+
+            .print-header div[style*="font-size: 9px"] {
+                font-size: 11px !important;
+            }
+
+            .print-header td[style*="font-size: 9px"] {
+                font-size: 11px !important;
+            }
+
+            /* Larger patient info section */
+            .patient-info-section {
+                font-size: 13px !important;
+            }
+
+            .patient-info-section td {
+                padding: 8px !important;
+                font-size: 13px !important;
+            }
+
+            /* Larger test results */
+            .test-title {
+                font-size: 16px !important;
+                padding: 15px !important;
+            }
+
+            .test-table {
+                font-size: 12px !important;
+            }
+
+            .test-table th {
+                padding: 12px !important;
+                font-size: 13px !important;
+            }
+
+            .test-table td {
+                padding: 10px !important;
+                font-size: 12px !important;
+            }
+
+            /* Larger signature section */
+            .signature-section {
+                font-size: 12px !important;
+                padding: 20px !important;
+            }
+
+            /* Larger footer */
+            .print-footer div {
+                font-size: 11px !important;
+                padding: 12px !important;
+            }
         }
 
         @media screen {
+            .print-header,
+            .print-footer {
+                display: none !important;
+            }
+
             .print-card {
                 max-width: 210mm;
                 margin: 0 auto;
@@ -378,8 +546,17 @@
             const reportDate = @json($patient->reporting_date ? \Carbon\Carbon::parse($patient->reporting_date)->format('d-m-Y') : '');
             const safeName = (patientName || 'patient').toString().replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_\-]/g, '');
             const fileName = safeName + (reportDate ? '_' + reportDate : '') + '.pdf';
-            // Use the browser print dialog to save as PDF; advanced server-side PDF generation can be added if needed
+            
+            // Add a class to trigger print-specific styles
+            document.body.classList.add('generating-pdf');
+            
+            // Trigger print dialog
             window.print();
+            
+            // Remove the class after a short delay
+            setTimeout(() => {
+                document.body.classList.remove('generating-pdf');
+            }, 1000);
         }
     </script>
 @endsection
