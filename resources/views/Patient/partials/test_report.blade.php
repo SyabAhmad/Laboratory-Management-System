@@ -1,8 +1,124 @@
 <style type="text/css">
+    .print-body {
+        margin-top: 20px;
+        margin-bottom: 25px;
+    }
+
+    .print-footer {
+        margin-top: 25px;
+    }
+
+    .footer-container {
+        background-color: #f8fafb;
+        border: 1px solid #e0e0e0 !important;
+        border-radius: 6px;
+        padding: 15px;
+        margin-top: 25px;
+        font-size: 10px;
+        color: #333;
+    }
+
+    .footer-row {
+        background-color: #ffffff !important;
+        padding: 12px;
+        border-radius: 4px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        line-height: 1.6;
+    }
+
+    .footer-note {
+        border-left: 3px solid #8d2d36 !important;
+    }
+
+    .footer-signature {
+        border-left: 3px solid #8d2d36 !important;
+        text-align: center;
+        padding: 15px 12px;
+    }
+
+    .footer-contact {
+        border-left: 3px solid #8d2d36 !important;
+    }
+    
+    .footer-contact div {
+        margin-bottom: 5px;
+        line-height: 1.6;
+    }
+    
+    .footer-contact div:last-child {
+        margin-bottom: 0;
+    }
+
     @media print {
+        @page {
+            size: A4;
+            margin: 10mm 10mm 15mm 10mm; /* tighter margins for fuller layout */
+        }
+        
         body {
             margin: 0;
             padding: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        /* Ensure proper A4 sizing */
+        html, body {
+            size: A4;
+            width: 210mm;
+            min-height: 297mm;
+        }
+        
+        /* Layout calibration */
+        .report-container {
+            width: 188mm !important;
+            max-width: 188mm !important;
+            margin: 0 auto !important;
+            padding: 0 !important;
+            border: none !important;
+            background: transparent !important;
+        }
+
+        .print-header,
+        .print-footer {
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 188mm;
+            padding: 0 10mm;
+        }   
+
+        .print-header {
+            top: 10mm;
+        }
+
+        .print-footer {
+            bottom: 12mm;
+            position: static !important;
+            width: auto !important;
+            padding: 0 !important;
+            transform: none !important;
+            left: auto !important;
+        }
+
+        .print-body {
+            margin-top: 70mm;
+            margin-bottom: 30mm;
+            padding: 0 10mm;
+        }
+
+        .footer-container {
+            padding: 10px;
+            margin: 0;
+            display: table;
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .footer-row {
+            margin-bottom: 8px;
+            page-break-inside: avoid;
+            display: table-row;
         }
         
         /* Preserve all colors in print */
@@ -29,6 +145,7 @@
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
             border-collapse: collapse !important;
+            width: 100% !important;
         }
         
         /* Preserve row colors */
@@ -37,49 +154,65 @@
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
         }
+
+        /* Ensure proper page breaks */
+        .test-title-section {
+            page-break-inside: avoid;
+        }
+        
+        .results-table {
+            page-break-inside: auto;
+        }
+        
+        .notes-section {
+            page-break-inside: avoid;
+        }
     }
 </style>
 
-<div
-    style="font-family: Arial, sans-serif; font-size: 11px; line-height: 1.4; padding: 20px; max-width: 800px; margin: auto; background: #fff; border: 1px solid #e0e0e0; border-radius: 8px;">
+<div class="report-container"
+    style="font-family: Arial, sans-serif; font-size: 14px; line-height: 1.4; padding: 24px; max-width: 940px; margin: auto; background: #fff; border: 2px solid #e0e0e0; border-radius: 8px;">
 
-    <!-- Header: Logo Left + Lab Info Center + Contact Right -->
-    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 20px; border-bottom: 2px solid #8d2d36; padding-bottom: 15px;">
-        <tr>
-            <!-- Left: Logo -->
-            <td width="15%" valign="top" align="center" style="padding-right: 15px;">
-                <img src="{{ asset('assets/images/logo.png') }}" alt="Logo"
-                    style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid #8d2d36; display: block; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-            </td>
-            <!-- Center: Lab Name & Info -->
-            <td style="padding: 0 15px;">
-                <div style="font-weight: bold; font-size: 20px; margin: 0; line-height: 1.1; color: #8d2d36; text-align: center;">
-                    NEW MODERN CLINICAL LABORATORY
-                </div>
-                <div style="font-size: 11px; margin: 5px 0 0 0; font-weight: 600; color: #8d2d36; text-align: center;">
-                    (KP HCC) REG: 03663 SWAT
-                </div>
-                <div style="font-size: 10px; color: #8d2d36; margin: 5px 0 0 0; line-height: 1.3; text-align: center;">
-                    Bacha Khan, BS Pathology (KMU)<br>
-                    DMLT KPK Peshawar
-                </div>
-            </td>
-            <!-- Right: Contact Info -->
-            <td width="30%" valign="top" align="right"
-                style="font-size: 10px; color: #8d2d36; line-height: 1.4; padding-left: 15px; border-left: 2px solid #8d2d36;">
-                <div style="font-weight: bold; color: #8d2d36; margin-bottom: 5px;">Contact Information</div>
-                <strong>Tel:</strong><br>
-                0302-8080191<br>
-                0313-9797790<br><br>
-                <strong>Address:</strong><br>
-                Kabal Road, Near Township Chowk<br>
-                Kanju Swat
-            </td>
-        </tr>
-    </table>
+    <div class="print-header">
+        <!-- Header: Logo Left + Lab Info Center + Contact Right -->
+        <table width="100%" cellpadding="0" cellspacing="0" style="border-bottom: 2px solid #8d2d36; padding-bottom: 15px;">
+            <tr>
+                <!-- Left: Logo -->
+                <td width="15%" valign="top" align="center" style="padding-right: 15px;">
+                    <img src="{{ asset('assets/images/logo.png') }}" alt="Logo"
+                        style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid #8d2d36; display: block; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                </td>
+                <!-- Center: Lab Name & Info -->
+                <td style="padding: 0 15px;">
+                    <div style="font-weight: bold; font-size: 20px; margin: 0; line-height: 1.1; color: #8d2d36; text-align: center;">
+                        NEW MODERN CLINICAL LABORATORY
+                    </div>
+                    <div style="font-size: 11px; margin: 5px 0 0 0; font-weight: 600; color: #8d2d36; text-align: center;">
+                        (KP HCC) REG: 03663 SWAT
+                    </div>
+                    <div style="font-size: 10px; color: #8d2d36; margin: 5px 0 0 0; line-height: 1.3; text-align: center;">
+                        Bacha Khan, BS Pathology (KMU)<br>
+                        DMLT KPK Peshawar
+                    </div>
+                </td>
+                <!-- Right: Contact Info -->
+                <td width="30%" valign="top" align="right"
+                    style="font-size: 10px; color: #8d2d36; line-height: 1.4; padding-left: 15px; border-left: 2px solid #8d2d36;">
+                    <div style="font-weight: bold; color: #8d2d36; margin-bottom: 5px;">Contact Information</div>
+                    <strong>Tel:</strong><br>
+                    0302-8080191<br>
+                    0313-9797790<br><br>
+                    <strong>Address:</strong><br>
+                    Kabal Road, Near Township Chowk<br>
+                    Kanju Swat
+                </td>
+            </tr>
+        </table>
+    </div>
 
-    <!-- Patient Info Section -->
-    <div style="background-color: #f8fafb; border: 1px solid #8d2d36 !important; border-radius: 6px; padding: 15px; margin-bottom: 20px;">
+    <div class="print-body">
+        <!-- Patient Info Section -->
+        <div style="background-color: #f8fafb; border: 1px solid #8d2d36 !important; border-radius: 6px; padding: 15px; margin-bottom: 20px;">
         <table width="100%" cellpadding="6" cellspacing="0" style="font-size: 11px; border-collapse: collapse;">
             <tr>
                 <td width="25%" style="font-weight: bold; color: black; padding-bottom: 8px;">Patient Name:</td>
@@ -252,22 +385,38 @@
     @endif
 
     <!-- Footer -->
-    <div style="background-color: #f8fafb !important; border: 1px solid #e0e0e0 !important; border-radius: 6px; padding: 15px; margin-top: 25px; display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: #333;">
-        <div style="flex: 1; text-align: left;">
-            <div style="background-color: #ffffff !important; padding: 10px; border-radius: 4px; border-left: 3px solid #8d2d36 !important;">
-                <strong style="color: black;">Please Note:</strong><br>
-                <i class="fas fa-info-circle" style="margin-right: 5px; color: black;"></i>Test(s) are performed on the state-of-the-art ARCHITECT MODULAR Ci4100 from Abbott Diagnostics, U.S.A.<br>
-                <i class="fas fa-signature" style="margin-right: 5px; color: black;"></i>This is a digitally signed report and does not require manual signature.
-            </div>
-        </div>
-        <div style="text-align: right; white-space: nowrap;">
-            <div style="background-color: #ffffff !important; padding: 10px; border-radius: 4px; border-right: 3px solid #8d2d36 !important;">
-                <div style="font-weight: bold; color: black; margin-bottom: 5px;">
-                    <i class="fas fa-user-md" style="margin-right: 5px;"></i>This is a digitally signed report by
-                </div>
-                <strong style="font-size: 11px;">Bacha Khan</strong>
-            </div>
-            {{-- <div style="display: inline-flex; gap: 8px; align-items: center; margin-top: 10px;">
+    <div class="print-footer">
+        <div class="footer-container">
+            <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+                <tr>
+                    <td style="padding-bottom: 10px;">
+                        <div class="footer-row footer-note">
+                            <strong style="color: black;">Please Note:</strong><br>
+                            <i class="fas fa-info-circle" style="margin-right: 5px; color: black;"></i>Test(s) are performed on the state-of-the-art ARCHITECT MODULAR Ci4100 from Abbott Diagnostics, U.S.A.<br>
+                            <i class="fas fa-signature" style="margin-right: 5px; color: black;"></i>This is a digitally signed report and does not require manual signature.
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding-bottom: 10px;">
+                        <div class="footer-row footer-signature">
+                            <div style="font-weight: bold; color: black; margin-bottom: 5px;">
+                                <i class="fas fa-user-md" style="margin-right: 5px;"></i>This is a digitally signed report by
+                            </div>
+                            <strong style="font-size: 11px;">Bacha Khan</strong>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="footer-row footer-contact">
+                            <div style="margin-bottom: 5px;"><i class="fas fa-map-marker-alt" style="margin-right: 6px; color: #8d2d36;"></i>Asad Abad Road, Near Township Chowk, Kanju Swat</div>
+                            <div><i class="fas fa-phone" style="margin-right: 6px; color: #8d2d36;"></i>0302-8080191  ·  0313-9797790</div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            {{-- <div class="footer-row" style="display: inline-flex; gap: 8px; align-items: center; justify-content: center;">
                 <img src="{{ asset('assets/images/neoapp.png') }}" alt="NEQAPP" style="height: 20px; opacity: 0.8;">
                 <img src="{{ asset('assets/images/riqas.png') }}" alt="RIQAS" style="height: 20px; opacity: 0.8;">
                 <img src="{{ asset('assets/images/pnac.png') }}" alt="PNAC" style="height: 20px; opacity: 0.8;">
