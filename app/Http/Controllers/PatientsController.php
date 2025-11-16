@@ -17,6 +17,7 @@ use App\Models\Tests\CBC;
 use App\Models\Tests\Urinal;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 use App\Models\Bills;
 
 class PatientsController extends Controller
@@ -299,7 +300,15 @@ class PatientsController extends Controller
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('age', function ($row) {
-                    return $row->age;
+                    // Use individual age parts if available, otherwise use the combined string
+                    if (!empty($row->age_years) || !empty($row->age_months) || !empty($row->age_days)) {
+                        $parts = [];
+                        if (!empty($row->age_years)) $parts[] = $row->age_years . 'Y';
+                        if (!empty($row->age_months)) $parts[] = $row->age_months . 'M';
+                        if (!empty($row->age_days)) $parts[] = $row->age_days . 'D';
+                        return !empty($parts) ? implode(' ', $parts) : '0Y';
+                    }
+                    return $row->age ?: 'N/A';
                 })
                 ->addColumn('data_status', function ($row) {
                     $hasData = !empty($row->test_report) && $row->test_report !== '{}' && $row->test_report !== 'null';
@@ -351,7 +360,17 @@ class PatientsController extends Controller
 
             return DataTables::of($data)
                 ->addIndexColumn()
-                ->addColumn('age', fn($r) => $r->age)
+                ->addColumn('age', function ($r) {
+                    // Use individual age parts if available, otherwise use the combined string
+                    if (!empty($r->age_years) || !empty($r->age_months) || !empty($r->age_days)) {
+                        $parts = [];
+                        if (!empty($r->age_years)) $parts[] = $r->age_years . 'Y';
+                        if (!empty($r->age_months)) $parts[] = $r->age_months . 'M';
+                        if (!empty($r->age_days)) $parts[] = $r->age_days . 'D';
+                        return !empty($parts) ? implode(' ', $parts) : '0Y';
+                    }
+                    return $r->age ?: 'N/A';
+                })
                 ->addColumn('action', function ($row) {
                     $btn  = '<a href="' . route('patients.edit', $row->id) . '" class="btn btn-warning btn-sm" title="Edit"><i class="fas fa-edit"></i></a>';
                     $btn .= '&nbsp;&nbsp;<a href="' . route("patients.profile", $row->id) . '" class="btn btn-info btn-sm detailsview" data-id="' . $row->id . '" title="View Details"><i class="fas fa-eye"></i></a>';
@@ -394,7 +413,11 @@ class PatientsController extends Controller
             'mobile_phone' => 'required|string|max:50',
             'address' => 'required|string',
             'gender' => 'required|string',
-            'age' => 'required|string|max:3',
+            // allow combined age strings up to 20 characters OR accept parts and combine server-side
+            'age' => 'required_without:age_years|nullable|string|max:20',
+            'age_years' => 'nullable|integer|min:0|max:150',
+            'age_months' => 'nullable|integer|min:0|max:11',
+            'age_days' => 'nullable|integer|min:0|max:30',
             'receiving_date' => 'required|date',
             'reporting_date' => 'required|date',
             'test_category'   => 'required|array|min:1',
@@ -402,6 +425,16 @@ class PatientsController extends Controller
             'test_prices'     => 'array',
             'test_prices.*'   => 'numeric',
         ]);
+
+        // Combine age parts into the `age` string if needed
+        if (empty($request->age) && ($request->filled('age_years') || $request->filled('age_months') || $request->filled('age_days'))) {
+            $parts = [];
+            if ($request->filled('age_years') && $request->age_years != '0') $parts[] = $request->age_years . 'Y';
+            if ($request->filled('age_months') && $request->age_months != '0') $parts[] = $request->age_months . 'M';
+            if ($request->filled('age_days') && $request->age_days != '0') $parts[] = $request->age_days . 'D';
+            $ageString = !empty($parts) ? implode(' ', $parts) : '0Y';
+            $request->merge(['age' => $ageString]);
+        }
 
         $patient = new Patients;
         // Generate a unique patient_id to avoid duplicate key errors.
@@ -414,6 +447,14 @@ class PatientsController extends Controller
         $patient->address = $request->address;
         $patient->gender = $request->gender;
         $patient->age = $request->age;
+        // Store split age parts for future migrations/DB columns
+        if ($request->filled('age_years')) $patient->age_years = (int)$request->age_years;
+        if ($request->filled('age_months')) $patient->age_months = (int)$request->age_months;
+        if ($request->filled('age_days')) $patient->age_days = (int)$request->age_days;
+        // Also store component parts if provided (requires migrations to persist)
+        if ($request->filled('age_years')) $patient->age_years = (int)$request->age_years;
+        if ($request->filled('age_months')) $patient->age_months = (int)$request->age_months;
+        if ($request->filled('age_days')) $patient->age_days = (int)$request->age_days;
         $patient->blood_group = $request->blood_group ?? null;
         $patient->receiving_date = $request->receiving_date;
         $patient->reporting_date = $request->reporting_date;
@@ -424,7 +465,9 @@ class PatientsController extends Controller
         $patient->test_category = json_encode($request->test_category);
 
         $patient->registerd_by = Auth::user() ? Auth::user()->name : null;
-        $patient->save();
+        $saved = $patient->save();
+        $patient->refresh();
+        Log::info('PatientsController@store - saved patient', ['id' => $patient->id, 'saved' => $saved, 'patient' => $patient->toArray()]);
 
         // 🔹 Generate patient receipt/token with prices
         $testPrices = $request->test_prices ?? [];
@@ -645,24 +688,48 @@ class PatientsController extends Controller
         $request->validate([
             'name' => 'required|string|max:191',
             'mobile_phone' => 'nullable|string|max:50',
-            'age' => 'nullable|string|max:3',
+            // allow combined age strings up to 20 chars (e.g. '22Y 3M 5D')
+            'age' => 'nullable|string|max:20',
+            'age_years' => 'nullable|integer|min:0|max:150',
+            'age_months' => 'nullable|integer|min:0|max:11',
+            'age_days' => 'nullable|integer|min:0|max:30',
             'receiving_date' => 'required|date',
             'reporting_date' => 'required|date',
         ]);
 
+        // If age wasn't provided as a combined string, try to assemble it from the split parts
+        if (empty($request->age) && ($request->filled('age_years') || $request->filled('age_months') || $request->filled('age_days'))) {
+            $parts = [];
+            if ($request->filled('age_years') && $request->age_years != '0') $parts[] = $request->age_years . 'Y';
+            if ($request->filled('age_months') && $request->age_months != '0') $parts[] = $request->age_months . 'M';
+            if ($request->filled('age_days') && $request->age_days != '0') $parts[] = $request->age_days . 'D';
+            $ageString = !empty($parts) ? implode(' ', $parts) : '0Y';
+            $request->merge(['age' => $ageString]);
+        }
+
         $patient = Patients::findOrFail($id);
+        // Debug: Log incoming request data for troubleshooting updates
+        Log::info('PatientsController@update - incoming request', ['id' => $id, 'data' => $request->only(['name','mobile_phone','address','gender','age','blood_group','receiving_date','reporting_date','note','referred_by'])]);
 
         $patient->name = $request->name;
         $patient->mobile_phone = $request->mobile_phone;
         $patient->address = $request->address;
         $patient->gender = $request->gender;
         $patient->age = $request->age;
+        // Update individual age parts
+        // Clear values if they are not provided in the request
+        $patient->age_years = $request->filled('age_years') ? (int)$request->age_years : null;
+        $patient->age_months = $request->filled('age_months') ? (int)$request->age_months : null;
+        $patient->age_days = $request->filled('age_days') ? (int)$request->age_days : null;
         $patient->blood_group = $request->blood_group ?? null;
         $patient->receiving_date = $request->receiving_date;
         $patient->reporting_date = $request->reporting_date;
         $patient->note = $request->note;
         $patient->referred_by = $request->referred_by;
-        $patient->save();
+        $saved = $patient->save();
+        // Refresh to ensure latest values are loaded and log the attributes to confirm persistence
+        $patient->refresh();
+        Log::info('PatientsController@update - save result', ['id' => $id, 'saved' => $saved, 'patient' => $patient->toArray()]);
 
         return redirect()->route('patients.edit', $id)->with('success', 'Patient updated successfully');
     }
@@ -868,6 +935,14 @@ class PatientsController extends Controller
 
         return view('Patient.patient_test_print', compact('patient', 'testEntry'));
     }
+
+    // Save-to-system functionality removed
+
+    // Listing saved reports removed
+
+    // Save single test report functionality removed
+
+    // Report download removed
 
     /**
      * Generate a unique patient_id.

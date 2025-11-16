@@ -20,42 +20,9 @@
         <!-- end page title -->
 
         <!-- Print Header (visible only in print view) -->
-        <div class="print-header" style="display: none;">
-            <table width="100%" cellpadding="0" cellspacing="0" style="border-bottom: 3px solid #8d2d36; padding-bottom: 15px; margin-bottom: 20px;">
-                <tr>
-                    <!-- Left: Logo -->
-                    <td width="15%" valign="top" align="center" style="padding-right: 20px;">
-                        <img src="{{ asset('assets/images/logo.png') }}" alt="Logo"
-                            style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid #8d2d36; display: block;">
-                    </td>
-                    <!-- Center: Lab Name & Info -->
-                    <td style="padding: 0 20px;">
-                        <div style="font-weight: bold; font-size: 22px; margin: 0; line-height: 1.2; color: #8d2d36; text-align: center;">
-                            NEW MODERN CLINICAL LABORATORY
-                        </div>
-                        <div style="font-size: 14px; margin: 5px 0 0 0; font-weight: 600; color: #8d2d36; text-align: center;">
-                            (KP HCC) REG: 03663 SWAT
-                        </div>
-                        <div style="font-size: 12px; color: #8d2d36; margin: 5px 0 0 0; line-height: 1.3; text-align: center;">
-                            Bacha Khan, BS Pathology (KMU) | DMLT KPK Peshawar
-                        </div>
-                    </td>
-                    <!-- Right: Contact Info -->
-                    <td width="25%" valign="top" align="right"
-                        style="font-size: 12px; color: #333; line-height: 1.4; padding-left: 20px; border-left: 3px solid #8d2d36;">
-                        <div style="font-weight: bold; color: #8d2d36; margin-bottom: 8px; font-size: 14px;">Contact Information</div>
-                        <strong>Tel:</strong><br>
-                        0302-8080191<br>
-                        0313-9797790<br><br>
-                        <strong>Address:</strong><br>
-                        Kabal Road, Near Township Chowk<br>
-                        Kanju Swat
-                    </td>
-                </tr>
-            </table>
-        </div>
+        @include('Patient.partials.print_header_footer')
 
-        <div class="card print-card" style="border-radius: 8px; overflow: hidden;">
+        <div class="card print-card print-body" style="border-radius: 8px; overflow: hidden;">
             <div class="card-body p-4">
                 <!-- Screen Header (hidden in print) -->
                 <div class="screen-header no-print">
@@ -63,12 +30,12 @@
                     <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 20px; border-bottom: 2px solid #8d2d36; padding-bottom: 15px;">
                         <tr>
                             <!-- Left: Logo -->
-                            <td width="15%" valign="top" align="center" style="padding-right: 15px;">
+                            <td width="15%" valign="top" align="center" style="padding-right: 6px;"> 
                                 <img src="{{ asset('assets/images/logo.png') }}" alt="Logo"
                                     style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid #8d2d36; display: block; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                             </td>
                             <!-- Center: Lab Name & Info -->
-                            <td style="padding: 0 15px;">
+                            <td style="padding: 0 6px;">
                                 <div style="font-weight: bold; font-size: 20px; margin: 0; line-height: 1.1; color: #8d2d36; text-align: center;">
                                     NEW MODERN CLINICAL LABORATORY
                                 </div>
@@ -82,7 +49,7 @@
                             </td>
                             <!-- Right: Contact Info -->
                             <td width="30%" valign="top" align="right"
-                                style="font-size: 10px; color: #333; line-height: 1.4; padding-left: 15px; border-left: 2px solid #8d2d36;">
+                                style="font-size: 10px; color: #333; line-height: 1.4; padding-left: 6px; border-left: 2px solid #8d2d36;"> 
                                 <div style="font-weight: bold; color: #8d2d36; margin-bottom: 5px;">Contact Information</div>
                                 <strong>Tel:</strong><br>
                                 0302-8080191<br>
@@ -97,7 +64,7 @@
 
                 <!-- Patient Information Section -->
                 <div style="background: linear-gradient(135deg, rgba(248, 250, 252, 0.8), rgba(255, 255, 255, 0.8)); border: 2px solid #8d2d36; border-radius: 8px; padding: 20px; margin-bottom: 25px;" class="patient-info-section">
-                    <table width="100%" cellpadding="8" cellspacing="0" style="font-size: 14px; border-collapse: collapse;">
+                            <table width="100%" cellpadding="8" cellspacing="0" style="font-size: 14px; border-collapse: collapse;">
                         <tr>
                             <td width="25%" style="font-weight: bold; color: black; padding-bottom: 10px; font-size: 14px;">
                                 <i class="fas fa-user" style="margin-right: 8px;"></i>Patient Name:
@@ -106,7 +73,21 @@
                             <td width="25%" style="font-weight: bold; color: black; padding-bottom: 10px; font-size: 14px;">
                                 <i class="fas fa-birthday-cake" style="margin-right: 8px;"></i>Age / Gender:
                             </td>
-                            <td width="25%" style="padding-bottom: 10px; font-weight: 600; font-size: 14px;">{{ $patient->age }} / {{ $patient->gender }}</td>
+                            <td width="25%" style="padding-bottom: 10px; font-weight: 600; font-size: 14px;">
+                                @php
+                                    // Use individual age parts if available, otherwise use the combined string
+                                    if (!empty($patient->age_years) || !empty($patient->age_months) || !empty($patient->age_days)) {
+                                        $parts = [];
+                                        if (!empty($patient->age_years)) $parts[] = $patient->age_years . 'Y';
+                                        if (!empty($patient->age_months)) $parts[] = $patient->age_months . 'M';
+                                        if (!empty($patient->age_days)) $parts[] = $patient->age_days . 'D';
+                                        $ageDisplay = !empty($parts) ? implode(' ', $parts) : '0Y';
+                                    } else {
+                                        $ageDisplay = $patient->age ?: 'N/A';
+                                    }
+                                @endphp
+                                {{ $ageDisplay }} / {{ $patient->gender }}
+                            </td>
                         </tr>
                         <tr>
                             <td style="font-weight: bold; color: black; padding-bottom: 10px; font-size: 14px;">
@@ -234,10 +215,11 @@
 
                         <!-- Individual Test PDF Button -->
                         <div class="no-print" style="margin-bottom: 15px; text-align: right;">
-                            <a href="{{ route('patients.printTest', ['patient' => $patient->id, 'testName' => $testName]) }}"
-                                target="_blank" class="btn btn-sm btn-outline-secondary">
+                            <a href="#" onclick="printTest(event, '{{ route('patients.printTest', ['patient' => $patient->id, 'testName' => $testName]) }}')"
+                                class="btn btn-sm btn-outline-secondary">
                                 <i class="mdi mdi-file-pdf"></i> Download Test PDF
                             </a>
+                            <!-- Save to System removed -->
                         </div>
 
                         <!-- Test Category Notes Section -->
@@ -277,13 +259,7 @@
                         <strong style="font-size: 11px;">Bacha Khan</strong>
                     </div>
                 </div>
-            <!-- Print Footer (visible only in print view) -->
-            <div class="print-footer" style="display: none;">
-                <div style="background: black; color: white; padding: 8px 12px; font-size: 9px; text-align: center; margin-top: 20px;">
-                    <strong>📍</strong> Asad Abad Road, Near Township Chowk Kamla Swat |
-                    <strong>📞</strong> 0302-9050191 - 03139796050
-                </div>
-            </div>
+            <!-- Print Footer (now included via partial) -->
 
             <!-- Screen Footer (hidden in print) -->
             <div class="screen-footer no-print">
@@ -305,12 +281,13 @@
             <a href="{{ route('patients.list') }}" class="btn btn-primary">
                 <i class="mdi mdi-arrow-left"></i> Back to List
             </a>
-            <button onclick="window.print()" class="btn btn-info" style="margin-left: 5px;">
+            <!-- <button type="button" onclick="window.print()" class="btn btn-info" style="margin-left: 5px;">
                 <i class="mdi mdi-printer"></i> Print
             </button>
-            <button onclick="downloadPDF()" class="btn btn-warning" style="margin-left: 5px;">
+            <button type="button" onclick="downloadPDF(event)" class="btn btn-warning" style="margin-left: 5px;">
                 <i class="mdi mdi-file-pdf"></i> Download PDF
-            </button>
+            </button> -->
+            <!-- Bulk save to system removed -->
 
             @php
                 // Format phone number for WhatsApp
@@ -348,18 +325,18 @@
     </div>
     </div>
 
+    <!-- Saved Reports functionality removed -->
+
     <style>
         @media print {
-            @page {
-                size: A4;
-                margin: 20mm 15mm 25mm 15mm; /* top, right, bottom, left */
-                @top-center {
-                    content: element(print-header);
+                @page {
+                        size: A4;
+                        margin: 6mm 0mm 10mm 0mm; /* minimal left/right margins to reduce side white area */
                 }
-                @bottom-center {
-                    content: element(print-footer);
+                :root {
+                    --print-header-height: 36mm;
+                    --print-footer-height: 32mm;
                 }
-            }
 
             .no-print {
                 display: none !important;
@@ -373,17 +350,32 @@
             .print-header,
             .print-footer {
                 display: block !important;
+                position: fixed;
+                left: 0;
+                transform: none;
+                width: 100%;
+                padding: 0 10mm;
+                z-index: 9999;
+                box-sizing: border-box;
             }
 
             .print-header {
-                position: running(print-header);
-                width: 100%;
+                top: 6mm;
+                height: var(--print-header-height);
             }
 
             .print-footer {
-                position: running(print-footer);
-                width: 100%;
+                bottom: 10mm;
+                height: var(--print-footer-height);
             }
+
+            /* Ensure card body leaves enough space for header/footer */
+            .print-body {
+                padding-top: calc(var(--print-header-height) + 12mm) !important;
+                padding-bottom: calc(var(--print-footer-height) + 10mm) !important;
+            }
+
+            /* Do not add mini-header rows in this page to avoid duplication with the fixed print header */
 
             body {
                 margin: 0;
@@ -432,16 +424,16 @@
                 page-break-after: auto;
             }
 
-            /* Ensure proper A4 sizing */
+            /* Ensure proper print sizing */
             html, body {
                 size: A4;
-                width: 210mm;
+                width: var(--print-page-width);
                 min-height: 297mm;
             }
 
-            /* Center content on A4 page */
+            /* Center content on print page */
             .print-card {
-                width: 180mm;
+                width: var(--print-inner-width-mm);
                 margin: 0 auto;
                 display: block;
             }
@@ -513,7 +505,7 @@
             }
 
             .print-card {
-                max-width: 210mm;
+                max-width: var(--print-page-width);
                 margin: 0 auto;
                 box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             }
@@ -540,7 +532,10 @@
     </style>
 
     <script>
-        function downloadPDF() {
+        function downloadPDF(e) {
+            if (e && e.preventDefault) {
+                e.preventDefault();
+            }
             // Get patient name and date for filename
             const patientName = @json($patient->name ?? '');
             const reportDate = @json($patient->reporting_date ? \Carbon\Carbon::parse($patient->reporting_date)->format('d-m-Y') : '');
@@ -558,5 +553,42 @@
                 document.body.classList.remove('generating-pdf');
             }, 1000);
         }
+        
+        function printTest(e, url) {
+            if (e && e.preventDefault) e.preventDefault();
+            fetch(url, { credentials: 'include' })
+                .then(resp => resp.text())
+                .then(html => {
+                    // Remove immediate window.print() calls from fetched content to avoid printing too early
+                    const sanitized = html.replace(/window\.print\s*\(\s*\)\s*;?/g, '');
+                    const iframe = document.createElement('iframe');
+                    iframe.style.position = 'fixed';
+                    iframe.style.right = '0';
+                    iframe.style.bottom = '0';
+                    iframe.style.width = '0';
+                    iframe.style.height = '0';
+                    iframe.style.border = '0';
+                    iframe.style.visibility = 'hidden';
+                    document.body.appendChild(iframe);
+                    const idoc = iframe.contentWindow.document;
+                    idoc.open();
+                    idoc.write(sanitized);
+                    idoc.close();
+                    iframe.onload = function () {
+                        try {
+                            iframe.contentWindow.focus();
+                            iframe.contentWindow.print();
+                        } catch (err) {
+                            console.error('Print failed', err);
+                        }
+                        setTimeout(() => { document.body.removeChild(iframe); }, 1500);
+                    };
+                }).catch(err => { console.error('Failed to load print view', err); });
+        }
+
+        // Save-to-system functionality removed
+    </script>
+    <script>
+        // Saved reports listing removed
     </script>
 @endsection

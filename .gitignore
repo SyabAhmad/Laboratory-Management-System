@@ -15,6 +15,8 @@ yarn-error.log
 /.vscode
 
 
+.github
+memory-bank
 #Ignore vscode AI rules
 .github\instructions\codacy.instructions.md
 

@@ -23,7 +23,7 @@
             <div class="dropdown-menu dropdown-menu-right profile-dropdown bg-cards"
                 style="border: 1px solid rgba(100,116,139,0.12);">
                 <!-- item-->
-                <div class="dropdown-item noti-title" style="background: var(--primary);">
+                <div class="dropdown-item noti-title" style="background: #8d2d36;">
                     <h6 class="m-0 text-white">
                         Welcome !
                     </h6>
@@ -125,7 +125,7 @@
 <div class="modal fade" id="attendance" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content bg-cards">
-            <div class="modal-header" style="background: var(--primary); color: var(--surface);">
+            <div class="modal-header" style="background: #8d2d36; color: var(--surface);">
                 <h4 class="modal-title" id="exampleModalLabel">Daily Attendance</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"
                     style="color: var(--surface);">
@@ -160,7 +160,7 @@
                     // ->get()
                 @endphp
                 @if ($items2 == 0)
-                    <div class="alert" role="alert" style="background:var(--primary); color:var(--surface); border-color:rgba(37,99,235,0.9);">
+                    <div class="alert" role="alert" style="background:#8d2d36; color:var(--surface); border-color:rgba(37,99,235,0.9);">
                         Welcome to the system. Please take your <strong>attendance</strong>.
                     </div>
                     <form role="form" class="parsley-examples" id="AttendanceForm" method="POST"

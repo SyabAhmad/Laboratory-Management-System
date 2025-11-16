@@ -66,6 +66,7 @@ Route::middleware(['auth:sanctum', 'verified'])
         Route::get('/patients/{id}/edit', 'App\Http\Controllers\PatientsController@edit')->name('patients.edit');
         // Print friendly patient test report (per-test)
         Route::get('/patients/{patient}/tests/{testName}/print', [App\Http\Controllers\PatientsController::class, 'printTestReport'])->name('patients.printTest');
+        // Save-to-system routes removed
 
         Route::put('/patients/{id}', 'App\Http\Controllers\PatientsController@update')->name('patients.update');
         Route::post('/patients/test-data', 'App\Http\Controllers\PatientsController@storeTestData')->name('patients.test.data.store');

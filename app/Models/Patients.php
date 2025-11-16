@@ -30,11 +30,18 @@ class Patients extends Model
         'test_category',
         'test_report',
         'registerd_by',
+        // New age part fields - migrations not yet applied; safe to keep here for future DB updates
+        'age_years',
+        'age_months',
+        'age_days',
     ];
 
     protected $casts = [
         'receiving_date' => 'date',
         'reporting_date' => 'date',
+        'age_years' => 'integer',
+        'age_months' => 'integer',
+        'age_days' => 'integer',
     ];
 
     /**
@@ -43,6 +50,15 @@ class Patients extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the referral that referred the patient (if any)
+     * Note: referrals are stored by name in patients.referred_by column
+     */
+    public function referral()
+    {
+        return $this->belongsTo(Referrals::class, 'referred_by', 'name');
     }
 
     /**
@@ -77,5 +93,33 @@ class Patients extends Model
         }
 
         return null;
+    }
+
+    /**
+     * Mutator: set the age string and attempt to synchronize age parts if present
+     */
+    public function setAgeAttribute($value)
+    {
+        $this->attributes['age'] = $value;
+
+        // Parse components like '22Y 3M 5D' to fill separate fields if they exist
+        try {
+            $years = $months = $days = null;
+            if ($value && is_string($value)) {
+                if (preg_match('/(\d+)\s*Y/i', $value, $m)) $years = (int)$m[1];
+                if (preg_match('/(\d+)\s*M/i', $value, $m)) $months = (int)$m[1];
+                if (preg_match('/(\d+)\s*D/i', $value, $m)) $days = (int)$m[1];
+                // fallback: plain numeric -> years
+                if (is_numeric(trim($value)) && is_null($years) && is_null($months) && is_null($days)) {
+                    $years = (int)trim($value);
+                }
+            }
+
+            if (!is_null($years)) $this->attributes['age_years'] = $years;
+            if (!is_null($months)) $this->attributes['age_months'] = $months;
+            if (!is_null($days)) $this->attributes['age_days'] = $days;
+        } catch (\Exception $e) {
+            // silently ignore parsing issues
+        }
     }
 }
