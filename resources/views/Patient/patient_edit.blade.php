@@ -29,6 +29,8 @@
             </div>
         @endif
 
+        <!-- Saved Reports functionality removed -->
+
         <div class="row">
             <div class="col-12">
                 <div class="card shadow-sm" style="border-radius: 12px; border: 1px solid rgba(37, 99, 235, 0.1);">
@@ -37,7 +39,7 @@
                             <i class="fas fa-user-edit text-primary-custom mr-2"></i> Patient Information
                         </h4>
 
-                        <form method="POST" action="{{ route('patients.update', $patient->id) }}">
+                        <form method="POST" action="{{ route('patients.update', $patient->id) }}" id="patientEditForm">
                             @csrf
                             @method('PUT')
 
@@ -89,16 +91,60 @@
                                         @enderror
                                     </div>
 
+                                    @php
+                                        // Prefer explicit DB-backed age parts (if columns exist) otherwise parse stored age string
+                                        $ageYears = old('age_years', $patient->age_years ?? null);
+                                        $ageMonths = old('age_months', $patient->age_months ?? null);
+                                        $ageDays = old('age_days', $patient->age_days ?? null);
+                                        if (empty($ageYears) && empty($ageMonths) && empty($ageDays)) {
+                                            $ageString = old('age', $patient->age ?? '');
+                                            $ageYears = $ageMonths = $ageDays = '';
+                                            if (preg_match('/(\d+)\s*Y/i', $ageString, $m)) { $ageYears = $m[1]; }
+                                            if (preg_match('/(\d+)\s*M/i', $ageString, $m)) { $ageMonths = $m[1]; }
+                                            if (preg_match('/(\d+)\s*D/i', $ageString, $m)) { $ageDays = $m[1]; }
+                                            // Fallback: if age is plain numeric assume years
+                                            if (empty($ageYears) && empty($ageMonths) && empty($ageDays) && is_numeric(trim($ageString))) {
+                                                $ageYears = trim($ageString);
+                                            }
+                                        }
+                                    @endphp
                                     <div class="form-group mb-4">
-                                        <label for="age" class="font-weight-bold">
+                                        <label for="age_years" class="font-weight-bold">
                                             <i class="fas fa-birthday-cake text-primary-custom mr-1"></i> Age <span class="text-danger">*</span>
                                         </label>
-                                        <input type="number" id="age" name="age" placeholder="Enter age"
-                                            class="form-control @error('age') is-invalid @enderror"
-                                            value="{{ old('age', $patient->age) }}" required>
-                                        @error('age')
-                                            <span class="invalid-feedback">{{ $message }}</span>
-                                        @enderror
+                                        <div class="row">
+                                            <div class="col-4">
+                                                <input type="number" id="age_years" name="age_years"
+                                                    class="form-control @error('age_years') is-invalid @enderror"
+                                                    value="{{ old('age_years', $ageYears) }}" placeholder="Years"
+                                                    min="0" max="150">
+                                                <small class="text-muted">Years</small>
+                                                @error('age_years')
+                                                    <span class="invalid-feedback">{{ $message }}</span>
+                                                @enderror
+                                            </div>
+                                            <div class="col-4">
+                                                <input type="number" id="age_months" name="age_months"
+                                                    class="form-control @error('age_months') is-invalid @enderror"
+                                                    value="{{ old('age_months', $ageMonths) }}" placeholder="Months"
+                                                    min="0" max="11">
+                                                <small class="text-muted">Months</small>
+                                                @error('age_months')
+                                                    <span class="invalid-feedback">{{ $message }}</span>
+                                                @enderror
+                                            </div>
+                                            <div class="col-4">
+                                                <input type="number" id="age_days" name="age_days"
+                                                    class="form-control @error('age_days') is-invalid @enderror"
+                                                    value="{{ old('age_days', $ageDays) }}" placeholder="Days"
+                                                    min="0" max="30">
+                                                <small class="text-muted">Days</small>
+                                                @error('age_days')
+                                                    <span class="invalid-feedback">{{ $message }}</span>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        <input type="hidden" id="age" name="age" value="{{ old('age', $patient->age) }}">
                                     </div>
 
                                     <div class="form-group mb-4">
@@ -280,11 +326,12 @@
                                                                 @endphp
                                                                 <!-- {{ $preview ?? '-' }}{{ strlen($preview ?? '') > 40 ? '...' : '' }} -->
                                                             </small>
-                                                            <a href="{{ route('patients.printTest', ['patient' => $patient->id, 'testName' => $test['name']]) }}"
-                                                                target="_blank" class="btn btn-sm btn-outline-secondary"
+                                                            <a href="#" onclick="printTest(event, '{{ route('patients.printTest', ['patient' => $patient->id, 'testName' => $test['name']]) }}')"
+                                                                class="btn btn-sm btn-outline-secondary"
                                                                 title="Print Test Report">
                                                                 <i class="fas fa-file-pdf"></i>
                                                             </a>
+                                                            <!-- Save to System removed -->
                                                         </div>
                                                     @else
                                                         <small class="text-muted">-</small>
@@ -638,7 +685,140 @@
 
 @section('scripts')
     <script>
+        function printTest(e, url) {
+            if (e && e.preventDefault) e.preventDefault();
+            fetch(url, { credentials: 'include' })
+                .then(resp => resp.text())
+                .then(html => {
+                    const sanitized = html.replace(/window\.print\s*\(\s*\)\s*;?/g, '');
+                    const iframe = document.createElement('iframe');
+                    iframe.style.position = 'fixed';
+                    iframe.style.right = '0';
+                    iframe.style.bottom = '0';
+                    iframe.style.width = '0';
+                    iframe.style.height = '0';
+                    iframe.style.border = '0';
+                    iframe.style.visibility = 'hidden';
+                    document.body.appendChild(iframe);
+                    const idoc = iframe.contentWindow.document;
+                    idoc.open();
+                    idoc.write(sanitized);
+                    idoc.close();
+                    iframe.onload = function () {
+                        try {
+                            iframe.contentWindow.focus();
+                            iframe.contentWindow.print();
+                        } catch (err) {
+                            console.error('Print failed', err);
+                        }
+                        setTimeout(() => { document.body.removeChild(iframe); }, 1500);
+                    };
+                }).catch(err => { console.error('Failed to load print view', err); });
+        }
+        // Save-to-system functionality removed
+            if (e && e.preventDefault) e.preventDefault();
+            const btn = e.currentTarget;
+            const original = btn.innerHTML;
+            try {
+                if (typeof btn.disabled !== 'undefined') btn.disabled = true; else btn.style.pointerEvents = 'none';
+                btn.innerHTML = '<i class="mdi mdi-spin mdi-loading"></i> Saving...';
+                const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 60000);
+                console.debug('saveTestToSystem (edit): fetching', url);
+                fetch(url, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': token,
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({}),
+                    signal: controller.signal
+                }).then(r => {
+                    clearTimeout(timeoutId);
+                    if (!r.ok) {
+                        return r.text().then(t => { throw new Error('Server responded with ' + r.status + ' - ' + t); });
+                    }
+                    return r.json();
+                }).then(data => {
+                    if (data.success) {
+                        // Open download link if provided
+                        if (data.download_url) {
+                            window.open(data.download_url, '_blank');
+                        }
+                        // Refresh saved reports list
+                        try { if (typeof loadSavedReportsEdit === 'function') loadSavedReportsEdit(@json($patient->id)); } catch (e) { }
+                        alert('Saved test report to system.');
+                    } else {
+                        alert('Failed to save test: ' + (data.message || 'Unknown'));
+                    }
+                }).catch(err => {
+                    console.debug('saveTestToSystem (edit): caught error', err);
+                    console.error(err);
+                    const msg = err.message || err;
+                    if (err.name === 'AbortError') {
+                        alert('Save request timed out after 60 seconds. Please try again or save one test at a time.');
+                    } else if (String(msg).toLowerCase().includes('<html') || String(msg).toLowerCase().includes('<!doctype')) {
+                        alert('Server returned an HTML response (probably a login redirect or error page). Please reload and ensure you are logged in.');
+                    } else {
+                        alert('An error occurred while saving the test report: ' + msg);
+                    }
+                }).finally(() => {
+                    btn.disabled = false;
+                    btn.innerHTML = original;
+                });
+            } catch (err) {
+                console.error(err);
+                if (typeof btn.disabled !== 'undefined') btn.disabled = false; else btn.style.pointerEvents = '';
+                btn.innerHTML = original;
+            }
+        
+
+        // Saved reports functionality removed
+            const container = document.getElementById('savedReportsListEdit');
+            if (!container) return;
+            if (!Array.isArray(reports) || reports.length === 0) {
+                container.innerHTML = '<div class="text-muted">No saved reports found for this patient.</div>';
+                return;
+            }
+            let html = '<div class="table-responsive"><table class="table table-sm mb-0"><thead><tr><th>File</th><th>Size</th><th>Saved</th><th>Action</th></tr></thead><tbody>';
+            for (const r of reports) {
+                const size = r.size_kb ? r.size_kb + ' KB' : '';
+                html += `<tr><td>${r.filename}</td><td>${size}</td><td>${r.modified}</td><td><a class="btn btn-sm btn-outline-primary" href="${r.download_url}" target="_blank">Download</a></td></tr>`;
+            }
+            html += '</tbody></table></div>';
+            container.innerHTML = html;
+        
+
+        // Saved reports functionality removed
+            // Saved reports functionality removed
+        
+
+        // Saved reports functionality removed
         $(document).ready(function() {
+            // Combine split age fields (years/months/days) into the hidden `age` string
+            function combineAgeFieldsEdit() {
+                const years = $('#age_years').val() || '0';
+                const months = $('#age_months').val() || '0';
+                const days = $('#age_days').val() || '0';
+                const ageParts = [];
+                if (years && years !== '0') ageParts.push(years + 'Y');
+                if (months && months !== '0') ageParts.push(months + 'M');
+                if (days && days !== '0') ageParts.push(days + 'D');
+                const ageString = ageParts.length > 0 ? ageParts.join(' ') : '0Y';
+                $('#age').val(ageString);
+                console.debug('Combined edit age:', ageString);
+            }
+
+            // Attach listeners for the editable age parts
+            $('#age_years, #age_months, #age_days').on('input', combineAgeFieldsEdit);
+            // Ensure the hidden `age` field is updated before the edit form submits
+            $('#patientEditForm').on('submit', function() { combineAgeFieldsEdit(); });
+            // Initialize on page load
+            combineAgeFieldsEdit();
             // Chevron icon animation for test results accordion
             $('[data-toggle="collapse"]').on('click', function() {
                 $(this).find('.collapse-icon').toggleClass('fa-chevron-right fa-chevron-down');

@@ -34,9 +34,12 @@
             padding: 0;
         }
 
-        /* Thermal Printer Slip - 2 1/4 inches (57.15mm) width */
+        /* Thermal Printer Slip - 80 mm width (common thermal receipt width) */
+        @media print {
+            @page { size: 80mm auto; margin: 0; }
+        }
         .slip-wrapper {
-            width: 57.15mm;
+            width: 80mm;
             margin: 0 auto;
             background-color: white;
             padding: 0;
