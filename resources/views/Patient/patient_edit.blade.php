@@ -684,248 +684,165 @@
 @endsection
 
 @section('scripts')
-    <script>
-        function printTest(e, url) {
-            if (e && e.preventDefault) e.preventDefault();
-            fetch(url, { credentials: 'include' })
-                .then(resp => resp.text())
-                .then(html => {
-                    const sanitized = html.replace(/window\.print\s*\(\s*\)\s*;?/g, '');
-                    const iframe = document.createElement('iframe');
-                    iframe.style.position = 'fixed';
-                    iframe.style.right = '0';
-                    iframe.style.bottom = '0';
-                    iframe.style.width = '0';
-                    iframe.style.height = '0';
-                    iframe.style.border = '0';
-                    iframe.style.visibility = 'hidden';
-                    document.body.appendChild(iframe);
-                    const idoc = iframe.contentWindow.document;
-                    idoc.open();
-                    idoc.write(sanitized);
-                    idoc.close();
-                    iframe.onload = function () {
-                        try {
-                            iframe.contentWindow.focus();
-                            iframe.contentWindow.print();
-                        } catch (err) {
-                            console.error('Print failed', err);
-                        }
-                        setTimeout(() => { document.body.removeChild(iframe); }, 1500);
-                    };
-                }).catch(err => { console.error('Failed to load print view', err); });
+   <script>
+    function printTest(e, url) {
+        if (e && e.preventDefault) e.preventDefault();
+
+        fetch(url, { credentials: 'include' })
+            .then(resp => resp.text())
+            .then(html => {
+                const sanitized = html.replace(/window\.print\s*\(\s*\)\s*;?/g, '');
+                const iframe = document.createElement('iframe');
+                iframe.style.position = 'fixed';
+                iframe.style.right = '0';
+                iframe.style.bottom = '0';
+                iframe.style.width = '0';
+                iframe.style.height = '0';
+                iframe.style.border = '0';
+                iframe.style.visibility = 'hidden';
+                document.body.appendChild(iframe);
+
+                const idoc = iframe.contentWindow.document;
+                idoc.open();
+                idoc.write(sanitized);
+                idoc.close();
+
+                iframe.onload = function () {
+                    try {
+                        iframe.contentWindow.focus();
+                        iframe.contentWindow.print();
+                    } catch (err) {
+                        console.error('Print failed', err);
+                    }
+                    setTimeout(() => {
+                        document.body.removeChild(iframe);
+                    }, 1500);
+                };
+            })
+            .catch(err => {
+                console.error('Failed to load print view', err);
+            });
+    }
+
+    $(document).ready(function () {
+
+        /* -------------------------------
+           AGE COMBINE LOGIC
+        --------------------------------*/
+        function combineAgeFieldsEdit() {
+            const years = $('#age_years').val() || '0';
+            const months = $('#age_months').val() || '0';
+            const days = $('#age_days').val() || '0';
+
+            const parts = [];
+            if (years !== '0') parts.push(years + 'Y');
+            if (months !== '0') parts.push(months + 'M');
+            if (days !== '0') parts.push(days + 'D');
+
+            const ageString = parts.length ? parts.join(' ') : '0Y';
+            $('#age').val(ageString);
         }
-        // Save-to-system functionality removed
-            if (e && e.preventDefault) e.preventDefault();
-            const btn = e.currentTarget;
-            const original = btn.innerHTML;
-            try {
-                if (typeof btn.disabled !== 'undefined') btn.disabled = true; else btn.style.pointerEvents = 'none';
-                btn.innerHTML = '<i class="mdi mdi-spin mdi-loading"></i> Saving...';
-                const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 60000);
-                console.debug('saveTestToSystem (edit): fetching', url);
-                fetch(url, {
-                    method: 'POST',
-                    credentials: 'include',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': token,
-                        'X-Requested-With': 'XMLHttpRequest'
-                    },
-                    body: JSON.stringify({}),
-                    signal: controller.signal
-                }).then(r => {
-                    clearTimeout(timeoutId);
-                    if (!r.ok) {
-                        return r.text().then(t => { throw new Error('Server responded with ' + r.status + ' - ' + t); });
-                    }
-                    return r.json();
-                }).then(data => {
-                    if (data.success) {
-                        // Open download link if provided
-                        if (data.download_url) {
-                            window.open(data.download_url, '_blank');
-                        }
-                        // Refresh saved reports list
-                        try { if (typeof loadSavedReportsEdit === 'function') loadSavedReportsEdit(@json($patient->id)); } catch (e) { }
-                        alert('Saved test report to system.');
-                    } else {
-                        alert('Failed to save test: ' + (data.message || 'Unknown'));
-                    }
-                }).catch(err => {
-                    console.debug('saveTestToSystem (edit): caught error', err);
-                    console.error(err);
-                    const msg = err.message || err;
-                    if (err.name === 'AbortError') {
-                        alert('Save request timed out after 60 seconds. Please try again or save one test at a time.');
-                    } else if (String(msg).toLowerCase().includes('<html') || String(msg).toLowerCase().includes('<!doctype')) {
-                        alert('Server returned an HTML response (probably a login redirect or error page). Please reload and ensure you are logged in.');
-                    } else {
-                        alert('An error occurred while saving the test report: ' + msg);
-                    }
-                }).finally(() => {
-                    btn.disabled = false;
-                    btn.innerHTML = original;
-                });
-            } catch (err) {
-                console.error(err);
-                if (typeof btn.disabled !== 'undefined') btn.disabled = false; else btn.style.pointerEvents = '';
-                btn.innerHTML = original;
-            }
-        
 
-        // Saved reports functionality removed
-            const container = document.getElementById('savedReportsListEdit');
-            if (!container) return;
-            if (!Array.isArray(reports) || reports.length === 0) {
-                container.innerHTML = '<div class="text-muted">No saved reports found for this patient.</div>';
-                return;
-            }
-            let html = '<div class="table-responsive"><table class="table table-sm mb-0"><thead><tr><th>File</th><th>Size</th><th>Saved</th><th>Action</th></tr></thead><tbody>';
-            for (const r of reports) {
-                const size = r.size_kb ? r.size_kb + ' KB' : '';
-                html += `<tr><td>${r.filename}</td><td>${size}</td><td>${r.modified}</td><td><a class="btn btn-sm btn-outline-primary" href="${r.download_url}" target="_blank">Download</a></td></tr>`;
-            }
-            html += '</tbody></table></div>';
-            container.innerHTML = html;
-        
-
-        // Saved reports functionality removed
-            // Saved reports functionality removed
-        
-
-        // Saved reports functionality removed
-        $(document).ready(function() {
-            // Combine split age fields (years/months/days) into the hidden `age` string
-            function combineAgeFieldsEdit() {
-                const years = $('#age_years').val() || '0';
-                const months = $('#age_months').val() || '0';
-                const days = $('#age_days').val() || '0';
-                const ageParts = [];
-                if (years && years !== '0') ageParts.push(years + 'Y');
-                if (months && months !== '0') ageParts.push(months + 'M');
-                if (days && days !== '0') ageParts.push(days + 'D');
-                const ageString = ageParts.length > 0 ? ageParts.join(' ') : '0Y';
-                $('#age').val(ageString);
-                console.debug('Combined edit age:', ageString);
-            }
-
-            // Attach listeners for the editable age parts
-            $('#age_years, #age_months, #age_days').on('input', combineAgeFieldsEdit);
-            // Ensure the hidden `age` field is updated before the edit form submits
-            $('#patientEditForm').on('submit', function() { combineAgeFieldsEdit(); });
-            // Initialize on page load
+        $('#age_years, #age_months, #age_days').on('input', combineAgeFieldsEdit);
+        $('#patientEditForm').on('submit', function () {
             combineAgeFieldsEdit();
-            // Chevron icon animation for test results accordion
-            $('[data-toggle="collapse"]').on('click', function() {
-                $(this).find('.collapse-icon').toggleClass('fa-chevron-right fa-chevron-down');
-            });
-
-            // Auto-rotate chevrons on load for already expanded items
-            $('.collapse.show').each(function() {
-                var target = $(this).attr('id');
-                $('[data-target="#' + target + '"] .collapse-icon').addClass('fa-chevron-down').removeClass(
-                    'fa-chevron-right');
-            });
-
-            // Fetch CBC Results
-            $('#fetchCBCResults').on('click', function() {
-                const btn = $(this);
-                const originalHtml = btn.html();
-
-                btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Fetching...');
-
-                setTimeout(function() {
-                    window.location.reload();
-                }, 1000);
-            });
-
-            $('.test-data-form').on('submit', function(e) {
-                e.preventDefault();
-
-                const form = $(this);
-                const submitBtn = form.find('button[type="submit"]');
-                const originalBtnHtml = submitBtn.html();
-
-                const testName = form.data('test-name');
-                const patientId = form.data('patient-id');
-                const csrfToken = $('meta[name="csrf-token"]').attr('content');
-
-                const formData = new FormData();
-                formData.append('patient_id', patientId);
-                formData.append('test_name', testName);
-                formData.append('_token', csrfToken);
-
-                form.find('input, textarea, select').each(function() {
-                    const field = $(this);
-                    const name = field.attr('name');
-                    if (name) {
-                        formData.append(`test_data[${name}]`, field.val());
-                    }
-                });
-
-                submitBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Saving…');
-
-                $.ajax({
-                        url: "{{ route('patients.storeTestData') }}",
-                        method: 'POST',
-                        data: formData,
-                        processData: false,
-                        contentType: false,
-                        dataType: 'json'
-                    })
-                    .done(function(response) {
-                        if (response.success) {
-                            if (typeof Swal !== 'undefined') {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Saved',
-                                    text: response.message ?? 'Test data saved.',
-                                    timer: 1800,
-                                    showConfirmButton: false
-                                });
-                            }
-                            setTimeout(function() {
-                                form.closest('.modal').modal('hide');
-                                window.location.reload();
-                            }, 1800);
-                        } else {
-                            const message = response.message ?? 'Failed to save test data.';
-                            if (typeof Swal !== 'undefined') {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Error',
-                                    text: message
-                                });
-                            } else {
-                                alert(message);
-                            }
-                        }
-                    })
-                    .fail(function(xhr) {
-                        let message = 'Failed to save test data.';
-                        if (xhr.status === 422 && xhr.responseJSON?.errors) {
-                            message = Object.values(xhr.responseJSON.errors).flat().join(' ');
-                        } else if (xhr.responseJSON?.message) {
-                            message = xhr.responseJSON.message;
-                        }
-                        if (typeof Swal !== 'undefined') {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: message
-                            });
-                        } else {
-                            alert(message);
-                        }
-                    })
-                    .always(function() {
-                        submitBtn.prop('disabled', false).html(originalBtnHtml);
-                    });
-            });
         });
-    </script>
+        combineAgeFieldsEdit();
+
+
+        /* -------------------------------
+           CBC Reload Button
+        --------------------------------*/
+        $('#fetchCBCResults').on('click', function () {
+            const btn = $(this);
+            const html = btn.html();
+
+            btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Fetching...');
+
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        });
+
+
+        /* -------------------------------
+           SUBMIT TEST DATA (IMPORTANT)
+        --------------------------------*/
+        $('.test-data-form').on('submit', function (e) {
+            e.preventDefault();
+
+            const form = $(this);
+            const submitBtn = form.find('button[type="submit"]');
+            const originalBtnHtml = submitBtn.html();
+
+            const testName = form.data('test-name');
+            const patientId = form.data('patient-id');
+            const csrfToken = $('meta[name="csrf-token"]').attr('content');
+
+            const formData = new FormData();
+            formData.append('patient_id', patientId);
+            formData.append('test_name', testName);
+            formData.append('_token', csrfToken);
+
+            form.find('input, textarea, select').each(function () {
+                const field = $(this);
+                const name = field.attr('name');
+                if (name) {
+                    formData.append(`test_data[${name}]`, field.val());
+                }
+            });
+
+            submitBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Saving…');
+
+            $.ajax({
+                url: "{{ route('patients.storeTestData') }}",
+                method: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                dataType: 'json'
+            })
+                .done(function (response) {
+                    if (response.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Saved',
+                            text: response.message ?? 'Test data saved.',
+                            timer: 1800,
+                            showConfirmButton: false
+                        });
+
+                        setTimeout(function () {
+                            form.closest('.modal').modal('hide');
+                            window.location.reload();
+                        }, 1800);
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: response.message ?? 'Failed to save test data.'
+                        });
+                    }
+                })
+                .fail(function (xhr) {
+                    let message = 'Failed to save test data.';
+                    if (xhr.status === 422 && xhr.responseJSON?.errors) {
+                        message = Object.values(xhr.responseJSON.errors).flat().join(' ');
+                    } else if (xhr.responseJSON?.message) {
+                        message = xhr.responseJSON.message;
+                    }
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: message
+                    });
+                })
+                .always(function () {
+                    submitBtn.prop('disabled', false).html(originalBtnHtml);
+                });
+        });
+    });
+</script>
+
 @endsection

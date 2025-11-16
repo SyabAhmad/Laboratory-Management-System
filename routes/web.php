@@ -59,10 +59,10 @@ Route::middleware(['auth:sanctum', 'verified'])
 
         // Patients Routes
         Route::get('/patients', 'App\Http\Controllers\PatientsController@index')->name('patients.list');
-    Route::get('/patients/completed', 'App\Http\Controllers\PatientsController@completedList')->name('patients.completed');
+        Route::get('/patients/completed', 'App\Http\Controllers\PatientsController@completedList')->name('patients.completed');
         Route::get('/new/patients', 'App\Http\Controllers\PatientsController@create')->name('patients.create');
         Route::post('/new/patients/store', 'App\Http\Controllers\PatientsController@store')->name('patients.store');
-        Route::get('/patients/status/{id}', 'App\Http\Controllers\PatientsController@statuschange')->name('patients.status');
+        Route::post('/patients/status/{id}', 'App\Http\Controllers\PatientsController@statuschange')->name('patients.status');
         Route::get('/patients/{id}/edit', 'App\Http\Controllers\PatientsController@edit')->name('patients.edit');
         // Print friendly patient test report (per-test)
         Route::get('/patients/{patient}/tests/{testName}/print', [App\Http\Controllers\PatientsController::class, 'printTestReport'])->name('patients.printTest');
@@ -88,7 +88,7 @@ Route::middleware(['auth:sanctum', 'verified'])
         Route::put('/referrals/update', "App\Http\Controllers\ReferralController@update")->name('referrals.update');
         Route::delete('/referrals/{id}', 'App\Http\Controllers\ReferralController@destroy')->name('referrals.destroy');
         Route::get('/referrals/patients', 'App\Http\Controllers\ReferralController@patients')->name('referrals.patients');
-        
+
         // Referral Commission Routes
         Route::get('/referrals/{referralId}/commissions', 'App\Http\Controllers\ReferralController@commissions')->name('referrals.commissions');
         Route::get('/referrals/{referralId}/commissions/monthly', 'App\Http\Controllers\ReferralController@commissionsMonthly')->name('referrals.commissions-monthly');
@@ -103,7 +103,7 @@ Route::middleware(['auth:sanctum', 'verified'])
         // Lab Test Parameters Routes
         Route::get('/labtest/{id}/parameters', 'App\Http\Controllers\LabTestParameterController@create')->name('labtest.parameters.create');
         Route::post('/labtest/{id}/parameters', 'App\Http\Controllers\LabTestParameterController@store')->name('labtest.parameters.store');
-    Route::delete('/labtest/parameters/{id}', 'App\Http\Controllers\LabTestParameterController@destroy')->name('labtest.parameters.destroy');
+        Route::delete('/labtest/parameters/{id}', 'App\Http\Controllers\LabTestParameterController@destroy')->name('labtest.parameters.destroy');
         Route::put('/labtest/parameters/{id}', 'App\Http\Controllers\LabTestParameterController@update')->name('labtest.parameters.update');
 
         Route::post('/labtest/add', 'App\Http\Controllers\LabTestCatController@store')->name('labtest.add');
@@ -125,8 +125,8 @@ Route::middleware(['auth:sanctum', 'verified'])
         Route::post('/billing/add', 'App\Http\Controllers\BillsController@store')->name('billing.add');
         Route::get('/billing/details/{id}', 'App\Http\Controllers\BillsController@show')->name('billing.details');
         Route::put('/billing/{bill}', 'App\Http\Controllers\BillsController@update')->name('bills.update');
-    // Mark a bill as fully paid (records delta payment and updates status)
-    Route::post('/billing/{bill}/mark-paid', 'App\Http\Controllers\BillsController@markAsPaid')->name('bills.markPaid');
+        // Mark a bill as fully paid (records delta payment and updates status)
+        Route::post('/billing/{bill}/mark-paid', 'App\Http\Controllers\BillsController@markAsPaid')->name('bills.markPaid');
         Route::get('/allbilling', 'App\Http\Controllers\BillsController@allbills')->name('allbills');
         Route::get('/all/billing', 'App\Http\Controllers\BillsController@allbills')->name('all.bills');
         Route::get('/billing', 'App\Http\Controllers\BillsController@index')->name('billing');
@@ -138,8 +138,8 @@ Route::middleware(['auth:sanctum', 'verified'])
         Route::get('/transection/other', 'App\Http\Controllers\PaymentsController@create')->name('other.transection');
         Route::post('/transection/other/post', 'App\Http\Controllers\PaymentsController@store')->name('other.transection.store');
 
-    // Balance overview
-    Route::get('/balance', 'App\Http\Controllers\BalanceController@index')->name('balance.index');
+        // Balance overview
+        Route::get('/balance', 'App\Http\Controllers\BalanceController@index')->name('balance.index');
 
         //Report Genarate Route
         Route::get('/patientreport', 'App\Http\Controllers\ReportGenarationController@patientindex')->name('patientreport');

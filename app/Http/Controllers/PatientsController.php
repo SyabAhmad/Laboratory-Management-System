@@ -323,13 +323,13 @@ class PatientsController extends Controller
                 ->addColumn('action', function ($row) {
                     $btn  = '<a href="' . route('patients.edit', $row->id) . '" class="btn btn-warning btn-sm" title="Edit"><i class="fas fa-edit"></i></a>';
                     $btn .= '&nbsp;&nbsp;<a href="' . route("patients.profile", $row->id) . '" class="btn btn-info btn-sm detailsview" data-id="' . $row->id . '" title="View Details"><i class="fas fa-eye"></i></a>';
-                    
+
                     // Add Download Slip button if receipt exists
                     $receipt = PatientReceipt::where('patient_id', $row->id)->latest()->first();
                     if ($receipt) {
                         $btn .= '&nbsp;&nbsp;<a href="' . route('patients.print-receipt', $receipt->id) . '" class="btn btn-success btn-sm" title="Download Slip" onclick="return openPrintModal(event, this)"><i class="fas fa-download"></i> Slip</a>';
                     }
-                    
+
                     $btn .= '&nbsp;&nbsp;<a href="javascript:void(0);" data-id="' . $row->id . '" class="btn btn-danger btn-sm deletebtn" title="Delete"><i class="fas fa-trash"></i></a>';
                     $btn .= '&nbsp;&nbsp;<a href="' . route("billing.create", ['id' => $row->id]) . '" class="btn btn-success btn-sm" title="Create Bill"><i class="fas fa-file-invoice-dollar"></i> Bill</a>';
                     return $btn;
@@ -374,13 +374,13 @@ class PatientsController extends Controller
                 ->addColumn('action', function ($row) {
                     $btn  = '<a href="' . route('patients.edit', $row->id) . '" class="btn btn-warning btn-sm" title="Edit"><i class="fas fa-edit"></i></a>';
                     $btn .= '&nbsp;&nbsp;<a href="' . route("patients.profile", $row->id) . '" class="btn btn-info btn-sm detailsview" data-id="' . $row->id . '" title="View Details"><i class="fas fa-eye"></i></a>';
-                    
+
                     // Add Download Slip button if receipt exists
                     $receipt = PatientReceipt::where('patient_id', $row->id)->latest()->first();
                     if ($receipt) {
                         $btn .= '&nbsp;&nbsp;<a href="' . route('patients.print-receipt', $receipt->id) . '" class="btn btn-success btn-sm" title="Download Slip" onclick="return openPrintModal(event, this)"><i class="fas fa-download"></i> Slip</a>';
                     }
-                    
+
                     return $btn;
                 })
                 ->rawColumns(['action'])
@@ -471,15 +471,15 @@ class PatientsController extends Controller
 
         // 🔹 Generate patient receipt/token with prices
         $testPrices = $request->test_prices ?? [];
-        
+
         // Debug: Log what we're receiving
-        \Log::info('Receipt Creation Debug', [
+        Log::info('Receipt Creation Debug', [
             'test_category' => $request->test_category,
             'test_prices' => $testPrices,
             'test_category_count' => count($request->test_category ?? []),
             'test_prices_count' => count($testPrices),
         ]);
-        
+
         $receipt = PatientReceipt::createFromPatientWithPrices(
             $patient,
             $request->test_category,
@@ -629,9 +629,9 @@ class PatientsController extends Controller
 
     public function statuschange($id, Request $request)
     {
-        $user = User::find($id);
-        $user->status = $request->status;
-        $user->update();
+        $patient = Patients::find($id);
+        $patient->status = $request->status;
+        $patient->save();
         return response()->json(['success' => 'Status changed successfully.']);
     }
 
@@ -709,7 +709,7 @@ class PatientsController extends Controller
 
         $patient = Patients::findOrFail($id);
         // Debug: Log incoming request data for troubleshooting updates
-        Log::info('PatientsController@update - incoming request', ['id' => $id, 'data' => $request->only(['name','mobile_phone','address','gender','age','blood_group','receiving_date','reporting_date','note','referred_by'])]);
+        Log::info('PatientsController@update - incoming request', ['id' => $id, 'data' => $request->only(['name', 'mobile_phone', 'address', 'gender', 'age', 'blood_group', 'receiving_date', 'reporting_date', 'note', 'referred_by'])]);
 
         $patient->name = $request->name;
         $patient->mobile_phone = $request->mobile_phone;
@@ -1026,4 +1026,3 @@ class PatientsController extends Controller
         ]);
     }
 }
-
