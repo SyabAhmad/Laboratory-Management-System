@@ -557,10 +557,34 @@
         function printTest(e, url) {
             if (e && e.preventDefault) e.preventDefault();
             fetch(url, { credentials: 'include' })
-                .then(resp => resp.text())
-                .then(html => {
-                    // Remove immediate window.print() calls from fetched content to avoid printing too early
-                    const sanitized = html.replace(/window\.print\s*\(\s*\)\s*;?/g, '');
+                .then(resp => {
+                    const type = (resp.headers.get('content-type') || '').toLowerCase();
+                    if (type.indexOf('application/pdf') !== -1) {
+                        return resp.blob().then(b => ({ pdf: b }));
+                    }
+                    return resp.text().then(t => ({ html: t }));
+                })
+                .then(result => {
+                    if (result.pdf) {
+                        const blobUrl = URL.createObjectURL(result.pdf);
+                        const iframe = document.createElement('iframe');
+                        iframe.style.position = 'fixed';
+                        iframe.style.right = '0';
+                        iframe.style.bottom = '0';
+                        iframe.style.width = '0';
+                        iframe.style.height = '0';
+                        iframe.style.border = '0';
+                        iframe.style.visibility = 'hidden';
+                        iframe.src = blobUrl;
+                        document.body.appendChild(iframe);
+                        iframe.onload = function () {
+                            try { iframe.contentWindow.focus(); iframe.contentWindow.print(); } catch (err) { console.error('Print failed', err); }
+                            setTimeout(() => { URL.revokeObjectURL(blobUrl); document.body.removeChild(iframe); }, 1500);
+                        };
+                        return;
+                    }
+
+                    const sanitized = result.html.replace(/window\.print\s*\(\s*\)\s*;?/g, '');
                     const iframe = document.createElement('iframe');
                     iframe.style.position = 'fixed';
                     iframe.style.right = '0';
@@ -575,12 +599,7 @@
                     idoc.write(sanitized);
                     idoc.close();
                     iframe.onload = function () {
-                        try {
-                            iframe.contentWindow.focus();
-                            iframe.contentWindow.print();
-                        } catch (err) {
-                            console.error('Print failed', err);
-                        }
+                        try { iframe.contentWindow.focus(); iframe.contentWindow.print(); } catch (err) { console.error('Print failed', err); }
                         setTimeout(() => { document.body.removeChild(iframe); }, 1500);
                     };
                 }).catch(err => { console.error('Failed to load print view', err); });

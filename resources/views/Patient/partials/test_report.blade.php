@@ -1,4 +1,4 @@
-<style type="text/css">
+    <style type="text/css">
     .print-body {
         margin-top: 20px;
         margin-bottom: 25px;
@@ -213,7 +213,7 @@
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 10px;
-            font-size: 12px;
+            font-size: 20px; /* increase baseline personal info font */
             border: 1px solid #e7e7e7;
                 border-radius: 6px;
                 background: #fff;
@@ -237,7 +237,7 @@
         .personal-info-table .value { color: #333; }
         .personal-info-row { background: transparent; }
         @media print {
-            .personal-info-table { font-size: 11px; }
+            .personal-info-table { font-size: 13px !important; }
         }
     </style>
     <style>
@@ -247,7 +247,7 @@
         .pi-cell { display:flex; gap: 10px; align-items: center; }
         .pi-cell i { color: #8d2d36; width: 30px; text-align: center; }
         .pi-meta { display:flex; flex-direction:column; }
-        .pi-label { font-size: 11px; color: #8d2d36; font-weight: 700; }
+        .pi-label { font-size: 12px; color: #8d2d36; font-weight: 700; }
         .pi-value { font-size: 12px; color: #333; font-weight: 600; }
         .section-title { background: #8d2d36; color: #fff; border-radius: 6px; padding: 10px 12px; text-align:center; font-weight:700; margin-bottom: 12px; display:block; }
         .section-title i { margin-right: 8px; }
@@ -256,10 +256,17 @@
         .results-table th { background: #fff; color: #333; font-weight: 700; }
         .results-table thead tr { border-bottom: 3px solid #8d2d36; }
         .results-table tbody tr td { padding: 12px; }
-        .results-table { border-radius: 6px; overflow: hidden; border: 1px solid #e6e6e6; width: var(--print-inner-width-mm) !important; max-width: var(--print-inner-width-mm) !important; box-sizing: border-box; }
+        .results-table { border-radius: 6px; overflow: hidden; border: 1px solid #e6e6e6; width: var(--print-inner-width-mm) !important; max-width: var(--print-inner-width-mm) !important; box-sizing: border-box; font-size: 13px; }
         @media print {
             .personal-card { border: 1px solid #e7e7e7 !important; }
             .section-title { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            /* Make table text larger for print so it's readable on paper */
+            .results-table { font-size: 14px !important; }
+            .results-table th { font-size: 14px !important; }
+            .results-table td { font-size: 14px !important; }
+            .pi-value { font-size: 13px !important; }
+            .pi-label { font-size: 13px !important; }
+            .section-title { font-size: 16px !important; padding: 12px 14px !important; }
         }
     </style>
 
@@ -316,7 +323,7 @@
         <span>{{ strtoupper($testEntry['name'] ?? 'TEST') }}</span>
     </div>
     <div style="border: 1px solid #e0e0e0; border-radius: 6px; overflow: hidden; margin-bottom: 20px; width: var(--print-inner-width-mm); max-width: var(--print-inner-width-mm); margin-left:auto; margin-right:auto; box-sizing: border-box;">
-        <table class="results-table" width="100%" cellpadding="5" cellspacing="0" style="border-collapse: collapse; font-size: 11px;">
+        <table class="results-table" width="100%" cellpadding="5" cellspacing="0" style="border-collapse: collapse;">
             <thead>
                 <!-- mini-header fallback removed to avoid duplication; use fixed header from partial -->
                 <tr style="background-color: #fff !important; border-bottom: 3px solid #8d2d36 !important;">
@@ -408,7 +415,7 @@
             <div style="font-weight: bold; color: #8d2d36; margin-bottom: 8px; font-size: 12px; border-bottom: 1px solid #8d2d36; padding-bottom: 8px;">
                 <i class="fas fa-sticky-note" style="margin-right: 8px;"></i>Notes
             </div>
-            <div style="font-size: 11px; color: #333; line-height: 1.5; white-space: pre-wrap;">
+            <div style="font-size: 20px; color: #333; line-height: 1.5; white-space: pre-wrap;">
                 {{ $categoryNotes }}
             </div>
         </div>
@@ -448,7 +455,7 @@
                         <i class="fas fa-building" style="margin-right: 5px;"></i>{{ $department }}
                     </div>
                     @foreach ($notesList as $note)
-                        <div style="margin-left: 15px; font-size: 10px; line-height: 1.4; margin-bottom: 6px; color: #333;">
+                        <div style="margin-left: 15px; font-size: 13px; line-height: 1.4; margin-bottom: 6px; color: #333;">
                             <span style="font-weight: 600; color: #555;">{{ $note['test_name'] }}:</span> {{ $note['notes'] }}
                         </div>
                     @endforeach
