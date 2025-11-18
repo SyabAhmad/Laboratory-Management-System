@@ -13,6 +13,37 @@
     --text-body: #475569; /* Body text */
 }
 
+.dashboard-card-unified {
+    background: linear-gradient(
+        135deg,
+        #1e3c72,
+        #8d2d36
+    ); /* Beautiful blue gradient */
+    color: #fff !important;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    padding: 20px;
+    transition: all 0.3s ease-in-out;
+}
+
+.dashboard-card-unified:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+}
+
+.dashboard-card-icon {
+    font-size: 40px;
+    color: #ffffff !important;
+}
+
+.dashboard-card-title {
+    color: #ffffff !important;
+}
+
+.dashboard-card-text1 {
+    color: rgba(255, 255, 255, 0.85) !important;
+}
+
 /* Small helpers */
 .bg-surface {
     background: var(--surface) !important;
@@ -153,7 +184,7 @@
     box-shadow: 0 12px 35px rgba(16, 24, 40, 0.15);
 }
 .dashboard-card-icon {
-    color: var(--primary) !important;
+    color: #ffff !important;
     font-size: 2.5rem;
     margin-right: 1rem;
 }
