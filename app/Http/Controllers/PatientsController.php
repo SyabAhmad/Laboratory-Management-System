@@ -463,9 +463,7 @@ class PatientsController extends Controller
         }
 
         $patient = new Patients;
-        // Generate a unique patient_id to avoid duplicate key errors.
-        // Use a date prefix plus a random suffix and ensure uniqueness in DB.
-        $patient->patient_id = $this->generateUniquePatientId();
+        // patient_id will be generated automatically based on the database id after insert
         $patient->user_id = Auth::id();
 
         $patient->name = $request->name;
@@ -1097,6 +1095,8 @@ class PatientsController extends Controller
 
         return (string) $candidate;
     }
+
+    // NOTE: generateUniquePatientId is left for legacy code but the new approach uses the model-created hook to set patient_id.
 
     /**
      * View patient receipt/token

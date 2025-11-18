@@ -11,6 +11,36 @@ class Patients extends Model
 {
     use HasFactory;
 
+    protected static function booted()
+    {
+        static::created(function ($patient) {
+            try {
+                // Only set patient_id when not provided yet
+                if (empty($patient->patient_id)) {
+                    // Format: PT{YYYY}{serial} e.g. PT2025000001
+                    $serial = str_pad($patient->id, 6, '0', STR_PAD_LEFT);
+                    $year = null;
+                    if ($patient->created_at instanceof Carbon) {
+                        $year = $patient->created_at->format('Y');
+                    } else {
+                        $year = Carbon::now()->format('Y');
+                    }
+                    $patient->patient_id = 'PT' . $year . $serial;
+                    // Save quietly to avoid firing other events
+                    if (method_exists($patient, 'saveQuietly')) {
+                        $patient->saveQuietly();
+                    } else {
+                        $patient->timestamps = false;
+                        $patient->save();
+                    }
+                }
+            } catch (\Exception $e) {
+                // Log error but do not block creation
+                \Log::error('Failed to set patient_id for patient: ' . $e->getMessage());
+            }
+        });
+    }
+
     protected $table = 'patients';
 
     // allow mass assignment for creating patients

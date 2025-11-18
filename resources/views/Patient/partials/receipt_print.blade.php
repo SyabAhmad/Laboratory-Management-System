@@ -288,48 +288,7 @@
 
     <div class="slip-wrapper">
         @include('Patient.partials.receipt_single', ['patient' => $patient, 'receipt' => $receipt, 'copyLabel' => 'Customer Copy', 'barcodeId' => 'barcode-1'])
-                @php
-                    $displayTests = [];
-
-                    // Use receipt tests if available
-                    if (!empty($receipt->tests) && is_array($receipt->tests)) {
-                        $displayTests = $receipt->tests;
-                    } else {
-                        // Fallback: get from patient's test_category JSON
-    $patientTests = json_decode($patient->test_category ?? '[]', true);
-    if (!empty($patientTests)) {
-        foreach ($patientTests as $testName) {
-            $displayTests[] = [
-                'test_name' => $testName,
-                'price' => 0,
-                                ];
-                            }
-                        }
-                    }
-                @endphp
-
-                @forelse($displayTests as $test)
-                    <div class="test-item">
-                        @if (is_array($test))
-                            <span class="test-name">{{ substr($test['test_name'] ?? '', 0, 14) }}</span>
-                            <span class="test-price">
-                                @if (isset($test['price']) && $test['price'] > 0)
-                                    Rs. {{ number_format($test['price'], 0) }}
-                                @else
-                                    -
-                                @endif
-                            </span>
-                        @else
-                            <span class="test-name">{{ substr($test, 0, 14) }}</span>
-                            <span class="test-price">-</span>
-                        @endif
-                    </div>
-                @empty
-                    <div class="test-item">
-                        <span class="test-name">No tests</span>
-                        <span class="test-price">-</span>
-                    </div>
-                @endforelse
+                <!-- Tests are rendered inside each included slip partial to avoid duplication -->
         <!-- Divider (visual) -> cut line for thermal printers -->
         <div class="cut-line" aria-hidden="true"><span class="scissors">✂</span> CUT HERE <span class="scissors">✂</span></div>
         @include('Patient.partials.receipt_single', ['patient' => $patient, 'receipt' => $receipt, 'copyLabel' => 'Office Copy', 'barcodeId' => 'barcode-2'])
