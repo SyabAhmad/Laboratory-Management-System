@@ -79,6 +79,21 @@ class ReportGenarationController extends Controller
         $testreport = TestReport::find($id);
         return view('XrayReport.report_details', compact('testreport'));
     }
+
+    /**
+     * Daily finance summary: shows all payments for a given day (default: today)
+     */
+    public function dailyFinance(Request $request)
+    {
+        $date = $request->input('date') ?: Carbon::now()->format('Y-m-d');
+        $start = Carbon::createFromFormat('Y-m-d', $date)->startOfDay();
+        $end = Carbon::createFromFormat('Y-m-d', $date)->endOfDay();
+
+        $payments = Payments::whereBetween('created_at', [$start, $end])->orderBy('created_at')->get();
+        $total = $payments->sum('amount');
+
+        return view('allreport.daily_finance', compact('date', 'payments', 'total'));
+    }
     // public function expanseledger()
     // {
     //     return view('allreport.expense');

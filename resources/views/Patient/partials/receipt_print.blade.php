@@ -49,10 +49,13 @@
 
         .slip {
             width: 100%;
-            padding: 2mm;
-            font-size: 7px;
-            line-height: 1.0;
+            padding: 3mm;
+            font-size: 11px; /* increased baseline font size */
+            line-height: 1.15;
             border: 1px dashed #999;
+            margin-bottom: 6mm;
+            break-inside: avoid;
+            page-break-inside: avoid;
         }
 
         .slip-header {
@@ -64,19 +67,19 @@
 
         .slip-title {
             font-weight: bold;
-            font-size: 9px;
+            font-size: 14px; /* made title bigger for readability */
             color: #8d2d36;
             margin-bottom: 0.2mm;
         }
 
         .slip-subtitle {
-            font-size: 6px;
+            font-size: 10px;
             color: #666;
             margin-bottom: 0.2mm;
         }
 
         .slip-marker {
-            font-size: 5px;
+            font-size: 9px;
             color: #999;
         }
 
@@ -91,7 +94,7 @@
             display: flex;
             justify-content: space-between;
             margin: 0.6mm 0;
-            font-size: 7px;
+            font-size: 11px;
         }
 
         .patient-label {
@@ -109,20 +112,20 @@
         .slip-token {
             text-align: center;
             border: 1px solid #8d2d36;
-            padding: 1mm;
+            padding: 2mm;
             margin: 1mm 0;
             background-color: #fafafa;
         }
 
         .token-label {
-            font-size: 5px;
+            font-size: 10px;
             color: #666;
             margin-bottom: 0.3mm;
         }
 
         .token-number {
-            font-size: 9px;
-            font-weight: bold;
+            font-size: 18px;
+            font-weight: 800;
             font-family: 'Courier New', monospace;
             letter-spacing: 0.5px;
             color: #333;
@@ -132,15 +135,15 @@
         .slip-tests {
             border-top: 1px dashed #ddd;
             border-bottom: 1px dashed #ddd;
-            padding: 0.8mm 0;
-            margin: 1mm 0;
-            font-size: 6px;
+            padding: 1.2mm 0;
+            margin: 1.5mm 0;
+            font-size: 10px;
         }
 
         .tests-header {
             font-weight: bold;
             margin-bottom: 0.6mm;
-            font-size: 7px;
+            font-size: 12px;
         }
 
         .test-item {
@@ -153,24 +156,24 @@
         .test-name {
             flex: 1;
             margin-right: 1mm;
-            font-size: 6px;
+            font-size: 10px;
         }
 
         .test-price {
             text-align: right;
             font-weight: bold;
-            min-width: 15mm;
-            font-size: 6px;
+            min-width: 18mm;
+            font-size: 10px;
         }
 
         /* Total Amount */
         .slip-total {
             display: flex;
             justify-content: space-between;
-            padding: 0.8mm 0;
-            margin-top: 0.8mm;
+            padding: 1.6mm 0;
+            margin-top: 1.2mm;
             font-weight: bold;
-            font-size: 7px;
+            font-size: 12px;
         }
 
         .total-label {
@@ -178,15 +181,15 @@
         }
 
         .total-amount {
-            font-size: 8px;
+            font-size: 14px;
             color: #8d2d36;
         }
 
         /* Barcode Section */
         .slip-barcode {
             text-align: center;
-            margin-top: 1.5mm;
-            padding-top: 0.8mm;
+            margin-top: 2mm;
+            padding-top: 1.0mm;
             border-top: 1px dashed #ddd;
         }
 
@@ -196,7 +199,7 @@
         }
 
         .barcode-text {
-            font-size: 5px;
+            font-size: 10px;
             color: #666;
             margin-top: 0.3mm;
             font-family: 'Courier New', monospace;
@@ -204,9 +207,9 @@
 
         /* Footer */
         .slip-footer {
-            padding-top: 0.8mm;
-            margin-top: 0.8mm;
-            font-size: 5px;
+            padding-top: 1mm;
+            margin-top: 1mm;
+            font-size: 10px;
             text-align: center;
             color: #666;
         }
@@ -261,42 +264,7 @@
     </div>
 
     <div class="slip-wrapper">
-        <div class="slip">
-            <!-- Header -->
-            <div class="slip-header">
-                <div class="slip-title">NEW MODERN LAB</div>
-                <div class="slip-subtitle">Patient Registration Slip</div>
-            </div>
-
-            <!-- Patient Information (from database) -->
-            <div class="slip-patient">
-                <div class="patient-row">
-                    <span class="patient-label">Patient #:</span>
-                    <span class="patient-value">{{ $patient->patient_id ?? 'N/A' }}</span>
-                </div>
-                <div class="patient-row">
-                    <span class="patient-label">Name:</span>
-                    <span class="patient-value">{{ substr($patient->name ?? 'N/A', 0, 18) }}</span>
-                </div>
-                <div class="patient-row">
-                    <span class="patient-label">Age:</span>
-                    <span class="patient-value">{{ $patient->age ?? 'N/A' }}</span>
-                </div>
-                <div class="patient-row">
-                    <span class="patient-label">Date:</span>
-                    <span class="patient-value">{{ $receipt->created_at->format('d-M-Y') }}</span>
-                </div>
-            </div>
-
-            <!-- Token/Slip Number -->
-            <div class="slip-token">
-                <div class="token-label">SLIP / TOKEN NUMBER</div>
-                <div class="token-number">{{ $receipt->receipt_number }}</div>
-            </div>
-
-            <!-- Tests with Prices (from database) -->
-            <div class="slip-tests">
-                <div class="tests-header">Tests Registered:</div>
+        @include('Patient.partials.receipt_single', ['patient' => $patient, 'receipt' => $receipt, 'copyLabel' => 'Customer Copy', 'barcodeId' => 'barcode-1'])
                 @php
                     $displayTests = [];
 
@@ -339,30 +307,21 @@
                         <span class="test-price">-</span>
                     </div>
                 @endforelse
-            </div>
+        <!-- Divider (visual) -->
+        <div style="height:4mm; width:100%;"></div>
+        @include('Patient.partials.receipt_single', ['patient' => $patient, 'receipt' => $receipt, 'copyLabel' => 'Office Copy', 'barcodeId' => 'barcode-2'])
 
-            <!-- Total Amount -->
-            <div class="slip-total">
-                <span class="total-label">TOTAL AMOUNT:</span>
-                <span class="total-amount">Rs. {{ number_format($receipt->total_amount ?? 0, 0) }}</span>
-            </div>
-
-            <!-- Barcode (generates from receipt number) -->
-            <div class="slip-barcode">
-                <svg id="barcode"></svg>
-                <div class="barcode-text">{{ $receipt->receipt_number }}</div>
-            </div>
-
-            <!-- Footer -->
-            <div class="slip-footer">
-                Keep this slip for your records
-            </div>
-        </div>
-    </div>
 
     <script>
-        // Generate barcode from receipt number
-        JsBarcode("#barcode", "{{ $receipt->receipt_number }}", {
+        // Generate barcode(s) for both copies
+        JsBarcode("#barcode-1", "{{ $receipt->receipt_number }}", {
+            format: "CODE128",
+            width: 1.2,
+            height: 20,
+            displayValue: false,
+            margin: 0
+        });
+        JsBarcode("#barcode-2", "{{ $receipt->receipt_number }}", {
             format: "CODE128",
             width: 1.2,
             height: 20,

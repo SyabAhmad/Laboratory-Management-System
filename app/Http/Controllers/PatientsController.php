@@ -936,6 +936,77 @@ class PatientsController extends Controller
         return view('Patient.patient_test_print', compact('patient', 'testEntry'));
     }
 
+    /**
+     * Print multiple selected test reports for a patient, combined in a single printable page
+     * Accepts a comma-separated list of test names (URL encoded) using {testNames}
+     */
+    public function printMultipleTestReports($patientId, $testNames)
+    {
+        $patient = Patients::findOrFail($patientId);
+
+        $decoded = rawurldecode($testNames);
+        $names = array_filter(array_map('trim', explode(',', $decoded)));
+
+        $testEntries = [];
+        foreach ($names as $name) {
+            // Reuse the same logic as printTestReport to build each entry
+            $testName = $name;
+            $existingTestReports = json_decode($patient->test_report ?? '{}', true) ?? [];
+            $foundKey = null;
+            foreach ($existingTestReports as $k => $v) {
+                if (is_string($k) && strtolower($k) === strtolower($testName)) {
+                    $foundKey = $k;
+                    break;
+                }
+            }
+            if ($foundKey === null) {
+                foreach ($existingTestReports as $k => $v) {
+                    if (is_array($v) && isset($v['test']) && strtolower($v['test']) === strtolower($testName)) {
+                        $foundKey = $k;
+                        break;
+                    }
+                }
+            }
+            $testData = $foundKey !== null ? $existingTestReports[$foundKey] : null;
+
+            // fetch template fields
+            $templateFields = [];
+            try {
+                $cat = DB::table('labtest_cat')
+                    ->whereRaw('LOWER(cat_name) = ?', [strtolower($testName)])
+                    ->first();
+                if ($cat) {
+                    $params = DB::table('lab_test_parameters')
+                        ->where('lab_test_cat_id', $cat->id)
+                        ->orderBy('id')
+                        ->get();
+                    foreach ($params as $p) {
+                        $fieldName = preg_replace('/[^a-z0-9]+/i', '_', strtolower($p->parameter_name));
+                        $templateFields[] = [
+                            'name' => $fieldName,
+                            'label' => $p->parameter_name,
+                            'unit' => $p->unit ?? '',
+                            'ref' => $p->reference_range ?? '',
+                            'required' => false,
+                        ];
+                    }
+                }
+            } catch (\Exception $e) {
+                $templateFields = [];
+            }
+
+            $testEntries[] = [
+                'name' => $testName,
+                'template' => ['fields' => $templateFields],
+                'saved_data' => is_array($testData) ? $testData : [],
+                'has_template' => !empty($templateFields),
+                'has_data' => !empty($testData),
+            ];
+        }
+
+        return view('Patient.patient_tests_print', compact('patient', 'testEntries'));
+    }
+
     // Save-to-system functionality removed
 
     // Listing saved reports removed

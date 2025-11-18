@@ -18,13 +18,13 @@
             max-width: none; /* ensure no max width applies */
         }
         /* Ensure header and footer fonts are larger for readability in print */
-        .print-header .lab-name { font-size: 22px !important; }
-        .print-header .lab-subtitle { font-size: 12px !important; }
-        .print-header .lab-address { font-size: 11.5px !important; }
-        .print-header .contact-info { font-size: 12px !important; }
-        .print-header-details { font-size: 12px !important; }
-        .print-footer .footer-item { font-size: 12px !important; }
-        .print-footer .footer-signature strong { font-size: 12px !important; }
+        .print-header .lab-name { font-size: 28px !important; }
+        .print-header .lab-subtitle { font-size: 16px !important; }
+        .print-header .lab-address { font-size: 15px !important; }
+        .print-header .contact-info { font-size: 15px !important; }
+        .print-header-details { font-size: 15px !important; }
+        .print-footer .footer-item { font-size: 15px !important; }
+        .print-footer .footer-signature strong { font-size: 16px !important; }
         .print-header-details { display: block !important; width: auto; padding: 0; }
         /* Ensure header table cells vertically center their content for print */
         .print-header .print-inner table td { vertical-align: middle !important; }
@@ -74,10 +74,10 @@
                 style="font-size: 12px; color: #8d2d36; line-height: 1.4; padding-left: 6px; border-left: 2px solid #8d2d36; vertical-align: middle;"
                 class="contact-info">
                 <div style="font-weight: bold; color: #8d2d36; margin-bottom: 5px;">Contact Information</div>
-                <strong>Tel:</strong><br>
+                <!-- <strong>Tel:</strong><br> -->
                 0302-8080191<br>
                 0313-9797790<br><br>
-                <strong>Address:</strong><br>
+                <!-- <strong>Address:</strong><br> -->
                 Kabal Road, Near Township Chowk<br>
                 Kanju Swat
             </td>
@@ -107,22 +107,23 @@
 <!-- Reusable Print Footer -->
     <div class="print-footer" style="display:none; padding: 0;">
         <div class="print-inner" style="width: var(--print-inner-width-mm); margin: 0 auto; padding: 0; box-sizing: border-box;">
-                <div class="footer-container" style="padding: 10px; margin: 0; display: grid; grid-template-columns: 57% 21.5% 21.5%; gap: 8px; width: 100%; align-items: center; justify-items: stretch;">
-        <div class="footer-item footer-note" style="background-color: #f8fafb; padding: 8px; border-left: 3px solid #8d2d36; font-size: 12px;">
+                <div class="footer-container" style="padding: 10px; margin: 0; display: flex; gap: 12px; width: 100%; align-items: center; justify-content: space-between;">
+            <div class="footer-item footer-note" style="background-color: #f8fafb; padding: 8px; border-left: 3px solid #8d2d36; font-size: 14px; flex: 1 1 62%;">
             <strong style="color: black;">Please Note:</strong><br>
             <i class="fas fa-info-circle" style="margin-right: 5px; color: black;"></i>Test(s) are performed on the state-of-the-art ARCHITECT MODULAR Ci4100 from Abbott Diagnostics, U.S.A.<br>
-            <i class="fas fa-signature" style="margin-right: 5px; color: black;"></i>This is a digitally signed report and does not require manual signature.
+            <i class="fas fa-signature" style="margin-right: 5px; color: black;"></i>This is a digitally signed report By <strong style=" color: black; font-size: 15px;">Bacha Khan</strong> and does not require manual signature. <br>
+            <!-- This is a digitally signed report by <strong style=" color: black; font-size: 12px;">Bacha Khan</strong> -->
         </div>
-        <div class="footer-item footer-signature" style="text-align:center; background: #fff; padding: 8px; font-size: 12px; display: flex; align-items: center; justify-content: center;">
+        <!-- <div class="footer-item footer-signature" style="text-align:center; background: #fff; padding: 8px; font-size: 14px; display: flex; align-items: center; justify-content: center; flex: 0 0 30%;">
             <div style="font-weight: bold; color: black; margin-bottom: 5px;">
                 <i class="fas fa-user-md" style="margin-right: 5px;"></i>This is a digitally signed report by
             </div>
             <strong style="font-size: 12px;">Bacha Khan</strong>
-        </div>
-        <div class="footer-item footer-contact" style="text-align: right; background: #fff; padding: 8px; border-left: 3px solid #8d2d36; padding-left: 12px;">
+        </div> -->
+        <!-- <div class="footer-item footer-contact" style="text-align: right; background: #fff; padding: 8px; border-left: 3px solid #8d2d36; padding-left: 12px;">
             <div style="margin-bottom: 5px;"> <i class="fas fa-map-marker-alt" style="margin-right: 6px; color: #8d2d36;"></i>Asad Abad Road, Near Township Chowk, Kanju Swat</div>
             <div><i class="fas fa-phone" style="margin-right: 6px; color: #8d2d36;"></i>0302-8080191  ·  0313-9797790</div>
-        </div>
+        </div> -->
             </div>
         </div>
     </div>

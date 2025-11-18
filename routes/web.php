@@ -21,18 +21,18 @@ Route::middleware(['auth:sanctum', 'verified'])
     ->group(function () {
         Route::get('/', 'App\Http\Controllers\DashboardController@index')->name('dashboard');
         Route::get('/dashboard', 'App\Http\Controllers\DashboardController@index')->name('dashboard');
-        Route::post('/labdetails/add', 'App\Http\Controllers\DashboardController@store')->name('labdetails.add');
-        Route::get('/labdetails/show', 'App\Http\Controllers\DashboardController@details')->name('labdetails.show');
-        Route::get('/labdetails/edit/{id}', 'App\Http\Controllers\MainCompanysController@edit')->name('labdetails.edit');
-        Route::post('/labdetails/update', 'App\Http\Controllers\MainCompanysController@update')->name('labdetails.update');
+        Route::post('/labdetails/add', 'App\Http\Controllers\DashboardController@store')->name('labdetails.add')->middleware('role:Admin,Super Admin');
+        Route::get('/labdetails/show', 'App\Http\Controllers\DashboardController@details')->name('labdetails.show')->middleware('role:Admin,Super Admin');
+        Route::get('/labdetails/edit/{id}', 'App\Http\Controllers\MainCompanysController@edit')->name('labdetails.edit')->middleware('role:Admin,Super Admin');
+        Route::post('/labdetails/update', 'App\Http\Controllers\MainCompanysController@update')->name('labdetails.update')->middleware('role:Admin,Super Admin');
 
         // Users Route
-        Route::get('user', 'App\Http\Controllers\UserController@index')->name('user');
-        Route::get('/users/edit/{id}', "App\Http\Controllers\UserController@edit")->name('user.edit');
-        Route::put('/users/update', 'App\Http\Controllers\UserController@update')->name('user.update');
-        Route::put('/users/pass/update', 'App\Http\Controllers\UserController@updatepass')->name('user.pass.update');
-        Route::get('/users/status/{id}', 'App\Http\Controllers\UserController@statuschange')->name('user.status');
-        Route::delete('/user/{id}', 'App\Http\Controllers\UserController@destroy')->name('user.delete');
+        Route::get('user', 'App\Http\Controllers\UserController@index')->name('user')->middleware('role:Admin,Super Admin');
+        Route::get('/users/edit/{id}', "App\Http\Controllers\UserController@edit")->name('user.edit')->middleware('role:Admin,Super Admin');
+        Route::put('/users/update', 'App\Http\Controllers\UserController@update')->name('user.update')->middleware('role:Admin,Super Admin');
+        Route::put('/users/pass/update', 'App\Http\Controllers\UserController@updatepass')->name('user.pass.update')->middleware('role:Admin,Super Admin');
+        Route::get('/users/status/{id}', 'App\Http\Controllers\UserController@statuschange')->name('user.status')->middleware('role:Admin,Super Admin');
+        Route::delete('/user/{id}', 'App\Http\Controllers\UserController@destroy')->name('user.delete')->middleware('role:Admin,Super Admin');
 
         Route::get('/users/employees/{id}', 'App\Http\Controllers\UserController@employeeschange')->name('user.employees');
         Route::get('/users/patitents/{id}', 'App\Http\Controllers\UserController@patitentschange')->name('user.patitents');
@@ -66,6 +66,8 @@ Route::middleware(['auth:sanctum', 'verified'])
         Route::get('/patients/{id}/edit', 'App\Http\Controllers\PatientsController@edit')->name('patients.edit');
         // Print friendly patient test report (per-test)
         Route::get('/patients/{patient}/tests/{testName}/print', [App\Http\Controllers\PatientsController::class, 'printTestReport'])->name('patients.printTest');
+        // Print multiple selected test reports combined into one print page
+        Route::get('/patients/{patient}/tests/print-multiple/{testNames}', [App\Http\Controllers\PatientsController::class, 'printMultipleTestReports'])->name('patients.printMultipleTests');
         // Save-to-system routes removed
 
         Route::put('/patients/{id}', 'App\Http\Controllers\PatientsController@update')->name('patients.update');
@@ -134,9 +136,9 @@ Route::middleware(['auth:sanctum', 'verified'])
             ->name('billing.registeredTests');
 
         // Payments Route
-        Route::get('/transection/record', 'App\Http\Controllers\PaymentsController@index')->name('transection.record');
-        Route::get('/transection/other', 'App\Http\Controllers\PaymentsController@create')->name('other.transection');
-        Route::post('/transection/other/post', 'App\Http\Controllers\PaymentsController@store')->name('other.transection.store');
+        Route::get('/transection/record', 'App\Http\Controllers\PaymentsController@index')->name('transection.record')->middleware('role:Admin,Super Admin,Accountant');
+        Route::get('/transection/other', 'App\Http\Controllers\PaymentsController@create')->name('other.transection')->middleware('role:Admin,Super Admin,Accountant');
+        Route::post('/transection/other/post', 'App\Http\Controllers\PaymentsController@store')->name('other.transection.store')->middleware('role:Admin,Super Admin,Accountant');
 
         // Balance overview
         Route::get('/balance', 'App\Http\Controllers\BalanceController@index')->name('balance.index');
@@ -146,6 +148,8 @@ Route::middleware(['auth:sanctum', 'verified'])
         Route::get('/ledger', 'App\Http\Controllers\ReportGenarationController@ledger')->name('ledger');
         Route::get('/ledger/details', 'App\Http\Controllers\ReportGenarationController@ledgerdetails')->name('ledger.details');
         Route::get('/referralreport', 'App\Http\Controllers\ReportGenarationController@referrallist')->name('referralreport');
+        // Daily finance summary/report
+        Route::get('/daily-finance', 'App\Http\Controllers\ReportGenarationController@dailyFinance')->name('report.dailyFinance')->middleware('role:Admin,Accountant,Super Admin');
         Route::get('/reportbooth', 'App\Http\Controllers\ReportGenarationController@reportbooth')->name('reportbooth');
         Route::get('/reportbooth/status/{id}/{status}', 'App\Http\Controllers\ReportGenarationController@report_statuschange');
         Route::get('/report/details/{id}', 'App\Http\Controllers\ReportGenarationController@report_details');

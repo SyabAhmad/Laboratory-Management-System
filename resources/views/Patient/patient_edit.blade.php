@@ -247,15 +247,21 @@
                 <div class="col-12">
                     <div class="card shadow-sm" style="border-radius: 12px; border: 1px solid rgba(37, 99, 235, 0.1);">
                         <div class="card-body" style="padding: 2rem;">
-                            <h4 class="header-title mb-4" style="color: var(--text-heading); font-weight: 600;">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <h4 class="header-title mb-4" style="color: var(--text-heading); font-weight: 600;">
                                 <i class="fas fa-flask text-primary-custom mr-2"></i> Edit Test Data
                             </h4>
+                                <div>
+                                    <button id="btn-print-selected" class="btn btn-outline-primary btn-sm">Print Selected</button>
+                                </div>
+                            </div>
 
                             <div class="table-responsive">
                                 <table class="table table-striped table-hover mb-0" style="border-radius: 8px; overflow: hidden;">
                                     <thead class="thead-light" style="background: linear-gradient(135deg, rgba(248, 250, 252, 0.9), rgba(255, 255, 255, 0.9));">
                                         <tr>
                                             <th>Test Name</th>
+                                            <th width="80">Select</th>
                                             <th>Status</th>
                                             <th>Last Updated</th>
                                             <th>Preview</th>
@@ -289,6 +295,9 @@
                                                             @endif
                                                         </div>
                                                     </div>
+                                                </td>
+                                                <td>
+                                                    <input type="checkbox" class="test-select" value="{{ $test['name'] }}" {{ !$hasData ? 'disabled' : '' }}>
                                                 </td>
                                                 <td>
                                                     @if ($hasData)
@@ -756,6 +765,19 @@
     }
 
     $(document).ready(function () {
+        // Print Selected button handler
+        $('#btn-print-selected').on('click', function (e) {
+            e.preventDefault();
+            const checked = $('.test-select:checked');
+            if (!checked || checked.length === 0) {
+                alert('Please select at least one test to print.');
+                return;
+            }
+            const names = []; checked.each(function () { names.push($(this).val()); });
+            const urlBase = '{{ url("/patients/" . $patient->id . "/tests/print-multiple") }}';
+            const target = urlBase + '/' + encodeURIComponent(names.join(','));
+            printTest(null, target);
+        });
 
         /* -------------------------------
            AGE COMBINE LOGIC
