@@ -11,7 +11,7 @@ class PrintTestReportDoubleSlipTest extends TestCase
 	public function test_test_report_print_renders_two_copies_with_font_size()
 	{
 		$patient = Patients::create([
-			'patient_id' => 'PT' . time(),
+			'patient_id' => 'PT' . uniqid(),
 			'name' => 'Jane Doe',
 			'mobile_phone' => '03123456780'
 		]);

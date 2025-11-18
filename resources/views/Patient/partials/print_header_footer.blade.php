@@ -111,6 +111,7 @@
             <div class="footer-item footer-note" style="background-color: #f8fafb; padding: 8px; border-left: 3px solid #8d2d36; font-size: 14px; flex: 1 1 62%;">
             <strong style="color: black;">Please Note:</strong><br>
             <i class="fas fa-info-circle" style="margin-right: 5px; color: black;"></i>Test(s) are performed on the state-of-the-art ARCHITECT MODULAR Ci4100 from Abbott Diagnostics, U.S.A.<br>
+            <i class="fas fa-signature" style="margin-right: 5px; color: black;"></i>This report is not meant for any sort of medico legal purpose.<br>
             <i class="fas fa-signature" style="margin-right: 5px; color: black;"></i>This is a digitally signed report By <strong style=" color: black; font-size: 15px;">Bacha Khan</strong> and does not require manual signature. <br>
             <!-- This is a digitally signed report by <strong style=" color: black; font-size: 12px;">Bacha Khan</strong> -->
         </div>

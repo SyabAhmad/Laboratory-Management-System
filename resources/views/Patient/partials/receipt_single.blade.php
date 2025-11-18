@@ -9,7 +9,7 @@
     <!-- Patient Information (from database) -->
     <div class="slip-patient">
         <div class="patient-row">
-            <span class="patient-label">Patient #:</span>
+            <span class="patient-label">Patient:</span>
             <span class="patient-value">{{ $patient->patient_id ?? 'N/A' }}</span>
         </div>
         <div class="patient-row">

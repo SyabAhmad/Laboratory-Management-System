@@ -31,6 +31,7 @@ class PrintDoubleSlipTest extends TestCase
 		// Ensure both copies are present
 		$response->assertSee('Customer Copy');
 		$response->assertSee('Office Copy');
+		$response->assertSee('CUT HERE');
 		// Ensure barcode ids exist
 		$response->assertSee('id="barcode-1"', false);
 		$response->assertSee('id="barcode-2"', false);

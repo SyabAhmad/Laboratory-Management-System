@@ -320,6 +320,11 @@
         <i class="fas fa-flask"></i>
         <span>{{ strtoupper($testEntry['name'] ?? 'TEST') }}</span>
     </div>
+    @if(!empty($testEntry['department']))
+        <div style="text-align: center; font-weight: 600; margin-bottom: 8px; font-size: 14px; color: #333;">
+            Department: {{ $testEntry['department'] ?? '-' }}
+        </div>
+    @endif
     <div style="border: 1px solid #e0e0e0; border-radius: 6px; overflow: hidden; margin-bottom: 20px; width: var(--print-inner-width-mm); max-width: var(--print-inner-width-mm); margin-left:auto; margin-right:auto; box-sizing: border-box;">
         <table class="results-table" width="100%" cellpadding="5" cellspacing="0" style="border-collapse: collapse;">
             <thead>
@@ -367,7 +372,8 @@
                     @endforeach
                 @else
                     <!-- Actual Test Parameters -->
-                    @foreach ($testEntry['template']['fields'] ?? [] as $field)
+                    @if(!empty($testEntry['template']['fields']))
+                        @foreach ($testEntry['template']['fields'] as $field)
                         @php
                             $value = $testEntry['saved_data'][$field['name']] ?? '';
                             $label = $field['label'] ?? 'Unknown';
@@ -391,7 +397,20 @@
                             <td style="padding: 10px; border-bottom: 1px solid #e0e0e0;">{{ $unit }}</td>
                             <td style="padding: 10px; border-bottom: 1px solid #e0e0e0;">{{ $ref }}</td>
                         </tr>
-                    @endforeach
+                        @endforeach
+                    @else
+                        {{-- No template; print flattened saved data key/value pairs as a fallback --}}
+                        @php $sd = $testEntry['saved_data'] ?? []; @endphp
+                        @foreach($sd as $k => $v)
+                            @php $rowCount++; @endphp
+                            <tr style="background: {{ $rowCount % 2 == 0 ? '#f9f9f9' : '#fff' }};">
+                                <td style="padding: 10px; border-bottom: 1px solid #e0e0e0; font-weight: 500;">{{ $k }}</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #e0e0e0; font-weight: 700; color: black;">{{ $v }}</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #e0e0e0;">&nbsp;</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #e0e0e0;">&nbsp;</td>
+                            </tr>
+                        @endforeach
+                    @endif
                 @endif
             </tbody>
         </table>
