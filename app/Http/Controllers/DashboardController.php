@@ -41,6 +41,15 @@ class DashboardController extends Controller
         // Outstanding balance
         $outstandingBalance = $totalBilled - $totalPaid;
 
+        // Today's stats
+        $todayStart = Carbon::today()->startOfDay();
+        $todayEnd = Carbon::today()->endOfDay();
+
+        $billedToday = Bills::whereBetween('created_at', [$todayStart, $todayEnd])->sum('amount') ?? 0;
+        $paidToday = Payments::whereBetween('created_at', [$todayStart, $todayEnd])->sum('amount') ?? 0;
+        $billsCountToday = Bills::whereBetween('created_at', [$todayStart, $todayEnd])->count();
+        $paymentsCountToday = Payments::whereBetween('created_at', [$todayStart, $todayEnd])->count();
+
         // Prepare monthly billed and paid totals for last 12 months
         $end = Carbon::now()->endOfMonth();
         $start = (clone $end)->subMonths(11)->startOfMonth();
@@ -93,6 +102,10 @@ class DashboardController extends Controller
             'totalBalance' => $outstandingBalance,
             'totalBilled' => $totalBilled,
             'totalPaid' => $totalPaid,
+            'billedToday' => $billedToday,
+            'paidToday' => $paidToday,
+            'billsCountToday' => $billsCountToday,
+            'paymentsCountToday' => $paymentsCountToday,
             'chartLabels' => $labels,
             'chartBilled' => $billedData,
             'chartPaid' => $paidData,

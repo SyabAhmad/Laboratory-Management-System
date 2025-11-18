@@ -119,6 +119,69 @@
                 </div>
             </div>
             <!-- End Stats Cards Section -->
+            <!-- Today's Finance Stats -->
+            <div class="row mb-4">
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-3">
+                    <div class="card dashboard-card h-100">
+                        <div class="card-body dashboard-card-body-6">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-section">
+                                    <i class="fas fa-calendar-day dashboard-card-icon"></i>
+                                </div>
+                                <div class="content-section">
+                                    <h5 class="card-title dashboard-card-title">Today's Billed</h5>
+                                    <p class="dashboard-card-text1">{{ isset($billedToday) ? number_format($billedToday, 2) : '0.00' }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-3">
+                    <div class="card dashboard-card h-100">
+                        <div class="card-body dashboard-card-body-6">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-section">
+                                    <i class="fas fa-hand-holding-usd dashboard-card-icon"></i>
+                                </div>
+                                <div class="content-section">
+                                    <h5 class="card-title dashboard-card-title">Today's Paid</h5>
+                                    <p class="dashboard-card-text1">{{ isset($paidToday) ? number_format($paidToday, 2) : '0.00' }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- <div class="col-lg-3 col-md-6 col-sm-12 mb-3">
+                    <div class="card dashboard-card h-100">
+                        <div class="card-body dashboard-card-body-6">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-section">
+                                    <i class="fas fa-file-invoice-dollar dashboard-card-icon"></i>
+                                </div>
+                                <div class="content-section">
+                                    <h5 class="card-title dashboard-card-title">Today's Due</h5>
+                                    <p class="dashboard-card-text1">{{ isset($billedToday, $paidToday) ? number_format(max($billedToday - $paidToday, 0), 2) : '0.00' }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div> -->
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-3">
+                    <div class="card dashboard-card h-100">
+                        <div class="card-body dashboard-card-body-6">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-section">
+                                    <i class="fas fa-receipt dashboard-card-icon"></i>
+                                </div>
+                                <div class="content-section">
+                                    <h5 class="card-title dashboard-card-title">Transactions Today</h5>
+                                    <p class="dashboard-card-text1">Bills: {{ $billsCountToday ?? 0 }} | Payments: {{ $paymentsCountToday ?? 0 }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         @else
             <div class="card">
                 <div class="card-body bg-dark">
