@@ -87,7 +87,12 @@ class PatientsController extends Controller
             $testData = $existingTestReports[$testName] ?? [];
 
             // 🔹 Load template dynamically from DB
-            $labTestCategory = \App\Models\LabTestCat::where('cat_name', $testName)->first();
+            // Try exact case-insensitive match first
+            $labTestCategory = \App\Models\LabTestCat::whereRaw('LOWER(cat_name) = ?', [strtolower($testName)])->first();
+            if (!$labTestCategory) {
+                // Try partial match (contains)
+                $labTestCategory = \App\Models\LabTestCat::whereRaw('LOWER(cat_name) LIKE ?', ['%' . strtolower($testName) . '%'])->first();
+            }
 
             if ($labTestCategory) {
                 $parameters = $labTestCategory->parameters()->get();
@@ -113,6 +118,8 @@ class PatientsController extends Controller
                 $template = !empty($fields) ? ['fields' => $fields] : null;
 
                 $savedData = $this->flattenTestData($testData);
+                // Make sure slug keys from saved data exist so template fields (that use slug keys) can find values
+                $savedData = $this->mapSavedDataToSlugKeys($savedData);
 
                 // Map any existing values saved under original parameter names to the slug keys
                 foreach ($parameters as $param) {
@@ -129,13 +136,16 @@ class PatientsController extends Controller
             }
             $isMllpData = isset($testData['instrument']) || isset($testData['analytes']);
 
-            $testsWithData[] = [
+                $departmentName = $labTestCategory ? ($labTestCategory->department ?? optional($labTestCategory->departmentRelation)->name) : null;
+
+                $testsWithData[] = [
                 'name' => $testName,
                 'template' => $template, // ✅ ensure included
                 'saved_data' => $savedData,
                 'has_data' => !empty($testData),
                 'has_template' => $labTestCategory ? true : false,
                 'is_mllp_data' => $isMllpData,
+                    'department' => $departmentName,
             ];
         }
 
@@ -265,6 +275,22 @@ class PatientsController extends Controller
         }
 
         return $savedData;
+    }
+
+    /**
+     * Normalize saved data keys to slug format, while preserving original keys.
+     * This makes mapping to template field keys more robust across variations.
+     */
+    private function mapSavedDataToSlugKeys(array $savedData)
+    {
+        $mapped = $savedData;
+        foreach ($savedData as $k => $v) {
+            $slug = \Str::slug($k, '_');
+            if (!array_key_exists($slug, $mapped)) {
+                $mapped[$slug] = $v;
+            }
+        }
+        return $mapped;
     }
 
 
@@ -437,9 +463,7 @@ class PatientsController extends Controller
         }
 
         $patient = new Patients;
-        // Generate a unique patient_id to avoid duplicate key errors.
-        // Use a date prefix plus a random suffix and ensure uniqueness in DB.
-        $patient->patient_id = $this->generateUniquePatientId();
+        // patient_id will be generated automatically based on the database id after insert
         $patient->user_id = Auth::id();
 
         $patient->name = $request->name;
@@ -899,8 +923,16 @@ class PatientsController extends Controller
             $cat = DB::table('labtest_cat')
                 ->whereRaw('LOWER(cat_name) = ?', [strtolower($testName)])
                 ->first();
+            if (!$cat) {
+                $cat = DB::table('labtest_cat')
+                    ->whereRaw('LOWER(cat_name) LIKE ?', ['%' . strtolower($testName) . '%'])
+                    ->first();
+            }
 
+            $departmentName = null;
             if ($cat) {
+                // department may be stored on the category or as department_id
+                $departmentName = $cat->department ?? (isset($cat->department_id) ? DB::table('departments')->where('id', $cat->department_id)->value('name') : null);
                 $params = DB::table('lab_test_parameters')
                     ->where('lab_test_cat_id', $cat->id)
                     ->orderBy('id')
@@ -908,7 +940,7 @@ class PatientsController extends Controller
 
                 foreach ($params as $p) {
                     // create a stable field name key that matches view expectations
-                    $fieldName = preg_replace('/[^a-z0-9]+/i', '_', strtolower($p->parameter_name));
+                    $fieldName = \Str::slug($p->parameter_name, '_');
                     $templateFields[] = [
                         'name' => $fieldName,
                         'label' => $p->parameter_name,
@@ -923,11 +955,29 @@ class PatientsController extends Controller
             $templateFields = [];
         }
 
+        // Debug log helpful to trace why there may be missing mapping for some tests
+        try {
+            \Log::info('printTestReport: computed', [
+                'patient_id' => $patientId,
+                'testName' => $testName,
+                'foundKey' => $foundKey,
+                'catId' => $cat->id ?? null,
+                'templateFieldCount' => count($templateFields),
+                'savedFlattenedKeys' => array_keys($savedDataFlattened ?? []),
+            ]);
+        } catch (\Exception $ex) {
+            // ignore logging errors
+        }
+
         // Build the testEntry object the view expects
+        $savedDataFlattened = is_array($testData) ? $this->flattenTestData($testData) : [];
+        $savedDataFlattened = $this->mapSavedDataToSlugKeys($savedDataFlattened);
+
         $testEntry = [
             'name' => $testName,
             'template' => ['fields' => $templateFields],
-            'saved_data' => is_array($testData) ? $testData : [],
+            'saved_data' => $savedDataFlattened,
+            'department' => $departmentName,
             'has_template' => !empty($templateFields),
             'has_data' => !empty($testData),
         ];
@@ -976,12 +1026,13 @@ class PatientsController extends Controller
                     ->whereRaw('LOWER(cat_name) = ?', [strtolower($testName)])
                     ->first();
                 if ($cat) {
+                    $departmentName = $cat->department ?? (isset($cat->department_id) ? DB::table('departments')->where('id', $cat->department_id)->value('name') : null);
                     $params = DB::table('lab_test_parameters')
                         ->where('lab_test_cat_id', $cat->id)
                         ->orderBy('id')
                         ->get();
                     foreach ($params as $p) {
-                        $fieldName = preg_replace('/[^a-z0-9]+/i', '_', strtolower($p->parameter_name));
+                        $fieldName = \Str::slug($p->parameter_name, '_');
                         $templateFields[] = [
                             'name' => $fieldName,
                             'label' => $p->parameter_name,
@@ -995,10 +1046,14 @@ class PatientsController extends Controller
                 $templateFields = [];
             }
 
+            $flattenedSaved = is_array($testData) ? $this->flattenTestData($testData) : [];
+            $flattenedSaved = $this->mapSavedDataToSlugKeys($flattenedSaved);
+
             $testEntries[] = [
                 'name' => $testName,
                 'template' => ['fields' => $templateFields],
-                'saved_data' => is_array($testData) ? $testData : [],
+                'saved_data' => $flattenedSaved,
+                'department' => $departmentName ?? null,
                 'has_template' => !empty($templateFields),
                 'has_data' => !empty($testData),
             ];
@@ -1040,6 +1095,8 @@ class PatientsController extends Controller
 
         return (string) $candidate;
     }
+
+    // NOTE: generateUniquePatientId is left for legacy code but the new approach uses the model-created hook to set patient_id.
 
     /**
      * View patient receipt/token

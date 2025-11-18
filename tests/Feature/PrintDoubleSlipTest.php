@@ -31,10 +31,15 @@ class PrintDoubleSlipTest extends TestCase
 		// Ensure both copies are present
 		$response->assertSee('Customer Copy');
 		$response->assertSee('Office Copy');
+		$response->assertSee('CUT HERE');
 		// Ensure barcode ids exist
 		$response->assertSee('id="barcode-1"', false);
 		$response->assertSee('id="barcode-2"', false);
 		// Check that bigger font CSS is present (example token number size)
-		$response->assertSee('font-size: 18px', false);
+		$response->assertSee('font-size: 24px', false);
+
+		// Ensure test names are present exactly twice (once per copy)
+		$this->assertEquals(2, substr_count($response->getContent(), 'Test A'));
+		$this->assertEquals(2, substr_count($response->getContent(), 'Test B'));
 	}
 }

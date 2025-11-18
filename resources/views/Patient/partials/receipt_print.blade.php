@@ -67,19 +67,20 @@
 
         .slip-title {
             font-weight: bold;
-            font-size: 14px; /* made title bigger for readability */
+            font-size: 20px; /* 14px made title bigger for readability */
             color: #8d2d36;
             margin-bottom: 0.2mm;
         }
 
         .slip-subtitle {
-            font-size: 10px;
+            font-size: 16px; /*12px */
             color: #666;
             margin-bottom: 0.2mm;
         }
 
         .slip-marker {
-            font-size: 9px;
+            /* 9px */
+            font-size: 15px; 
             color: #999;
         }
 
@@ -94,7 +95,8 @@
             display: flex;
             justify-content: space-between;
             margin: 0.6mm 0;
-            font-size: 11px;
+            /* 11px */
+            font-size: 17px;
         }
 
         .patient-label {
@@ -118,13 +120,15 @@
         }
 
         .token-label {
-            font-size: 10px;
+            /* 10px */
+            font-size: 16px;
             color: #666;
             margin-bottom: 0.3mm;
         }
 
         .token-number {
-            font-size: 18px;
+            /* 18px */
+            font-size: 24px;
             font-weight: 800;
             font-family: 'Courier New', monospace;
             letter-spacing: 0.5px;
@@ -137,13 +141,15 @@
             border-bottom: 1px dashed #ddd;
             padding: 1.2mm 0;
             margin: 1.5mm 0;
-            font-size: 10px;
+            /* 10px */
+            font-size: 16px;
         }
 
         .tests-header {
             font-weight: bold;
             margin-bottom: 0.6mm;
-            font-size: 12px;
+            /* 12px */
+            font-size: 20px;
         }
 
         .test-item {
@@ -156,14 +162,16 @@
         .test-name {
             flex: 1;
             margin-right: 1mm;
-            font-size: 10px;
+            /* 10px */
+            font-size: 16px;
         }
 
         .test-price {
             text-align: right;
             font-weight: bold;
             min-width: 18mm;
-            font-size: 10px;
+            /* 10px */
+            font-size: 16px;
         }
 
         /* Total Amount */
@@ -173,7 +181,8 @@
             padding: 1.6mm 0;
             margin-top: 1.2mm;
             font-weight: bold;
-            font-size: 12px;
+            /* 12px */
+            font-size: 20px;
         }
 
         .total-label {
@@ -181,7 +190,8 @@
         }
 
         .total-amount {
-            font-size: 14px;
+            /* 14px */
+            font-size: 20px;
             color: #8d2d36;
         }
 
@@ -199,7 +209,8 @@
         }
 
         .barcode-text {
-            font-size: 10px;
+            /* 10px */
+            font-size: 16px;
             color: #666;
             margin-top: 0.3mm;
             font-family: 'Courier New', monospace;
@@ -209,7 +220,8 @@
         .slip-footer {
             padding-top: 1mm;
             margin-top: 1mm;
-            font-size: 10px;
+            /* 10px */
+            font-size: 16px;
             text-align: center;
             color: #666;
         }
@@ -250,6 +262,17 @@
         .btn-close:hover {
             background-color: #5a6268;
         }
+
+        /* Cut line for thermal printers - visible between duplicates */
+        .cut-line {
+            width: 100%;
+            border-top: 2px dashed #000;
+            margin: 3mm 0;
+            text-align: center;
+            font-size: 9px;
+            color: #333;
+        }
+        .cut-line .scissors { margin-right: 8px; margin-left: 8px; }
     </style>
 </head>
 
@@ -265,50 +288,9 @@
 
     <div class="slip-wrapper">
         @include('Patient.partials.receipt_single', ['patient' => $patient, 'receipt' => $receipt, 'copyLabel' => 'Customer Copy', 'barcodeId' => 'barcode-1'])
-                @php
-                    $displayTests = [];
-
-                    // Use receipt tests if available
-                    if (!empty($receipt->tests) && is_array($receipt->tests)) {
-                        $displayTests = $receipt->tests;
-                    } else {
-                        // Fallback: get from patient's test_category JSON
-    $patientTests = json_decode($patient->test_category ?? '[]', true);
-    if (!empty($patientTests)) {
-        foreach ($patientTests as $testName) {
-            $displayTests[] = [
-                'test_name' => $testName,
-                'price' => 0,
-                                ];
-                            }
-                        }
-                    }
-                @endphp
-
-                @forelse($displayTests as $test)
-                    <div class="test-item">
-                        @if (is_array($test))
-                            <span class="test-name">{{ substr($test['test_name'] ?? '', 0, 14) }}</span>
-                            <span class="test-price">
-                                @if (isset($test['price']) && $test['price'] > 0)
-                                    Rs. {{ number_format($test['price'], 0) }}
-                                @else
-                                    -
-                                @endif
-                            </span>
-                        @else
-                            <span class="test-name">{{ substr($test, 0, 14) }}</span>
-                            <span class="test-price">-</span>
-                        @endif
-                    </div>
-                @empty
-                    <div class="test-item">
-                        <span class="test-name">No tests</span>
-                        <span class="test-price">-</span>
-                    </div>
-                @endforelse
-        <!-- Divider (visual) -->
-        <div style="height:4mm; width:100%;"></div>
+                <!-- Tests are rendered inside each included slip partial to avoid duplication -->
+        <!-- Divider (visual) -> cut line for thermal printers -->
+        <div class="cut-line" aria-hidden="true"><span class="scissors">✂</span> CUT HERE <span class="scissors">✂</span></div>
         @include('Patient.partials.receipt_single', ['patient' => $patient, 'receipt' => $receipt, 'copyLabel' => 'Office Copy', 'barcodeId' => 'barcode-2'])
 
 
