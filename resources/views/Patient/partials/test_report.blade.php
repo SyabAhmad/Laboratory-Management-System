@@ -120,13 +120,11 @@
         .footer-container {
             padding: 10px 0;
             margin: 0;
-            display: grid;
-            /* give more space to the left note while keeping signature and contact smaller; using fr units prevents overflow due to gaps */
-            grid-template-columns: 120mm 45mm 45mm; /* adjusted to match 210mm print inner width */
+            display: flex;
             gap: 12px;
             width: 100%;
-            align-items: start;
-            justify-items: stretch;
+            align-items: center;
+            justify-content: space-between;
         }
         
         .footer-row {
@@ -237,7 +235,7 @@
         .personal-info-table .value { color: #333; }
         .personal-info-row { background: transparent; }
         @media print {
-            .personal-info-table { font-size: 13px !important; }
+            .personal-info-table { font-size: 18px !important; }
         }
     </style>
     <style>
@@ -261,12 +259,12 @@
             .personal-card { border: 1px solid #e7e7e7 !important; }
             .section-title { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             /* Make table text larger for print so it's readable on paper */
-            .results-table { font-size: 14px !important; }
-            .results-table th { font-size: 14px !important; }
-            .results-table td { font-size: 14px !important; }
-            .pi-value { font-size: 13px !important; }
-            .pi-label { font-size: 13px !important; }
-            .section-title { font-size: 16px !important; padding: 12px 14px !important; }
+            .results-table { font-size: 18px !important; }
+            .results-table th { font-size: 18px !important; }
+            .results-table td { font-size: 18px !important; }
+            .pi-value { font-size: 16px !important; }
+            .pi-label { font-size: 16px !important; }
+            .section-title { font-size: 22px !important; padding: 12px 14px !important; }
         }
     </style>
 
