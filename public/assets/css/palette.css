@@ -14,11 +14,8 @@
 }
 
 .dashboard-card-unified {
-    background: linear-gradient(
-        135deg,
-        #1e3c72,
-        #8d2d36
-    ); /* Beautiful blue gradient */
+    /* background: #c9515d; */
+    background: linear-gradient(135deg, #446197, #b36c73);
     color: #fff !important;
     border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
@@ -65,7 +62,8 @@
     color: var(--secondary) !important;
 }
 .btn-primary-custom {
-    background: var(--primary);
+    /* background: var(--primary); */
+    background: #8d2d36;
     border-color: var(--primary);
     color: #fff;
 }
@@ -241,7 +239,7 @@
 
 /* Enhanced card body backgrounds with gradients */
 .dashboard-card-body-1 {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #667eea 0%, #8d2d36 100%);
 }
 .dashboard-card-body-2 {
     background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);

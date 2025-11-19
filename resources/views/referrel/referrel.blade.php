@@ -21,7 +21,7 @@
             <div class="card-body">
                 <h4 class="text-center">List of all Referrals</h4>
                 <p class="text-right">
-                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#Referrelmodel"><i
+                    <button type="button" class="btn btn-primary-custom" data-toggle="modal" data-target="#Referrelmodel"><i
                             class="fas fa-plus"></i> New Referred</button>
                 </p>
                 {{-- <h6 class="text-center">List of all employees</h6> --}}
@@ -105,7 +105,7 @@
 
                         <div class="form-group row mb-0">
                             <div class="col-sm-8 offset-sm-4">
-                                <button type="submit" class="btn btn-primary waves-effect waves-light mr-1">
+                                <button type="submit" class="btn btn-primary-custom waves-effect waves-light mr-1">
                                     Register
                                 </button>
                                 <button type="button" data-dismiss="modal" class="btn btn-light waves-effect">

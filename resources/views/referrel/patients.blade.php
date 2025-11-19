@@ -39,7 +39,7 @@
                             <input type="text" class="form-control" id="searchInput" placeholder="Search by patient name or ID..." value="{{ request('search') }}">
                         </div>
                         <div class="col-md-4 d-flex align-items-end">
-                            <button type="button" class="btn btn-primary mr-2" id="applyFilters">
+                            <button type="button" class="btn btn-primary-custom mr-2" id="applyFilters">
                                 <i class="fas fa-filter"></i> Apply Filters
                             </button>
                             <button type="button" class="btn btn-secondary" id="clearFilters">
@@ -251,7 +251,7 @@
                                 <small class="text-muted">{{ $referral->patients->count() }} patients referred</small>
                             </div>
                             <div class="card-footer bg-light">
-                                <button class="btn btn-primary btn-sm btn-block view-patients" data-referral-id="{{ $referral->id }}">
+                                <button class="btn btn-primary-custom btn-sm btn-block view-patients" data-referral-id="{{ $referral->id }}">
                                     <i class="fas fa-users mr-1"></i> View Patients
                                 </button>
                             </div>
@@ -265,7 +265,7 @@
                     <i class="fas fa-users fa-4x text-muted mb-4"></i>
                     <h4 class="text-muted">No Referrals Found</h4>
                     <p class="text-muted">Start by adding some referrals to track their patients.</p>
-                    <a href="{{ route('referrels.list') }}" class="btn btn-primary btn-lg">
+                    <a href="{{ route('referrels.list') }}" class="btn btn-primary-custom btn-lg">
                         <i class="fas fa-plus mr-2"></i> Add First Referral
                     </a>
                 </div>
