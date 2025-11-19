@@ -29,13 +29,13 @@
                 <div class="col-lg-6 col-md-6 col-sm-12 mb-3">
                     <a href="{{ route('patients.create') }}" class="text-decoration-none">
                         <div class="card dashboard-card h-100">
-                            <div class="card-body dashboard-card-body-2">
+                            <div class="card-body card-body dashboard-card-unified">
                                 <div class="d-flex align-items-center">
                                     <div class="icon-section">
                                         <i class="fas fa-user-plus dashboard-card-icon"></i>
                                     </div>
                                     <div class="content-section">
-                                        <h5 class="card-title dashboard-card-title">Add Patient</h5>
+                                        <h5 class="card-title dashboard-card-unified">Add Patient</h5>
                                         <p class="dashboard-card-text1">Create new patient</p>
                                     </div>
                                 </div>
@@ -46,13 +46,13 @@
                 <div class="col-lg-6 col-md-6 col-sm-12 mb-3">
                     <a href="{{ route('allbills') }}" class="text-decoration-none">
                         <div class="card dashboard-card h-100">
-                            <div class="card-body dashboard-card-body-1">
+                            <div class="card-body card-body dashboard-card-unified">
                                 <div class="d-flex align-items-center">
                                     <div class="icon-section">
                                         <i class="fas fa-file-invoice-dollar dashboard-card-icon"></i>
                                     </div>
                                     <div class="content-section">
-                                        <h5 class="card-title dashboard-card-title">All Bills</h5>
+                                        <h5 class="card-title dashboard-card-unified">All Bills</h5>
                                         <p class="dashboard-card-text1">View all bills</p>
                                     </div>
                                 </div>
@@ -68,13 +68,13 @@
                 <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
                     <a href="{{ route('patients.list') }}" class="text-decoration-none">
                         <div class="card dashboard-card h-100">
-                            <div class="card-body dashboard-card-body-4">
+                            <div class="card-body card-body dashboard-card-unified">
                                 <div class="d-flex align-items-center">
                                     <div class="icon-section">
                                         <i class="fas fa-user-injured dashboard-card-icon"></i>
                                     </div>
                                     <div class="content-section">
-                                        <h5 class="card-title dashboard-card-title">Patients</h5>
+                                        <h5 class="card-title dashboard-card-unified">Patients</h5>
                                         <p class="dashboard-card-text1">{{ App\Models\Patients::get()->count() }}</p>
                                     </div>
                                 </div>
@@ -85,13 +85,13 @@
                 <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
                     <a href="{{ route('balance.index') }}" class="text-decoration-none" aria-label="View balance details">
                         <div class="card dashboard-card balance-card-accent h-100 clickable-card" role="link">
-                            <div class="card-body dashboard-card-body-3">
+                            <div class="card-body card-body dashboard-card-unified">
                                 <div class="d-flex align-items-center">
                                     <div class="icon-section">
                                         <i class="fas fa-balance-scale dashboard-card-icon"></i>
                                     </div>
                                     <div class="content-section">
-                                        <h5 class="card-title dashboard-card-title">Company Total Balance</h5>
+                                        <h5 class="card-title dashboard-card-unified">Company Total Balance</h5>
                                         <p class="dashboard-card-text1">
                                             {{ isset($totalBalance) ? number_format($totalBalance, 2) : '0.00' }}</p>
                                     </div>
@@ -103,13 +103,13 @@
                 <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
                     <a href="{{ route('referrals.patients') }}" class="text-decoration-none">
                         <div class="card dashboard-card h-100">
-                            <div class="card-body dashboard-card-body-5">
+                            <div class="card-body card-body dashboard-card-unified">
                                 <div class="d-flex align-items-center">
                                     <div class="icon-section">
                                         <i class="fas fa-handshake dashboard-card-icon"></i>
                                     </div>
                                     <div class="content-section">
-                                        <h5 class="card-title dashboard-card-title">Referrals</h5>
+                                        <h5 class="card-title dashboard-card-unified">Referrals</h5>
                                         <p class="dashboard-card-text1">{{ App\Models\Referrals::get()->count() }}</p>
                                     </div>
                                 </div>
@@ -119,6 +119,69 @@
                 </div>
             </div>
             <!-- End Stats Cards Section -->
+            <!-- Today's Finance Stats -->
+            <div class="row mb-4">
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-3">
+                    <div class="card dashboard-card h-100">
+                        <div class="card-body card-body dashboard-card-unified">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-section">
+                                    <i class="fas fa-calendar-day dashboard-card-icon"></i>
+                                </div>
+                                <div class="content-section">
+                                    <h5 class="card-title dashboard-card-unified">Today's Billed</h5>
+                                    <p class="dashboard-card-text1">{{ isset($billedToday) ? number_format($billedToday, 2) : '0.00' }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-3">
+                    <div class="card dashboard-card h-100">
+                        <div class="card-body card-body dashboard-card-unified">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-section">
+                                    <i class="fas fa-hand-holding-usd dashboard-card-icon"></i>
+                                </div>
+                                <div class="content-section">
+                                    <h5 class="card-title dashboard-card-unified">Today's Paid</h5>
+                                    <p class="dashboard-card-text1">{{ isset($paidToday) ? number_format($paidToday, 2) : '0.00' }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-3">
+                    <div class="card dashboard-card h-100">
+                        <div class="card-body card-body dashboard-card-unified">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-section">
+                                    <i class="fas fa-file-invoice-dollar dashboard-card-icon"></i>
+                                </div>
+                                <div class="content-section">
+                                    <h5 class="card-title dashboard-card-unified">Today's Due</h5>
+                                    <p class="dashboard-card-text1">{{ isset($billedToday, $paidToday) ? number_format(max($billedToday - $paidToday, 0), 2) : '0.00' }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-3">
+                    <div class="card dashboard-card h-100">
+                        <div class="card-body card-body dashboard-card-unified">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-section">
+                                    <i class="fas fa-receipt dashboard-card-icon"></i>
+                                </div>
+                                <div class="content-section">
+                                    <h5 class="card-title dashboard-card-unified">Transactions Today</h5>
+                                    <p class="dashboard-card-text1">Bills: {{ $billsCountToday ?? 0 }} | Payments: {{ $paymentsCountToday ?? 0 }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         @else
             <div class="card">
                 <div class="card-body bg-dark">
@@ -134,7 +197,7 @@
             <div class="col-lg-6 col-md-12 mb-4">
                 <div class="card dashboard-card">
                     <div class="card-body">
-                        <h5 class="card-title dashboard-card-title">Monthly Billed vs Paid</h5>
+                        <h5 class="card-title dashboard-card-unified">Monthly Billed vs Paid</h5>
                         <canvas id="chartRevenue" width="400" height="200"></canvas>
                     </div>
                 </div>
@@ -142,7 +205,7 @@
             <div class="col-lg-6 col-md-12 mb-4">
                 <div class="card dashboard-card">
                     <div class="card-body">
-                        <h5 class="card-title dashboard-card-title">Monthly Paid (Payments)</h5>
+                        <h5 class="card-title dashboard-card-unified">Monthly Paid (Payments)</h5>
                         <canvas id="chartPayments" width="400" height="200"></canvas>
                     </div>
                 </div>

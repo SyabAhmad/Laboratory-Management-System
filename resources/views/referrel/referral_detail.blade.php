@@ -62,7 +62,7 @@
                             <input type="text" class="form-control" id="searchInput" placeholder="Search by patient name or ID..." value="{{ request('search') }}">
                         </div>
                         <div class="col-md-4 d-flex align-items-end">
-                            <button type="button" class="btn btn-primary mr-2" id="applyFilters">
+                            <button type="button" class="btn btn-primary-custom mr-2" id="applyFilters">
                                 <i class="fas fa-search"></i> Search
                             </button>
                             <button type="button" class="btn btn-secondary" id="clearFilters">

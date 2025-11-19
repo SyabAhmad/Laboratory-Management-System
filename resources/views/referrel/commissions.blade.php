@@ -214,7 +214,7 @@
                                 icon: 'success',
                                 title: 'Success',
                                 text: data.message,
-                                confirmButtonClass: 'btn btn-primary'
+                                confirmButtonClass: 'btn btn-primary-custom'
                             }).then(() => {
                                 location.reload();
                             });
@@ -223,7 +223,7 @@
                                 icon: 'error',
                                 title: 'Error',
                                 text: data.message || 'Failed to update commission status',
-                                confirmButtonClass: 'btn btn-primary'
+                                confirmButtonClass: 'btn btn-primary-custom'
                             });
                         }
                     })

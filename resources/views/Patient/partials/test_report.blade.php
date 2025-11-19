@@ -254,6 +254,10 @@
         .results-table th { background: #fff; color: #333; font-weight: 700; }
         .results-table thead tr { border-bottom: 3px solid #8d2d36; }
         .results-table tbody tr td { padding: 12px; }
+        /* Make the first column a bit darker (not pure black), for better readability */
+        .results-table tbody tr td:first-child { color: #222 !important; font-weight: 400; }
+        .results-table tbody tr td:nth-child(3) { color: #222 !important; font-weight: 400; }
+        .results-table tbody tr td:nth-child(4) { color: #222 !important; font-weight: 400; }
         .results-table { border-radius: 6px; overflow: hidden; border: 1px solid #e6e6e6; width: var(--print-inner-width-mm) !important; max-width: var(--print-inner-width-mm) !important; box-sizing: border-box; font-size: 13px; }
         @media print {
             .personal-card { border: 1px solid #e7e7e7 !important; }

@@ -266,12 +266,12 @@
             </div>
 
             <!-- Footer Section -->
-            <div
+            <!-- <div
                 style="background: black; color: var(--surface); padding: 10px 15px; margin: 15px -1.5rem -1.5rem -1.5rem; font-size: 10px; text-align: center;">
                 <strong>�</strong> Asad Abad Road, Near Township Chowk Kamla Swat |
                 <strong>📞</strong> 0302-9050191 - 03139796050 |
                 <!-- <strong>🌐</strong> www.newmoderncliniclab.com -->
-            </div>
+            </div> -->
         </div>
     </div>
 

@@ -12,7 +12,7 @@
             right: 0; /* anchor to page right edge, ensures full width */
             width: auto; /* allow full width to be derived from left/right */
             padding: 0; /* no extra padding, inner alignment is handled by .print-inner */
-            z-index: 9999;
+            z-index: 200000;
             display: block !important;
             box-sizing: border-box;
             max-width: none; /* ensure no max width applies */
@@ -29,7 +29,30 @@
         /* Ensure header table cells vertically center their content for print */
         .print-header .print-inner table td { vertical-align: middle !important; }
         /* Slightly increase logo size for print and keep aspect ratio */
+            .print-header .print-inner table td.header-logo-cell { display: none; }
+            /* The floating logo is absolutely positioned, so the table doesn't need a dedicated left cell */
+        
         .print-header .print-inner table td img { width: 88px !important; height: 88px !important; }
+        /* Make header logo larger and ensure it doesn't affect surrounding layout by absolute positioning, anchored to its cell */
+        .print-header .print-inner table td img.header-logo {
+            position: absolute !important;
+            left: 4mm !important; /* anchor to cell left */
+            top: 50% !important;
+            transform: translateY(-50%) !important; /* only translate vertically */
+            width: 28mm !important;
+            height: 28mm !important;
+            z-index: 999999 !important; /* very high to ensure it sits on top */
+            display: block !important;
+        }
+            .print-header .print-inner .print-logo img.header-logo {
+                width: 36mm !important;
+                height: 36mm !important;
+                border-radius: 50% !important;
+                border: 3px solid #8d2d36 !important;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+            }
+        /* Prevent the enlarged logo from overlapping center text by adding left padding to center cell */
+        .print-header .print-inner table td.center-cell { padding-left: 36mm !important; }
 
         .print-header {
             top: 6mm; /* align with page margins */
@@ -48,16 +71,15 @@
 
 <!-- Reusable Print Header -->
     <div class="print-header" style="display:none; padding: 0;">
-        <div class="print-inner" style="width: var(--print-inner-width-mm); margin: 0 auto; padding: 0; box-sizing: border-box;">
+        <div class="print-inner" style="width: var(--print-inner-width-mm); margin: 0 auto; padding: 0; box-sizing: border-box; position: relative;">
+            <!-- Floating logo (absolutely positioned so it doesn't affect table layout) -->
+            <div class="print-logo" style="position: absolute; left: 1mm; top: 1mm; z-index: 999999;">
+                <img src="{{ asset('assets/images/logo.png') }}" class="header-logo" alt="Logo" style="width: 28mm; height: 28mm; border-radius: 50%; border: 3px solid #8d2d36; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            </div>
             <table width="100%" cellpadding="0" cellspacing="0" style="border-bottom: 2px solid #8d2d36; padding-bottom: 18px;">
         <tr>
-            <!-- Left: Logo -->
-            <td width="15%" valign="middle" align="center" style="padding-right: 6px; vertical-align: middle;">
-                <img src="{{ asset('assets/images/logo.png') }}" alt="Logo"
-                    style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid #8d2d36; display: block; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-            </td>
             <!-- Center: Lab Name & Info -->
-            <td style="padding: 0 6px; text-align: center; vertical-align: middle;">
+            <td class="center-cell" style="padding: 0 6px; text-align: center; vertical-align: middle;">
                 <div class="lab-name" style="font-weight: bold; font-size: 22px; margin: 0; line-height: 1.1; color: #8d2d36;">
                     NEW MODERN CLINICAL LABORATORY
                 </div>
@@ -67,6 +89,7 @@
                 <div class="lab-address" style="font-size: 11.5px; color: #8d2d36; margin: 5px 0 0 0; line-height: 1.3;">
                     Bacha Khan, BS Pathology (KMU)<br>
                     DMLT KPK Peshawar
+                    CT Pathology Department Saidu Medical College/ SGTH Swat
                 </div>
             </td>
             <!-- Right: Contact Info -->
@@ -75,8 +98,10 @@
                 class="contact-info">
                 <div style="font-weight: bold; color: #8d2d36; margin-bottom: 5px;">Contact Information</div>
                 <!-- <strong>Tel:</strong><br> -->
-                0302-8080191<br>
-                0313-9797790<br><br>
+                
+                0302-8080191  <br>   0313-9797790
+                <br>
+                Email: bachakhanacl@gmail.com <br>
                 <!-- <strong>Address:</strong><br> -->
                 Kabal Road, Near Township Chowk<br>
                 Kanju Swat

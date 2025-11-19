@@ -285,7 +285,7 @@
                     </div>`,
                     icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonClass: 'btn btn-primary',
+                    confirmButtonClass: 'btn btn-primary-custom',
                     cancelButtonClass: 'btn btn-secondary',
                     confirmButtonText: 'Yes, Mark Paid',
                     cancelButtonText: 'Cancel'
@@ -318,7 +318,7 @@
                                     html: `<p>${data.message}</p>
                                            <p><strong>Amount Marked:</strong> PKR ${parseFloat(data.total_amount).toLocaleString('en-PK', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
                                            <p><strong>Commissions Updated:</strong> ${data.commission_count}</p>`,
-                                    confirmButtonClass: 'btn btn-primary'
+                                    confirmButtonClass: 'btn btn-primary-custom'
                                 }).then(() => {
                                     location.reload();
                                 });
@@ -327,7 +327,7 @@
                                     icon: 'error',
                                     title: 'Error',
                                     text: data.message || 'Failed to update commissions',
-                                    confirmButtonClass: 'btn btn-primary'
+                                    confirmButtonClass: 'btn btn-primary-custom'
                                 });
                             }
                         })
@@ -337,7 +337,7 @@
                                 icon: 'error',
                                 title: 'Error',
                                 text: 'Failed to update commissions. Check console for details.',
-                                confirmButtonClass: 'btn btn-primary'
+                                confirmButtonClass: 'btn btn-primary-custom'
                             });
                         });
                     }

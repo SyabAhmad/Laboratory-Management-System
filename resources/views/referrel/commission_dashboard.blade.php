@@ -173,7 +173,7 @@
                             <i class="fas fa-user-tie fa-4x text-muted mb-4"></i>
                             <h4 class="text-muted">No Referrals Available</h4>
                             <p class="text-muted">Start by adding referrals to the system.</p>
-                            <a href="{{ route('referrels.create') }}" class="btn btn-primary">
+                            <a href="{{ route('referrels.create') }}" class="btn btn-primary-custom">
                                 <i class="fas fa-plus"></i> Add Referral
                             </a>
                         </div>
