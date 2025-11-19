@@ -21,6 +21,7 @@ Route::middleware(['auth:sanctum', 'verified'])
     ->group(function () {
         Route::get('/', 'App\Http\Controllers\DashboardController@index')->name('dashboard');
         Route::get('/dashboard', 'App\Http\Controllers\DashboardController@index')->name('dashboard');
+        Route::get('/dashboard/export', 'App\Http\Controllers\DashboardController@exportCsv')->name('dashboard.export');
         Route::post('/labdetails/add', 'App\Http\Controllers\DashboardController@store')->name('labdetails.add')->middleware('role:Admin,Super Admin');
         Route::get('/labdetails/show', 'App\Http\Controllers\DashboardController@details')->name('labdetails.show')->middleware('role:Admin,Super Admin');
         Route::get('/labdetails/edit/{id}', 'App\Http\Controllers\MainCompanysController@edit')->name('labdetails.edit')->middleware('role:Admin,Super Admin');
