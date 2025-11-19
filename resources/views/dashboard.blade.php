@@ -151,7 +151,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-3 col-md-6 col-sm-12 mb-3">
+                <!-- <div class="col-lg-3 col-md-6 col-sm-12 mb-3">
                     <div class="card dashboard-card h-100">
                         <div class="card-body card-body dashboard-card-unified">
                             <div class="d-flex align-items-center">
@@ -165,7 +165,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> -->
                 <div class="col-lg-3 col-md-6 col-sm-12 mb-3">
                     <div class="card dashboard-card h-100">
                         <div class="card-body card-body dashboard-card-unified">
@@ -197,7 +197,17 @@
             <div class="col-lg-6 col-md-12 mb-4">
                 <div class="card dashboard-card">
                     <div class="card-body">
-                        <h5 class="card-title dashboard-card-unified">Monthly Billed vs Paid</h5>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h5 class="card-title dashboard-card-unified mb-0">Monthly Billed vs Paid</h5>
+                            <div>
+                                <a href="{{ route('dashboard.export', ['type' => 'monthly']) }}" class="btn btn-sm btn-primary me-1" title="Export CSV">
+                                    <i class="fas fa-file-csv"></i> CSV
+                                </a>
+                                <button onclick="downloadChart('chartRevenue', 'monthly_chart')" class="btn btn-sm btn-success" title="Download Image">
+                                    <i class="fas fa-download"></i> Image
+                                </button>
+                            </div>
+                        </div>
                         <canvas id="chartRevenue" width="400" height="200"></canvas>
                     </div>
                 </div>
@@ -205,8 +215,36 @@
             <div class="col-lg-6 col-md-12 mb-4">
                 <div class="card dashboard-card">
                     <div class="card-body">
-                        <h5 class="card-title dashboard-card-unified">Monthly Paid (Payments)</h5>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h5 class="card-title dashboard-card-unified mb-0">Monthly Paid (Payments)</h5>
+                            <div>
+                                <button onclick="downloadChart('chartPayments', 'monthly_payments_chart')" class="btn btn-sm btn-success" title="Download Image">
+                                    <i class="fas fa-download"></i> Image
+                                </button>
+                            </div>
+                        </div>
                         <canvas id="chartPayments" width="400" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Daily Chart Row -->
+        <div class="row mt-4">
+            <div class="col-lg-12 col-md-12 mb-4">
+                <div class="card dashboard-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h5 class="card-title dashboard-card-unified mb-0">Daily Billed vs Paid (Last 30 Days)</h5>
+                            <div>
+                                <a href="{{ route('dashboard.export', ['type' => 'daily']) }}" class="btn btn-sm btn-primary me-1" title="Export CSV">
+                                    <i class="fas fa-file-csv"></i> CSV
+                                </a>
+                                <button onclick="downloadChart('chartDaily', 'daily_chart')" class="btn btn-sm btn-success" title="Download Image">
+                                    <i class="fas fa-download"></i> Image
+                                </button>
+                            </div>
+                        </div>
+                        <canvas id="chartDaily" width="400" height="200"></canvas>
                     </div>
                 </div>
             </div>
@@ -258,16 +296,22 @@
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
     <script>
+        // Store chart instances globally for download functionality
+        let chartInstances = {};
+
         (function() {
             // Data passed from controller
             const labels = @json($chartLabels ?? []);
             const billed = @json($chartBilled ?? []);
             const paid = @json($chartPaid ?? []);
+            const dailyLabels = @json($dailyLabels ?? []);
+            const dailyBilled = @json($dailyBilled ?? []);
+            const dailyPaid = @json($dailyPaid ?? []);
 
             // Combined chart: billed vs paid
             const ctx = document.getElementById('chartRevenue');
             if (ctx) {
-                new Chart(ctx.getContext('2d'), {
+                chartInstances['chartRevenue'] = new Chart(ctx.getContext('2d'), {
                     type: 'line',
                     data: {
                         labels: labels,
@@ -308,7 +352,7 @@
             // Payments bar chart
             const ctx2 = document.getElementById('chartPayments');
             if (ctx2) {
-                new Chart(ctx2.getContext('2d'), {
+                chartInstances['chartPayments'] = new Chart(ctx2.getContext('2d'), {
                     type: 'bar',
                     data: {
                         labels: labels,
@@ -328,6 +372,66 @@
                     }
                 });
             }
+
+            // Daily chart: billed vs paid
+            const ctx3 = document.getElementById('chartDaily');
+            if (ctx3) {
+                chartInstances['chartDaily'] = new Chart(ctx3.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: dailyLabels,
+                        datasets: [{
+                                label: 'Billed',
+                                data: dailyBilled,
+                                borderColor: 'rgba(255, 99, 132, 1)',
+                                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                                fill: true,
+                                tension: 0.3
+                            },
+                            {
+                                label: 'Paid',
+                                data: dailyPaid,
+                                borderColor: 'rgba(54, 162, 235, 1)',
+                                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                                fill: true,
+                                tension: 0.3
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'top'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
         })();
+
+        // Function to download chart as image
+        function downloadChart(chartId, filename) {
+            const chart = chartInstances[chartId];
+            if (!chart) {
+                alert('Chart not found!');
+                return;
+            }
+
+            // Get the canvas element
+            const canvas = document.getElementById(chartId);
+            
+            // Convert to image and download
+            const url = canvas.toDataURL('image/png');
+            const link = document.createElement('a');
+            link.download = filename + '_' + new Date().toISOString().split('T')[0] + '.png';
+            link.href = url;
+            link.click();
+        }
     </script>
 @endsection

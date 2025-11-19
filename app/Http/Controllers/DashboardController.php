@@ -97,6 +97,50 @@ class DashboardController extends Controller
         $billedData = array_map(function($m) use ($billedRows){ return isset($billedRows[$m]) ? (float)$billedRows[$m] : 0; }, $period);
         $paidData = array_map(function($m) use ($paidRows){ return isset($paidRows[$m]) ? (float)$paidRows[$m] : 0; }, $period);
 
+        // --- Daily Stats for Last 30 Days ---
+        $dailyEnd = Carbon::today()->endOfDay();
+        $dailyStart = Carbon::today()->subDays(29)->startOfDay();
+
+        $dailyPeriod = [];
+        $dCursor = (clone $dailyStart);
+        while ($dCursor->lte($dailyEnd)) {
+            $dailyPeriod[] = $dCursor->format('Y-m-d');
+            $dCursor->addDay();
+        }
+
+        // Daily Billed
+        $dailyBilledRows = DB::table('bills')
+            ->select(DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d') as day"), DB::raw('COALESCE(SUM(amount),0) as total'))
+            ->whereBetween('created_at', [$dailyStart, $dailyEnd])
+            ->groupBy('day')
+            ->pluck('total', 'day')
+            ->toArray();
+
+        // Daily Paid (Payments)
+        $dailyPaidPaymentsRows = DB::table('payments')
+            ->select(DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d') as day"), DB::raw('COALESCE(SUM(amount),0) as total'))
+            ->whereBetween('created_at', [$dailyStart, $dailyEnd])
+            ->groupBy('day')
+            ->pluck('total', 'day')
+            ->toArray();
+
+        // Daily Paid (Commissions)
+        $dailyPaidCommissionsRows = DB::table('referral_commissions')
+            ->where('status', 'paid')
+            ->select(DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d') as day"), DB::raw('COALESCE(SUM(commission_amount),0) as total'))
+            ->whereBetween('created_at', [$dailyStart, $dailyEnd])
+            ->groupBy('day')
+            ->pluck('total', 'day')
+            ->toArray();
+
+        $dailyLabels = array_map(function($d){ return Carbon::createFromFormat('Y-m-d', $d)->format('M d'); }, $dailyPeriod);
+        $dailyBilledData = array_map(function($d) use ($dailyBilledRows){ return isset($dailyBilledRows[$d]) ? (float)$dailyBilledRows[$d] : 0; }, $dailyPeriod);
+        
+        $dailyPaidData = [];
+        foreach ($dailyPeriod as $day) {
+            $dailyPaidData[] = ($dailyPaidPaymentsRows[$day] ?? 0) + ($dailyPaidCommissionsRows[$day] ?? 0);
+        }
+
         return view('dashboard', [
             'company' => $company,
             'totalBalance' => $outstandingBalance,
@@ -109,7 +153,113 @@ class DashboardController extends Controller
             'chartLabels' => $labels,
             'chartBilled' => $billedData,
             'chartPaid' => $paidData,
+            'dailyLabels' => $dailyLabels,
+            'dailyBilled' => $dailyBilledData,
+            'dailyPaid' => $dailyPaidData,
         ]);
+    }
+
+    public function exportCsv(Request $request)
+    {
+        $type = $request->query('type', 'monthly');
+        $filename = $type . '_data_' . date('Y-m-d') . '.csv';
+
+        $headers = [
+            "Content-type" => "text/csv",
+            "Content-Disposition" => "attachment; filename=$filename",
+            "Pragma" => "no-cache",
+            "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
+            "Expires" => "0"
+        ];
+
+        $callback = function() use ($type) {
+            $file = fopen('php://output', 'w');
+
+            if ($type === 'monthly') {
+                fputcsv($file, ['Month', 'Billed Amount', 'Paid Amount']);
+
+                $end = Carbon::now()->endOfMonth();
+                $start = (clone $end)->subMonths(11)->startOfMonth();
+                
+                // Re-query logic for simplicity or refactor to shared service. 
+                // For now, duplicating query logic for export to ensure fresh data.
+                
+                $period = [];
+                $cursor = (clone $start);
+                while ($cursor->lte($end)) {
+                    $period[] = $cursor->format('Y-m');
+                    $cursor->addMonth();
+                }
+
+                $billedRows = DB::table('bills')
+                    ->select(DB::raw("DATE_FORMAT(created_at, '%Y-%m') as month"), DB::raw('COALESCE(SUM(amount),0) as total'))
+                    ->whereBetween('created_at', [$start, $end])
+                    ->groupBy('month')
+                    ->pluck('total', 'month')->toArray();
+
+                $paidPaymentsRows = DB::table('payments')
+                    ->select(DB::raw("DATE_FORMAT(created_at, '%Y-%m') as month"), DB::raw('COALESCE(SUM(amount),0) as total'))
+                    ->whereBetween('created_at', [$start, $end])
+                    ->groupBy('month')
+                    ->pluck('total', 'month')->toArray();
+
+                $paidCommissionsRows = DB::table('referral_commissions')
+                    ->where('status', 'paid')
+                    ->select(DB::raw("DATE_FORMAT(created_at, '%Y-%m') as month"), DB::raw('COALESCE(SUM(commission_amount),0) as total'))
+                    ->whereBetween('created_at', [$start, $end])
+                    ->groupBy('month')
+                    ->pluck('total', 'month')->toArray();
+
+                foreach ($period as $month) {
+                    $billed = $billedRows[$month] ?? 0;
+                    $paid = ($paidPaymentsRows[$month] ?? 0) + ($paidCommissionsRows[$month] ?? 0);
+                    fputcsv($file, [$month, $billed, $paid]);
+                }
+
+            } else {
+                // Daily
+                fputcsv($file, ['Date', 'Billed Amount', 'Paid Amount']);
+
+                $dailyEnd = Carbon::today()->endOfDay();
+                $dailyStart = Carbon::today()->subDays(29)->startOfDay();
+
+                $dailyPeriod = [];
+                $dCursor = (clone $dailyStart);
+                while ($dCursor->lte($dailyEnd)) {
+                    $dailyPeriod[] = $dCursor->format('Y-m-d');
+                    $dCursor->addDay();
+                }
+
+                $dailyBilledRows = DB::table('bills')
+                    ->select(DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d') as day"), DB::raw('COALESCE(SUM(amount),0) as total'))
+                    ->whereBetween('created_at', [$dailyStart, $dailyEnd])
+                    ->groupBy('day')
+                    ->pluck('total', 'day')->toArray();
+
+                $dailyPaidPaymentsRows = DB::table('payments')
+                    ->select(DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d') as day"), DB::raw('COALESCE(SUM(amount),0) as total'))
+                    ->whereBetween('created_at', [$dailyStart, $dailyEnd])
+                    ->groupBy('day')
+                    ->pluck('total', 'day')->toArray();
+
+                $dailyPaidCommissionsRows = DB::table('referral_commissions')
+                    ->where('status', 'paid')
+                    ->select(DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d') as day"), DB::raw('COALESCE(SUM(commission_amount),0) as total'))
+                    ->whereBetween('created_at', [$dailyStart, $dailyEnd])
+                    ->groupBy('day')
+                    ->pluck('total', 'day')->toArray();
+
+                foreach ($dailyPeriod as $day) {
+                    $billed = $dailyBilledRows[$day] ?? 0;
+                    $paid = ($dailyPaidPaymentsRows[$day] ?? 0) + ($dailyPaidCommissionsRows[$day] ?? 0);
+                    fputcsv($file, [$day, $billed, $paid]);
+                }
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 
     /**
