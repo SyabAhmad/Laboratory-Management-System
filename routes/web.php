@@ -128,6 +128,8 @@ Route::middleware(['auth:sanctum', 'verified'])
         Route::get('/billing/registered-tests/{id}', 'App\Http\Controllers\BillsController@getRegisteredTests')->name('billing.get-registered-tests');
         Route::post('/billing/add', 'App\Http\Controllers\BillsController@store')->name('billing.add');
         Route::get('/billing/details/{id}', 'App\Http\Controllers\BillsController@show')->name('billing.details');
+        Route::get('/billing/{id}/print', 'App\Http\Controllers\BillsController@printA4')->name('billing.print');
+        Route::get('/billing/{id}/print-thermal', 'App\Http\Controllers\BillsController@printThermal')->name('billing.print-thermal');
         Route::put('/billing/{bill}', 'App\Http\Controllers\BillsController@update')->name('bills.update');
         // Mark a bill as fully paid (records delta payment and updates status)
         Route::post('/billing/{bill}/mark-paid', 'App\Http\Controllers\BillsController@markAsPaid')->name('bills.markPaid');

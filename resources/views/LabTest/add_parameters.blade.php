@@ -4,7 +4,7 @@
 @section('content')
 <div class="container py-4">
     <div class="card shadow-sm border-0 rounded-3 bg-cards">
-        <div class="card-header bg-surface border-0 py-3 d-flex align-items-center justify-content-between">
+        <div class="card-header bg-surface border-0 py-3 d-flex align-items-center justify-content-between" style="background-color: #8d2d36; color: white;">
             <h4 class="mb-0">
                 Add Parameters for: <span class="text-primary-custom fw-semibold">{{ $test->cat_name }}</span>
             </h4>
