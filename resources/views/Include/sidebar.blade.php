@@ -406,6 +406,12 @@
                         <li>
                             <a href="{{ route('transection.record') }}">Transaction History</a>
                         </li>
+                        <li>
+                            <a href="{{ route('expenses.index') }}">
+                                <i class="fas fa-money-bill-wave"></i>
+                                Expenses
+                            </a>
+                        </li>
 
                     </ul>
                 </li>

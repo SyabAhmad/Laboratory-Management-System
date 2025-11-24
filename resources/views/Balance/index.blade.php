@@ -23,7 +23,7 @@
 
 
         <div class="row">
-            <div class="col-lg-4 col-md-6 mb-4">
+            <div class="col-lg-6 col-md-6 mb-4">
                 <div class="card dashboard-card balance-card-accent shadow-sm">
                     <div class="card-body text-center">
                         <div class="mb-3">
@@ -47,7 +47,20 @@
                 </div>
             </div>
 
-            <div class="col-lg-8 col-md-6">
+            <div class="col-lg-6 col-md-6 mb-4">
+                <div class="card dashboard-card shadow-sm" style="border-left: 4px solid #dc3545;">
+                    <div class="card-body text-center">
+                        <div class="mb-3">
+                            <i class="fas fa-arrow-down fa-3x text-danger"></i>
+                        </div>
+                        <h5 class="dashboard-card-title text-uppercase font-weight-bold">Total Expenses</h5>
+                        <p class="dashboard-card-text display-4 text-danger font-weight-bold">{{ isset($totalExpenses) ? number_format($totalExpenses, 2) : '0.00' }}</p>
+                        <small class="text-muted">All Business Expenses</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12">
                 <div class="card shadow-sm">
                     <div class="card-body">
                         <h5 class="mb-4 text-primary">
@@ -67,9 +80,10 @@
                                 </thead>
                                 <tbody>
                                     @forelse($transactions as $t)
-                                        <tr style="background-color: {{ 
-                                            $t->type === 'Commission' ? 'rgba(220, 53, 69, 0.05)' : 
-                                            ($t->type === 'Payment' ? 'rgba(40, 167, 69, 0.05)' : 'rgba(255, 193, 7, 0.05)')
+                                        <tr style="background-color: {{
+                                            $t->type === 'Commission' ? 'rgba(220, 53, 69, 0.05)' :
+                                            ($t->type === 'Payment' ? 'rgba(40, 167, 69, 0.05)' :
+                                            ($t->type === 'Expense' ? 'rgba(255, 99, 132, 0.05)' : 'rgba(255, 193, 7, 0.05)'))
                                         }};">
                                             <td>{{ \Carbon\Carbon::parse($t->created_at)->format('M d, Y') }}</td>
                                             <td><strong>{{ $t->patient_name ?? '-' }}</strong></td>
@@ -83,18 +97,23 @@
                                                     <span class="badge badge-success" style="font-size: 12px;">
                                                         <i class="fas fa-arrow-up"></i> Payment Received
                                                     </span>
+                                                @elseif($t->type === 'Expense')
+                                                    <span class="badge" style="background-color: #ff6384; color: #fff; font-size: 12px;">
+                                                        <i class="fas fa-minus-circle"></i> Expense
+                                                    </span>
                                                 @else
                                                     <span class="badge" style="background-color: #ffc107; color: #000; font-size: 12px;">
                                                         <i class="fas fa-file-invoice"></i> Bill Created
                                                     </span>
                                                 @endif
                                             </td>
-                                            <td style="font-weight: bold; font-size: 15px; {{ 
-                                                $t->type === 'Commission' ? 'color: #dc3545;' : 
-                                                ($t->type === 'Payment' ? 'color: #28a745;' : 'color: #ffc107;')
+                                            <td style="font-weight: bold; font-size: 15px; {{
+                                                $t->type === 'Commission' ? 'color: #dc3545;' :
+                                                ($t->type === 'Payment' ? 'color: #28a745;' :
+                                                ($t->type === 'Expense' ? 'color: #ff6384;' : 'color: #ffc107;'))
                                             }}">
-                                                {{ 
-                                                    $t->type === 'Commission' ? '-' : 
+                                                {{
+                                                    $t->type === 'Commission' || $t->type === 'Expense' ? '-' :
                                                     ($t->type === 'Payment' ? '+' : '')
                                                 }}{{ number_format($t->amount, 2) }} PKR
                                             </td>

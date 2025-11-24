@@ -76,6 +76,7 @@ Route::middleware(['auth:sanctum', 'verified'])
         Route::get('/patients/details/{id}', 'App\Http\Controllers\PatientsController@show')->name('patients.profile');
         Route::delete('/patients/{id}', 'App\Http\Controllers\PatientsController@destroy')->name('patients.destroy');
         Route::get('/patients/{id}/registered-tests', 'App\Http\Controllers\PatientsController@registeredTests')->name('patients.registered_tests');
+        Route::get('/patients/search', 'App\Http\Controllers\PatientsController@search')->name('patients.search');
         Route::get('/patients/{id}/fetch-cbc-results', [App\Http\Controllers\PatientsController::class, 'fetchCBCResults'])->name('patients.fetchCBCResults');
 
         // Patient Receipt / Token Routes
@@ -143,6 +144,9 @@ Route::middleware(['auth:sanctum', 'verified'])
 
         // Balance overview
         Route::get('/balance', 'App\Http\Controllers\BalanceController@index')->name('balance.index');
+
+        // Expenses Routes
+        Route::resource('expenses', 'App\Http\Controllers\ExpenseController');
 
         //Report Genarate Route
         Route::get('/patientreport', 'App\Http\Controllers\ReportGenarationController@patientindex')->name('patientreport');

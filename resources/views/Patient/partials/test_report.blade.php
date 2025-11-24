@@ -117,6 +117,12 @@
             box-sizing: border-box;
         }
 
+        /* Adjust padding for multiple tests to avoid empty pages */
+        .multiple-tests.print-body {
+            padding-top: calc(var(--print-header-height) + 6mm) !important;
+            padding-bottom: calc(var(--print-footer-height) + 5mm) !important;
+        }
+
         .footer-container {
             padding: 10px 0;
             margin: 0;
@@ -173,6 +179,29 @@
             print-color-adjust: exact !important;
         }
 
+        /* Smaller fonts for multiple tests */
+        .multiple-tests .personal-info-table { font-size: 16px !important; }
+        .multiple-tests .personal-info-table th { font-size: 16px !important; }
+        .multiple-tests .personal-info-table td { font-size: 16px !important; }
+        .multiple-tests .pi-value { font-size: 10px !important; }
+        .multiple-tests .pi-label { font-size: 10px !important; }
+        .multiple-tests .section-title { font-size: 18px !important; padding: 8px 10px !important; }
+        .multiple-tests .results-table { font-size: 12px !important; }
+        .multiple-tests .results-table th { font-size: 12px !important; }
+        .multiple-tests .results-table td { font-size: 12px !important; }
+        .multiple-tests .footer-container { font-size: 8px !important; }
+        .multiple-tests .footer-note { font-size: 8px !important; }
+
+        /* Adjust notes section for multiple tests */
+        .multiple-tests .test-notes-section { margin-bottom: 5px !important; padding: 5px !important; }
+        .multiple-tests .notes-header { font-size: 10px !important; margin-bottom: 4px !important; padding-bottom: 4px !important; }
+        .multiple-tests .notes-content { font-size: 10px !important; line-height: 1.2 !important; }
+        .multiple-tests .clinical-notes-section { margin-bottom: 5px !important; padding: 5px !important; }
+        .multiple-tests .clinical-notes-header { font-size: 10px !important; margin-bottom: 5px !important; padding-bottom: 4px !important; }
+        .multiple-tests .dept-title { font-size: 8px !important; margin-bottom: 3px !important; }
+        .multiple-tests .note-item { font-size: 9px !important; margin-bottom: 3px !important; line-height: 1.2 !important; }
+        .multiple-tests .clinical-notes-dept { margin-bottom: 6px !important; padding-bottom: 5px !important; }
+
         /* Ensure proper page breaks */
         .test-title-section {
             page-break-inside: avoid;
@@ -206,6 +235,7 @@
 {{-- Header and footer are included by Layout.print now to avoid duplication --}}
 <!-- end include print header/footer -->
     {{-- Personal information block (table format) --}}
+    @if(!isset($skipPatientInfo) || !$skipPatientInfo)
     <style>
         .personal-info-table {
             width: 100%;
@@ -317,6 +347,7 @@
             </div>
         </div>
     </div>
+    @endif
     <hr style="border: 0; border-top: 1px solid #e7e7e7; margin: 8px 0 12px 0;">
 
     {{-- Title of the test category --}}
@@ -432,11 +463,11 @@
         }
     @endphp
     @if($categoryNotes)
-        <div style="padding: 10px; margin-bottom: 20px;">
-            <div style="font-weight: bold; color: #8d2d36; margin-bottom: 8px; font-size: 12px; border-bottom: 1px solid #8d2d36; padding-bottom: 8px;">
+        <div class="test-notes-section" style="padding: 10px; margin-bottom: 20px;">
+            <div class="notes-header" style="font-weight: bold; color: #8d2d36; margin-bottom: 8px; font-size: 12px; border-bottom: 1px solid #8d2d36; padding-bottom: 8px;">
                 <i class="fas fa-sticky-note" style="margin-right: 8px;"></i>Notes
             </div>
-            <div style="font-size: 20px; color: #333; line-height: 1.5; white-space: pre-wrap;">
+            <div class="notes-content" style="font-size: 20px; color: #333; line-height: 1.5; white-space: pre-wrap;">
                 {{ $categoryNotes }}
             </div>
         </div>
@@ -466,17 +497,17 @@
     @endphp
 
     @if (!empty($billNotes))
-        <div style="background-color: #fffacd !important; border: 2px solid #f39c12 !important; border-radius: 6px; padding: 15px; margin-bottom: 20px;">
-            <div style="font-weight: bold; color: #d68910; font-size: 12px; margin-bottom: 10px; border-bottom: 1px solid #f39c12; padding-bottom: 8px;">
+        <div class="clinical-notes-section" style="background-color: #fffacd !important; border: 2px solid #f39c12 !important; border-radius: 6px; padding: 15px; margin-bottom: 20px;">
+            <div class="clinical-notes-header" style="font-weight: bold; color: #d68910; font-size: 12px; margin-bottom: 10px; border-bottom: 1px solid #f39c12; padding-bottom: 8px;">
                 <i class="fas fa-sticky-note" style="margin-right: 8px;"></i>Clinical Notes & Remarks
             </div>
             @foreach ($billNotes as $department => $notesList)
-                <div style="margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px dashed #f39c12;">
-                    <div style="font-weight: bold; color: #d68910; font-size: 11px; margin-bottom: 6px;">
+                <div class="clinical-notes-dept" style="margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px dashed #f39c12;">
+                    <div class="dept-title" style="font-weight: bold; color: #d68910; font-size: 11px; margin-bottom: 6px;">
                         <i class="fas fa-building" style="margin-right: 5px;"></i>{{ $department }}
                     </div>
                     @foreach ($notesList as $note)
-                        <div style="margin-left: 15px; font-size: 13px; line-height: 1.4; margin-bottom: 6px; color: #333;">
+                        <div class="note-item" style="margin-left: 15px; font-size: 13px; line-height: 1.4; margin-bottom: 6px; color: #333;">
                             <span style="font-weight: 600; color: #555;">{{ $note['test_name'] }}:</span> {{ $note['notes'] }}
                         </div>
                     @endforeach

@@ -91,7 +91,7 @@
                                         <i class="fas fa-balance-scale dashboard-card-icon"></i>
                                     </div>
                                     <div class="content-section">
-                                        <h5 class="card-title dashboard-card-unified">Company Total Balance</h5>
+                                        <h5 class="card-title dashboard-card-unified">Net Company Balance</h5>
                                         <p class="dashboard-card-text1">
                                             {{ isset($totalBalance) ? number_format($totalBalance, 2) : '0.00' }}</p>
                                     </div>
@@ -175,11 +175,28 @@
                                 </div>
                                 <div class="content-section">
                                     <h5 class="card-title dashboard-card-unified">Transactions Today</h5>
-                                    <p class="dashboard-card-text1">Bills: {{ $billsCountToday ?? 0 }} | Payments: {{ $paymentsCountToday ?? 0 }}</p>
+                                    <p class="dashboard-card-text1">Bills: {{ $billsCountToday ?? 0 }} | Payments: {{ $paymentsCountToday ?? 0 }} | Commissions: {{ $commissionsCountToday ?? 0 }}</p>
                                 </div>
                             </div>
                         </div>
                     </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-3">
+                    <a href="{{ route('expenses.index') }}" class="text-decoration-none">
+                        <div class="card dashboard-card h-100">
+                            <div class="card-body card-body dashboard-card-unified">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-section">
+                                        <i class="fas fa-money-bill-wave dashboard-card-icon"></i>
+                                    </div>
+                                    <div class="content-section">
+                                        <h5 class="card-title dashboard-card-unified">Today's Expenses</h5>
+                                        <p class="dashboard-card-text1">{{ isset($expensesToday) ? number_format($expensesToday, 2) : '0.00' }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
                 </div>
             </div>
         @else
