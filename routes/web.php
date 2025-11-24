@@ -144,6 +144,9 @@ Route::middleware(['auth:sanctum', 'verified'])
         // Balance overview
         Route::get('/balance', 'App\Http\Controllers\BalanceController@index')->name('balance.index');
 
+        // Expenses Routes
+        Route::resource('expenses', 'App\Http\Controllers\ExpenseController');
+
         //Report Genarate Route
         Route::get('/patientreport', 'App\Http\Controllers\ReportGenarationController@patientindex')->name('patientreport');
         Route::get('/ledger', 'App\Http\Controllers\ReportGenarationController@ledger')->name('ledger');

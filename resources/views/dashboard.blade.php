@@ -181,6 +181,23 @@
                         </div>
                     </div>
                 </div>
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-3">
+                    <a href="{{ route('expenses.index') }}" class="text-decoration-none">
+                        <div class="card dashboard-card h-100">
+                            <div class="card-body card-body dashboard-card-unified">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-section">
+                                        <i class="fas fa-money-bill-wave dashboard-card-icon"></i>
+                                    </div>
+                                    <div class="content-section">
+                                        <h5 class="card-title dashboard-card-unified">Today's Expenses</h5>
+                                        <p class="dashboard-card-text1">{{ isset($expensesToday) ? number_format($expensesToday, 2) : '0.00' }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
             </div>
         @else
             <div class="card">

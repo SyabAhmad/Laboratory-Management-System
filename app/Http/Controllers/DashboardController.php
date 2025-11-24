@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\MainCompanys;
 use App\Models\Payments;
 use App\Models\ReferralCommission;
+use App\Models\Expense;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -79,6 +80,9 @@ class DashboardController extends Controller
             $q->whereBetween('created_at', [$todayStart, $todayEnd])
               ->orWhereBetween('updated_at', [$todayStart, $todayEnd]);
             })->count();
+
+        // Today's expenses
+        $expensesToday = Expense::whereDate('expense_date', Carbon::today())->sum('amount') ?? 0;
 
         // Prepare monthly billed and paid totals for last 12 months
         $end = Carbon::now()->endOfMonth();
@@ -180,6 +184,7 @@ class DashboardController extends Controller
             'totalPaid' => $totalPaid,
             'billedToday' => $billedToday,
             'paidToday' => $paidToday,
+            'expensesToday' => $expensesToday,
             'billsCountToday' => $billsCountToday,
             'paymentsCountToday' => $paymentsCountToday,
             'commissionsCountToday' => $commissionsCountToday ?? 0,
