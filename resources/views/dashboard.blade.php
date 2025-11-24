@@ -91,7 +91,7 @@
                                         <i class="fas fa-balance-scale dashboard-card-icon"></i>
                                     </div>
                                     <div class="content-section">
-                                        <h5 class="card-title dashboard-card-unified">Company Total Balance</h5>
+                                        <h5 class="card-title dashboard-card-unified">Net Company Balance</h5>
                                         <p class="dashboard-card-text1">
                                             {{ isset($totalBalance) ? number_format($totalBalance, 2) : '0.00' }}</p>
                                     </div>

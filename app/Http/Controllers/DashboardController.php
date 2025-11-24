@@ -39,8 +39,14 @@ class DashboardController extends Controller
         
         // Combined total paid
         $totalPaid = $totalPaymentsPaid + $totalCommissionsPaid;
-        
-        // Outstanding balance
+
+        // Total expenses
+        $totalExpenses = Expense::sum('amount') ?? 0;
+
+        // Net balance (Income - Expenses)
+        $netBalance = $totalPaid - $totalExpenses;
+
+        // Outstanding balance (what's owed to the lab)
         $outstandingBalance = $totalBilled - $totalPaid;
 
         // Today's stats
@@ -179,9 +185,10 @@ class DashboardController extends Controller
 
         return view('dashboard', [
             'company' => $company,
-            'totalBalance' => $outstandingBalance,
+            'totalBalance' => $netBalance, // Changed from outstandingBalance to netBalance
             'totalBilled' => $totalBilled,
             'totalPaid' => $totalPaid,
+            'totalExpenses' => $totalExpenses,
             'billedToday' => $billedToday,
             'paidToday' => $paidToday,
             'expensesToday' => $expensesToday,

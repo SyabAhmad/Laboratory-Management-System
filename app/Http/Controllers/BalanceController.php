@@ -13,16 +13,24 @@ class BalanceController extends Controller
     {
         // Compute totals from bills and payments to show an outstanding balance
         $totalBilled = \App\Models\Bills::sum('amount') ?? 0;
-        
+
         // Total paid from Payments
         $totalPaymentsPaid = \App\Models\Payments::sum('amount') ?? 0;
-        
+
         // Total paid from ReferralCommission (paid status)
         $totalCommissionsPaid = \App\Models\ReferralCommission::where('status', 'paid')
             ->sum('commission_amount') ?? 0;
-        
-        // Combined total paid
+
+        // Total expenses
+        $totalExpenses = \App\Models\Expense::sum('amount') ?? 0;
+
+        // Combined total paid (payments + commissions)
         $totalPaid = $totalPaymentsPaid + $totalCommissionsPaid;
+
+        // Net balance = Income - Expenses
+        $netBalance = $totalPaid - $totalExpenses;
+
+        // Outstanding balance (what's owed to the lab)
         $outstanding = $totalBilled - $totalPaid;
 
         // Fetch bills (all billed amounts)
@@ -61,12 +69,24 @@ class BalanceController extends Controller
                 \DB::raw('"Commission" as type')
             );
 
+        // Fetch expenses
+        $expenses = \App\Models\Expense::select(
+            'expenses.created_at',
+            \DB::raw('CONCAT("Expense #", expenses.id) as reference'),
+            'expenses.amount',
+            'expenses.note',
+            \DB::raw('NULL as patient_name'),
+            \DB::raw('"Expense" as type')
+        );
+
         // Union all queries and order by created_at desc, paginate by 20 per page
-        $transactions = $bills->union($payments)->union($commissions)->orderBy('created_at', 'desc')->paginate(20);
+        $transactions = $bills->union($payments)->union($commissions)->union($expenses)->orderBy('created_at', 'desc')->paginate(20);
 
         return view('Balance.index', [
             'totalBilled' => $totalBilled,
             'totalPaid' => $totalPaid,
+            'totalExpenses' => $totalExpenses,
+            'netBalance' => $netBalance,
             'outstanding' => $outstanding,
             'transactions' => $transactions,
         ]);

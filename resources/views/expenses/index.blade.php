@@ -59,6 +59,7 @@ $(document).ready(function() {
     $('.expenses-table').DataTable({
         processing: true,
         serverSide: true,
+        searchDelay: 500, // Add 500ms debouncing to prevent database overload
         ajax: "{{ route('expenses.index') }}",
         columns: [
             { data: 'DT_RowIndex', name: 'DT_RowIndex' },

@@ -227,6 +227,7 @@
             var table = $('.patitent_datatable').DataTable({
                 processing: true,
                 serverSide: true,
+                searchDelay: 500, // Add 500ms debouncing to prevent database overload
                 ajax: {
                     url: "{{ route('patients.list') }}"
                 },
@@ -284,6 +285,7 @@
             var completedTable = $('.completed_patitent_datatable').DataTable({
                 processing: true,
                 serverSide: true,
+                searchDelay: 500, // Add 500ms debouncing to prevent database overload
                 ajax: {
                     url: "{{ route('patients.completed') }}"
                 },

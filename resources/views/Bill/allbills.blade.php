@@ -49,6 +49,7 @@
             var table = $('.allbill_datatable').DataTable({
                 processing: true,
                 serverSide: true,
+                searchDelay: 500, // Add 500ms debouncing to prevent database overload
                 ajax: {
                     url: "{{ route('allbills') }}",
                 },

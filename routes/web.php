@@ -76,6 +76,7 @@ Route::middleware(['auth:sanctum', 'verified'])
         Route::get('/patients/details/{id}', 'App\Http\Controllers\PatientsController@show')->name('patients.profile');
         Route::delete('/patients/{id}', 'App\Http\Controllers\PatientsController@destroy')->name('patients.destroy');
         Route::get('/patients/{id}/registered-tests', 'App\Http\Controllers\PatientsController@registeredTests')->name('patients.registered_tests');
+        Route::get('/patients/search', 'App\Http\Controllers\PatientsController@search')->name('patients.search');
         Route::get('/patients/{id}/fetch-cbc-results', [App\Http\Controllers\PatientsController::class, 'fetchCBCResults'])->name('patients.fetchCBCResults');
 
         // Patient Receipt / Token Routes
