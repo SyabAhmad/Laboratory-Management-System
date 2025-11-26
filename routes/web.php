@@ -69,6 +69,11 @@ Route::middleware(['auth:sanctum', 'verified'])
         Route::get('/patients/{patient}/tests/{testName}/print', [App\Http\Controllers\PatientsController::class, 'printTestReport'])->name('patients.printTest');
         // Print multiple selected test reports combined into one print page
         Route::get('/patients/{patient}/tests/print-multiple/{testNames}', [App\Http\Controllers\PatientsController::class, 'printMultipleTestReports'])->name('patients.printMultipleTests');
+        
+        // Print Debug Routes (for troubleshooting 404 errors)
+        Route::get('/print/debug/{patient}/{testName}', 'App\Http\Controllers\PrintDebugController@debugPrintTest')->name('print.debug.test');
+        Route::get('/print/test-urls/{patient}', 'App\Http\Controllers\PrintDebugController@testUrlGeneration')->name('print.test.urls');
+        
         // Save-to-system routes removed
 
         Route::put('/patients/{id}', 'App\Http\Controllers\PatientsController@update')->name('patients.update');
@@ -128,6 +133,8 @@ Route::middleware(['auth:sanctum', 'verified'])
         Route::get('/billing/registered-tests/{id}', 'App\Http\Controllers\BillsController@getRegisteredTests')->name('billing.get-registered-tests');
         Route::post('/billing/add', 'App\Http\Controllers\BillsController@store')->name('billing.add');
         Route::get('/billing/details/{id}', 'App\Http\Controllers\BillsController@show')->name('billing.details');
+        Route::get('/billing/{id}/print', 'App\Http\Controllers\BillsController@printA4')->name('billing.print');
+        Route::get('/billing/{id}/print-thermal', 'App\Http\Controllers\BillsController@printThermal')->name('billing.print-thermal');
         Route::put('/billing/{bill}', 'App\Http\Controllers\BillsController@update')->name('bills.update');
         // Mark a bill as fully paid (records delta payment and updates status)
         Route::post('/billing/{bill}/mark-paid', 'App\Http\Controllers\BillsController@markAsPaid')->name('bills.markPaid');

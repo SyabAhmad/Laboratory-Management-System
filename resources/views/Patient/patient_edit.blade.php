@@ -2,6 +2,7 @@
 @section('title', 'Edit Patient')
 
 @section('content')
+{{-- Dual option styles removed (UI no longer supports dual option fields) --}}
 
     <div class="container-fluid">
 
@@ -458,13 +459,13 @@
                                                                 @foreach ($template['fields'] as $field)
                                                                     @php
                                                                         $value = $testData[$field['name']] ?? '';
+                                                                        $fieldType = $field['type'] ?? 'text';
                                                                     @endphp
                                                                     <tr>
                                                                         <td><strong>{{ $field['label'] }}</strong></td>
                                                                         <td>
                                                                             @if (!empty($value))
-                                                                                <pre class="mb-0"
-                                                                                    style="background: var(--surface); padding: 8px; border-radius: 4px; white-space: pre-wrap; word-wrap: break-word;">{{ $value }}</pre>
+                                                                                <pre class="mb-0" style="background: var(--surface); padding: 8px; border-radius: 4px; white-space: pre-wrap; word-wrap: break-word;">{{ $value }}</pre>
                                                                             @else
                                                                                 <span class="text-muted">-</span>
                                                                             @endif
@@ -657,6 +658,8 @@
                                                         step="{{ $field['step'] ?? '1' }}"
                                                         {{ $field['required'] ?? false ? 'required' : '' }}>
                                                 @break
+
+                                                {{-- Dual option field type removed - fallback to text input --}}
 
                                                 @default
                                                     <input type="text" id="{{ $testSlug }}_{{ $field['name'] }}"

@@ -4,7 +4,7 @@
 @section('content')
 <div class="container py-4">
     <div class="card shadow-sm border-0 rounded-3 bg-cards">
-        <div class="card-header bg-surface border-0 py-3 d-flex align-items-center justify-content-between">
+        <div class="card-header bg-surface border-0 py-3 d-flex align-items-center justify-content-between" style="background-color: #8d2d36; color: white;">
             <h4 class="mb-0">
                 Add Parameters for: <span class="text-primary-custom fw-semibold">{{ $test->cat_name }}</span>
             </h4>
@@ -27,15 +27,23 @@
                             <label class="form-label visually-hidden">Parameter Name</label>
                             <input type="text" name="parameter_name[]" class="form-control" placeholder="Parameter Name" required>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-2">
+                            <label class="form-label visually-hidden">Field Type</label>
+                            <select name="field_type[]" class="form-control field-type-select" required>
+                                <option value="text" selected>Text Input</option>
+                                <option value="number">Number Input</option>
+                                <option value="textarea">Text Area</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
                             <label class="form-label visually-hidden">Unit</label>
                             <input type="text" name="unit[]" class="form-control" placeholder="Unit (e.g., mg/dL)">
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <label class="form-label visually-hidden">Reference Range</label>
                             <input type="text" name="reference_range[]" class="form-control" placeholder="Reference Range (e.g., 5–20)">
                         </div>
-                        <div class="col-md-3 d-flex align-items-end">
+                        <div class="col-md-1 d-flex align-items-end">
                             <button type="button" class="btn btn-outline-danger w-100 remove-row">
                                 <i class="bi bi-trash me-1"></i> Remove
                             </button>
@@ -67,6 +75,7 @@
                         <thead class="table-light">
                             <tr>
                                 <th scope="col">Name</th>
+                                <th scope="col">Field Type</th>
                                 <th scope="col">Unit</th>
                                 <th scope="col">Reference Range</th>
                                 <th scope="col" class="text-end">Actions</th>
@@ -76,6 +85,25 @@
                             @foreach($test->parameters as $param)
                                 <tr data-param-id="{{ $param->id }}">
                                     <td class="param-name">{{ $param->parameter_name }}</td>
+                                    <td class="param-field-type">
+                                        @switch($param->field_type ?? 'text')
+                                            @case('text')
+                                                <span class="badge badge-info">Text Input</span>
+                                                @break
+                                            @case('number')
+                                                <span class="badge badge-info">Number Input</span>
+                                                @break
+                                            @case('dual_option')
+                                                <span class="badge badge-info">Text Input</span>
+                                                @break
+                                            @case('textarea')
+                                                <span class="badge badge-info">Text Area</span>
+                                                @break
+                                            @default
+                                                <span class="badge badge-secondary">{{ ucfirst($param->field_type ?? 'text') }}</span>
+                                        @endswitch
+                                    </td>
+                                    {{-- Options column removed --}}
                                     <td class="param-unit">{{ $param->unit }}</td>
                                     <td class="param-range">{{ $param->reference_range }}</td>
                                     <td class="text-end param-actions">
@@ -105,10 +133,30 @@
 </div>
 
 <script>
+    // Function to handle field type changes
+    function handleFieldTypeChange(select) {
+        // Keep behavior simple: we don't show dual-option fields anymore.
+        // Always show unit / reference fields regardless of field type.
+        const row = select.closest('.parameter-row');
+        const unitField = row.querySelector('input[name="unit[]"]');
+        const referenceRangeField = row.querySelector('input[name="reference_range[]"]');
+        if (unitField) unitField.closest('.col-md-2').style.display = 'block';
+        if (referenceRangeField) referenceRangeField.closest('.col-md-2').style.display = 'block';
+    }
+
+    // Initial setup for existing field type selects
+    document.querySelectorAll('.field-type-select').forEach(select => {
+        handleFieldTypeChange(select);
+    });
+
     document.getElementById('add-row').addEventListener('click', function() {
         const container = document.getElementById('parameter-container');
         const newRow = document.querySelector('.parameter-row').cloneNode(true);
         newRow.querySelectorAll('input').forEach(input => input.value = '');
+        // Reset field type to text
+        const fieldTypeSelect = newRow.querySelector('.field-type-select');
+        fieldTypeSelect.value = 'text';
+        handleFieldTypeChange(fieldTypeSelect);
         container.appendChild(newRow);
     });
 
@@ -116,6 +164,13 @@
         if (e.target.classList.contains('remove-row') || e.target.closest('.remove-row')) {
             const row = e.target.closest('.parameter-row');
             if (row) row.remove();
+        }
+    });
+
+    // Handle field type change events
+    document.addEventListener('change', function(e) {
+        if (e.target.classList.contains('field-type-select')) {
+            handleFieldTypeChange(e.target);
         }
     });
 
@@ -180,15 +235,37 @@
             row.classList.add('editing');
 
             const nameCell = row.querySelector('.param-name');
+            const fieldTypeCell = row.querySelector('.param-field-type');
+            const dualOptionsCell = row.querySelector('.param-dual-options');
             const unitCell = row.querySelector('.param-unit');
             const rangeCell = row.querySelector('.param-range');
             const actionsCell = row.querySelector('.param-actions');
 
             const currentName = nameCell.textContent.trim();
+            const currentFieldType = fieldTypeCell.textContent.trim();
+            // dual options column removed; no currentDualOptions required
             const currentUnit = unitCell.textContent.trim();
             const currentRange = rangeCell.textContent.trim();
 
+            // Get current field type value from the parameter data
+            const currentParam = @json($test->parameters->keyBy('id')->toArray());
+            const paramData = currentParam[id] || {};
+            
             nameCell.innerHTML = `<input type="text" class="form-control form-control-sm edit-name" value="${escapeHtml(currentName)}">`;
+            
+            // Field type dropdown
+            fieldTypeCell.innerHTML = `
+                <select class="form-control form-control-sm edit-field-type" required>
+                    <option value="text" ${(paramData.field_type || 'text') === 'text' ? 'selected' : ''}>Text Input</option>
+                    <option value="number" ${paramData.field_type === 'number' ? 'selected' : ''}>Number Input</option>
+                    <option value="textarea" ${paramData.field_type === 'textarea' ? 'selected' : ''}>Text Area</option>
+                </select>
+            `;
+            
+            // Dual options inputs (initially hidden)
+            const dualOptions = paramData.dual_options ? (Array.isArray(paramData.dual_options) ? paramData.dual_options : JSON.parse(paramData.dual_options)) : [];
+            dualOptionsCell.innerHTML = `<span class="text-muted">-</span>`;
+            
             unitCell.innerHTML = `<input type="text" class="form-control form-control-sm edit-unit" value="${escapeHtml(currentUnit)}">`;
             rangeCell.innerHTML = `<input type="text" class="form-control form-control-sm edit-range" value="${escapeHtml(currentRange)}">`;
 
@@ -198,6 +275,17 @@
             `;
         });
 
+        // Field type change handler for inline editing
+        table.addEventListener('change', function(e) {
+            if (e.target.classList.contains('edit-field-type')) {
+                const row = e.target.closest('tr');
+                const dualOptionsEdit = row.querySelector('.dual-options-edit');
+                const placeholder = row.querySelector('.edit-dual-options-placeholder');
+                
+                // No-op for dual option since it's removed from field types
+            }
+        });
+
         // Save / Cancel handlers
         table.addEventListener('click', function(e) {
             const saveBtn = e.target.closest('.btn-save');
@@ -205,11 +293,14 @@
                 const row = saveBtn.closest('tr');
                 const id = row.dataset.paramId;
                 const name = row.querySelector('.edit-name').value.trim();
+                const fieldType = row.querySelector('.edit-field-type').value;
                 const unit = row.querySelector('.edit-unit').value.trim();
                 const range = row.querySelector('.edit-range').value.trim();
 
                 // basic client-side validation
                 if (!name) { alert('Parameter name is required'); return; }
+                
+                // dual options removed - no validation needed
 
                 // send AJAX PUT
                 const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || document.querySelector('input[name=_token]')?.value;
@@ -224,6 +315,8 @@
                         fd.append('_method', 'PUT');
                         fd.append('_token', token);
                         fd.append('parameter_name', name);
+                        fd.append('field_type', fieldType);
+                        // dual options removed: don't append dual_option_1/2
                         fd.append('unit', unit);
                         fd.append('reference_range', range);
                         return fd;
@@ -241,6 +334,32 @@
                     if (data && data.success) {
                         // update row display
                         row.querySelector('.param-name').textContent = data.param.parameter_name;
+                        
+                        // Update field type display
+                        const fieldTypeCell = row.querySelector('.param-field-type');
+                        const fieldType = data.param.field_type || 'text';
+                        let fieldTypeBadge = '';
+                        switch(fieldType) {
+                            case 'text':
+                                fieldTypeBadge = '<span class="badge badge-info">Text Input</span>';
+                                break;
+                            case 'number':
+                                fieldTypeBadge = '<span class="badge badge-info">Number Input</span>';
+                                break;
+                            // 'dual_option' type removed from UI
+                            case 'textarea':
+                                fieldTypeBadge = '<span class="badge badge-info">Text Area</span>';
+                                break;
+                            default:
+                                fieldTypeBadge = '<span class="badge badge-secondary">' + fieldType + '</span>';
+                        }
+                        fieldTypeCell.innerHTML = fieldTypeBadge;
+                        
+                        // Update dual options display
+                        const dualOptionsCell = row.querySelector('.param-dual-options');
+                        // Dual options removed - always keep placeholder
+                        if (dualOptionsCell) dualOptionsCell.innerHTML = '<span class="text-muted">-</span>';
+                        
                         row.querySelector('.param-unit').textContent = data.param.unit || '';
                         row.querySelector('.param-range').textContent = data.param.reference_range || '';
                         row.querySelector('.param-actions').innerHTML = `

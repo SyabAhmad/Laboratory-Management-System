@@ -25,15 +25,32 @@
         <div class="card">
             <div class="card-body">
                 <div id="printarea">
-                    <div class="text-center mt-4 mb-4">
-                        @foreach (App\Models\MainCompanys::where('id', 1)->get() as $item)
-                            <img src="{{ asset('/assets/HMS/lablogo/' . $item->lab_image) }}" alt="Lab Logo"
-                                style="width: 120px; height: 120px" class="img-fluid rounded shadow-sm"> <br />
-                        @endforeach
+                    {{-- Include header/footer partial --}}
+                    @include('Patient.partials.print_header_footer')
+
+                    <!-- Bill Header -->
+                    <div style="text-align: center; margin: 20px 0; padding: 10px; border-bottom: 2px solid #8d2d36;">
+                        <h2 style="color: #8d2d36; margin: 0; font-size: 24px;">BILL RECEIPT</h2>
+                        <p style="margin: 5px 0; font-size: 16px; color: #666;">Invoice Number: {{ $bills->bill_no }}</p>
+                        <p style="margin: 5px 0; font-size: 14px; color: #666;">Date: {{ $bills->created_at ? $bills->created_at->format('d-M-Y H:i') : 'N/A' }}</p>
                     </div>
 
+                    <div class="print-body">
                     <style>
                         @media print {
+                            :root {
+                                --print-header-height: 36mm;
+                                --print-footer-height: 32mm;
+                                --print-page-width: 210mm;
+                                --print-side-padding: 0mm;
+                                --print-inner-width-mm: calc(var(--print-page-width) - (var(--print-side-padding) * 2));
+                            }
+                            html, body {
+                                margin: 0;
+                                padding: 0;
+                                width: var(--print-page-width);
+                                height: 297mm;
+                            }
                             body * {
                                 visibility: hidden;
                             }
@@ -44,7 +61,12 @@
                                 position: absolute;
                                 left: 0;
                                 top: 0;
-                                width: 100%;
+                                width: var(--print-page-width);
+                                margin: 0;
+                                padding: 0;
+                            }
+                            .print-header, .print-footer {
+                                display: block !important;
                             }
                             .no-print {
                                 display: none !important;
@@ -58,6 +80,11 @@
                             }
                             .btn {
                                 display: none;
+                            }
+                            .print-body {
+                                width: var(--print-inner-width-mm);
+                                margin: 0 auto;
+                                padding: 0;
                             }
                         }
                     </style>
@@ -160,28 +187,7 @@
                                     <td class="font-weight-bold">Net Amount:</td>
                                     <td class="text-right font-weight-bold h5 text-success" id="display_net_amount">{{ number_format($bills->total_price, 2) }}</td>
                                 </tr>
-                                
-                                {{-- Referral Commission Section --}}
-                                @if ($commissionDetails && $commissionDetails['referral_name'])
-                                    <tr class="border-top bg-light">
-                                        <td colspan="2" class="font-weight-bold text-info">
-                                            <i class="mdi mdi-percent"></i> Referral Commission
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Referral Name:</td>
-                                        <td class="text-right">{{ $commissionDetails['referral_name'] ?? 'N/A' }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Commission Percentage:</td>
-                                        <td class="text-right">{{ number_format($commissionDetails['commission_percentage'], 2) }}%</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="font-weight-bold">Commission Amount:</td>
-                                        <td class="text-right font-weight-bold text-info">{{ number_format($commissionDetails['commission_amount'], 2) }} PKR</td>
-                                    </tr>
-                                @endif
-                                
+
                                 <tr>
                                     <td>Payment Method:</td>
                                     <td class="text-right" id="display_payment_type">{{ $bills->payment_type }}</td>
@@ -196,6 +202,7 @@
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
                     </div>
                 </div>
 
@@ -217,9 +224,14 @@
                                 <i class="mdi mdi-check-circle"></i> Paid
                             </span>
                         @endif
-                        <button onclick="myFunction('printarea')" class="btn btn-success float-right" data-toggle="tooltip" title="Print this bill">
-                            <i class="mdi mdi-printer"></i> Print
-                        </button>
+                        <div class="btn-group float-right" role="group">
+                            <a href="{{ route('billing.print', $bills->id) }}" class="btn btn-success" data-toggle="tooltip" title="Print A4 Bill">
+                                <i class="mdi mdi-printer"></i> Print A4
+                            </a>
+                            <a href="{{ route('billing.print-thermal', $bills->id) }}" class="btn btn-info" data-toggle="tooltip" title="Print Thermal Bill">
+                                <i class="mdi mdi-receipt"></i> Print Thermal
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -312,13 +324,7 @@
     </div>
 
     <script>
-        function myFunction(el) {
-            var getFullContent = document.body.innerHTML;
-            var printsection = document.getElementById(el).innerHTML;
-            document.body.innerHTML = printsection;
-            window.print();
-            document.body.innerHTML = getFullContent;
-        }
+
 
         $(document).ready(function() {
                     // Bill data

@@ -19,7 +19,7 @@
         <!-- end page title -->
 
         <div class="card">
-            <div class="card-header bg-primary text-white">
+            <div class="card-header" style="background-color: #8d2d36; color: white;">
                 <h5 class="card-title mb-0">Patient Bills Overview</h5>
             </div>
             <div class="card-body">

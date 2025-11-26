@@ -73,12 +73,14 @@
 
     @media print {
             :root {
-                --print-header-height: 36mm; /* slightly smaller header to allow more body space */
-                --print-footer-height: 32mm; /* slightly smaller footer for more body space */
+                --print-header-height: 30mm; /* header for A4 */
+                --print-footer-height: 20mm; /* footer for A4 */
+                --print-page-width: 210mm;
+                --print-inner-width-mm: 190mm;
             }
         @page {
                     size: A4;
-                    margin: 6mm 0mm 10mm 0mm; /* minimal left/right to reduce side white area */
+                    margin: 10mm 10mm 10mm 10mm; /* standard margins for A4 */
         }
         
         body {
@@ -88,17 +90,17 @@
             height: 100%;
         }
         
-        /* Ensure proper A4 sizing */
+        /* Ensure proper thermal sizing */
         html, body {
-            size: A4;
+            size: 80mm auto;
             width: var(--print-page-width);
-            min-height: 297mm;
+            min-height: auto;
         }
         
-        /* Layout calibration */
+        /* Layout calibration for thermal */
             .report-container {
-            /* use relative widths so different printers don't scale unexpectedly */
-            width: calc(100% - 12mm) !important;
+            /* use full width for thermal printers */
+            width: 100% !important;
             max-width: var(--print-inner-width-mm) !important;
             margin: 0 auto !important;
             padding: 0 !important;
@@ -109,9 +111,9 @@
         /* Header/Footer positioning handled by the shared partial (print_header_footer.blade.php) */
 
         .print-body {
-            padding-top: calc(var(--print-header-height) + 12mm) !important; /* ensure content clears header */
-            /* ensure body-bottom keeps clear space equal to footer height + bottom anchor */
-            padding-bottom: calc(var(--print-footer-height) + 10mm) !important;
+            padding-top: calc(var(--print-header-height) + 15mm) !important; /* ensure content clears header with margin */
+            /* ensure body-bottom keeps clear space equal to footer height + margin */
+            padding-bottom: calc(var(--print-footer-height) + 15mm) !important;
             /* rely on report-inner for horizontal spacing so inner content matches header/footer */
             padding-left: 0 !important; padding-right: 0 !important;
             box-sizing: border-box;
@@ -119,15 +121,15 @@
 
         /* Adjust padding for multiple tests to avoid empty pages */
         .multiple-tests.print-body {
-            padding-top: calc(var(--print-header-height) + 6mm) !important;
-            padding-bottom: calc(var(--print-footer-height) + 5mm) !important;
+            padding-top: calc(var(--print-header-height) + 1mm) !important;
+            padding-bottom: calc(var(--print-footer-height) + 1mm) !important;
         }
 
         .footer-container {
-            padding: 10px 0;
+            padding: 2px 0;
             margin: 0;
             display: flex;
-            gap: 12px;
+            gap: 4px;
             width: 100%;
             align-items: center;
             justify-content: space-between;
@@ -179,28 +181,28 @@
             print-color-adjust: exact !important;
         }
 
-        /* Smaller fonts for multiple tests */
-        .multiple-tests .personal-info-table { font-size: 16px !important; }
-        .multiple-tests .personal-info-table th { font-size: 16px !important; }
-        .multiple-tests .personal-info-table td { font-size: 16px !important; }
-        .multiple-tests .pi-value { font-size: 10px !important; }
-        .multiple-tests .pi-label { font-size: 10px !important; }
-        .multiple-tests .section-title { font-size: 18px !important; padding: 8px 10px !important; }
-        .multiple-tests .results-table { font-size: 12px !important; }
-        .multiple-tests .results-table th { font-size: 12px !important; }
-        .multiple-tests .results-table td { font-size: 12px !important; }
-        .multiple-tests .footer-container { font-size: 8px !important; }
+        /* Smaller fonts for multiple tests on thermal */
+        .multiple-tests .personal-info-table { font-size: 9px !important; }
+        .multiple-tests .personal-info-table th { font-size: 9px !important; }
+        .multiple-tests .personal-info-table td { font-size: 9px !important; }
+        .multiple-tests .pi-value { font-size: 7px !important; }
+        .multiple-tests .pi-label { font-size: 7px !important; }
+        .multiple-tests .section-title { font-size: 10px !important; padding: 4px 6px !important; }
+        .multiple-tests .results-table { font-size: 8px !important; }
+        .multiple-tests .results-table th { font-size: 8px !important; }
+        .multiple-tests .results-table td { font-size: 8px !important; }
+        .multiple-tests .footer-container { font-size: 6px !important; }
         .multiple-tests .footer-note { font-size: 8px !important; }
 
-        /* Adjust notes section for multiple tests */
-        .multiple-tests .test-notes-section { margin-bottom: 5px !important; padding: 5px !important; }
-        .multiple-tests .notes-header { font-size: 10px !important; margin-bottom: 4px !important; padding-bottom: 4px !important; }
-        .multiple-tests .notes-content { font-size: 10px !important; line-height: 1.2 !important; }
-        .multiple-tests .clinical-notes-section { margin-bottom: 5px !important; padding: 5px !important; }
-        .multiple-tests .clinical-notes-header { font-size: 10px !important; margin-bottom: 5px !important; padding-bottom: 4px !important; }
-        .multiple-tests .dept-title { font-size: 8px !important; margin-bottom: 3px !important; }
-        .multiple-tests .note-item { font-size: 9px !important; margin-bottom: 3px !important; line-height: 1.2 !important; }
-        .multiple-tests .clinical-notes-dept { margin-bottom: 6px !important; padding-bottom: 5px !important; }
+        /* Adjust notes section for multiple tests on thermal */
+        .multiple-tests .test-notes-section { margin-bottom: 2px !important; padding: 2px !important; }
+        .multiple-tests .notes-header { font-size: 8px !important; margin-bottom: 2px !important; padding-bottom: 2px !important; }
+        .multiple-tests .notes-content { font-size: 8px !important; line-height: 1.1 !important; }
+        .multiple-tests .clinical-notes-section { margin-bottom: 2px !important; padding: 2px !important; }
+        .multiple-tests .clinical-notes-header { font-size: 8px !important; margin-bottom: 2px !important; padding-bottom: 2px !important; }
+        .multiple-tests .dept-title { font-size: 6px !important; margin-bottom: 2px !important; }
+        .multiple-tests .note-item { font-size: 7px !important; margin-bottom: 2px !important; line-height: 1.1 !important; }
+        .multiple-tests .clinical-notes-dept { margin-bottom: 3px !important; padding-bottom: 2px !important; }
 
         /* Ensure proper page breaks */
         .test-title-section {
@@ -234,6 +236,7 @@
 
 {{-- Header and footer are included by Layout.print now to avoid duplication --}}
 <!-- end include print header/footer -->
+@php $maxRowsPerPage = 15; @endphp
     {{-- Personal information block (table format) --}}
     @if(!isset($skipPatientInfo) || !$skipPatientInfo)
     <style>
@@ -241,7 +244,7 @@
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 10px;
-            font-size: 20px; /* increase baseline personal info font */
+            font-size: 12px; /* increase baseline personal info font */
             border: 1px solid #e7e7e7;
                 border-radius: 6px;
                 background: #fff;
@@ -265,19 +268,19 @@
         .personal-info-table .value { color: #333; }
         .personal-info-row { background: transparent; }
         @media print {
-            .personal-info-table { font-size: 18px !important; }
+            .personal-info-table { font-size: 14px !important; }
         }
     </style>
     <style>
         /* Personal card grid styles (screen and print friendly) */
-        .personal-card { border-radius: 8px; background: #fff; border: 1px solid #e7e7e7; padding: 8px; margin-bottom: 12px; width: var(--print-inner-width-mm) !important; max-width: var(--print-inner-width-mm) !important; margin-left: auto; margin-right: auto; box-sizing: border-box; }
+        .personal-card { border-radius: 4px; background: #fff; border: 1px solid #e7e7e7; padding: 4px; margin-bottom: 6px; width: 100% !important; max-width: 100% !important; margin-left: auto; margin-right: auto; box-sizing: border-box; }
         .personal-card-inner { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px 18px; }
         .pi-cell { display:flex; gap: 10px; align-items: center; }
         .pi-cell i { color: #8d2d36; width: 30px; text-align: center; }
         .pi-meta { display:flex; flex-direction:column; }
-        .pi-label { font-size: 12px; color: #8d2d36; font-weight: 700; }
-        .pi-value { font-size: 12px; color: #333; font-weight: 600; }
-        .section-title { background: #8d2d36; color: #fff; border-radius: 6px; padding: 10px 12px; text-align:center; font-weight:700; margin-bottom: 12px; display:block; }
+        .pi-label { font-size: 10px; color: #8d2d36; font-weight: 700; }
+        .pi-value { font-size: 10px; color: #333; font-weight: 600; }
+        .section-title { background: #8d2d36; color: #fff; border-radius: 4px; padding: 6px 8px; text-align:center; font-weight:700; margin-bottom: 8px; display:block; font-size: 14px; }
         .section-title i { margin-right: 8px; }
 
         /* Results table styling */
@@ -288,19 +291,38 @@
         .results-table tbody tr td:first-child { color: #222 !important; font-weight: 400; }
         .results-table tbody tr td:nth-child(3) { color: #222 !important; font-weight: 400; }
         .results-table tbody tr td:nth-child(4) { color: #222 !important; font-weight: 400; }
-        .results-table { border-radius: 6px; overflow: hidden; border: 1px solid #e6e6e6; width: var(--print-inner-width-mm) !important; max-width: var(--print-inner-width-mm) !important; box-sizing: border-box; font-size: 13px; }
+        .results-table { border-radius: 4px; overflow: hidden; border: 1px solid #e6e6e6; width: 100% !important; max-width: 100% !important; box-sizing: border-box; font-size: 10px; }
         @media print {
             .personal-card { border: 1px solid #e7e7e7 !important; }
             .section-title { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            /* Make table text larger for print so it's readable on paper */
-            .results-table { font-size: 18px !important; }
-            .results-table th { font-size: 18px !important; }
-            .results-table td { font-size: 18px !important; }
-            .pi-value { font-size: 16px !important; }
-            .pi-label { font-size: 16px !important; }
-            .section-title { font-size: 22px !important; padding: 12px 14px !important; }
+            /* Adjust sizes for A4 printing */
+                .results-table { font-size: 12px !important; }
+                .results-table th { font-size: 12px !important; }
+                .results-table td { font-size: 12px !important; }
+                .pi-value { font-size: 12px !important; }
+                .pi-label { font-size: 12px !important; }
+                .section-title { font-size: 16px !important; padding: 8px 10px !important; }
+    
+            /* Adjust header and footer fonts for A4 printing */
+            .print-header .lab-name { font-size: 20px !important; }
+            .print-header .lab-subtitle { font-size: 14px !important; }
+            .print-header .lab-address { font-size: 12px !important; }
+            .print-header .contact-info { font-size: 12px !important; }
+            .print-header-details { font-size: 12px !important; }
+            .print-footer .footer-item { font-size: 12px !important; }
+            .print-footer .footer-signature strong { font-size: 14px !important; }
+    
+            /* Adjust logo size for A4 printing */
+            .print-header .print-inner table td img { width: 30mm !important; height: 30mm !important; }
+            .print-header .print-inner table td img.header-logo { width: 25mm !important; height: 25mm !important; }
+            .print-header .print-logo img.header-logo { width: 28mm !important; height: 28mm !important; }
+    
+            /* Adjust header and footer positioning for A4 */
+            .print-header { top: 10mm !important; }
+            .print-footer { bottom: 10mm !important; }
         }
     </style>
+    {{-- Dual option styles removed --}}
 
     <div class="personal-card" role="region" aria-label="Patient information">
         <div class="personal-card-inner">
@@ -356,7 +378,7 @@
         <span>{{ strtoupper($testEntry['name'] ?? 'TEST') }}</span>
     </div>
     @if(!empty($testEntry['department']))
-        <div style="text-align: center; font-weight: 600; margin-bottom: 8px; font-size: 14px; color: #333;">
+        <div style="text-align: center; font-weight: 600; margin-bottom: 8px; font-size: 12px; color: #333;">
             Department: {{ $testEntry['department'] ?? '-' }}
         </div>
     @endif
@@ -368,13 +390,13 @@
                     <th style="text-align: left; padding: 12px; font-weight: bold; width: 50%; color: black;">
                         <i class="fas fa-tag" style="margin-right: 5px;"></i>Test Name
                     </th>
-                    <th style="text-align: left; padding: 12px; font-weight: bold; width: 10%; color: black;">
+                    <th style="text-align: left; padding: 12px; font-weight: bold; width: 25%; color: black;">
                         <i class="fas fa-chart-line" style="margin-right: 5px;"></i>Results
                     </th>
-                    <th style="text-align: left; padding: 12px; font-weight: bold; width: 15%; color: black;">
+                    <th style="text-align: left; padding: 12px; font-weight: bold; width: 10%; color: black;">
                         <i class="fas fa-balance-scale" style="margin-right: 5px;"></i>Unit
                     </th>
-                    <th style="text-align: left; padding: 12px; font-weight: bold; width: 25%; color: black;">
+                    <th style="text-align: left; padding: 12px; font-weight: bold; width: 15%; color: black;">
                         <i class="fas fa-ruler" style="margin-right: 5px;"></i>Reference Ranges
                     </th>
                 </tr>
@@ -383,67 +405,153 @@
                 @php
                     $analytes = $testEntry['saved_data']['analytes'] ?? [];
                     $hasHL7Data = !empty($analytes) && is_array($analytes);
-                    $rowCount = 0;
                 @endphp
 
                 @if ($hasHL7Data)
                     <!-- HL7 Data -->
-                    @foreach ($analytes as $analyte)
-                        @php $rowCount++; @endphp
-                        <tr style="background: {{ $rowCount % 2 == 0 ? '#f9f9f9' : '#fff' }};">
-                            <td style="padding: 10px; border-bottom: 1px solid #e0e0e0; font-weight: 500;">
-                                {{ $analyte['name'] ?? ($analyte['code'] ?? 'Unknown') }}
-                            </td>
-                            <td style="padding: 10px; border-bottom: 1px solid #e0e0e0; font-weight: 700; color: black;">
-                                {{ $analyte['value'] ?? '' }}
-                            </td>
-                            <td style="padding: 10px; border-bottom: 1px solid #e0e0e0;">
-                                {{ $analyte['units'] ?? '' }}
-                            </td>
-                            <td style="padding: 10px; border-bottom: 1px solid #e0e0e0;">
-                                {{ $analyte['ref_range'] ?? '' }}
-                            </td>
-                        </tr>
+                    @php $chunks = array_chunk($analytes, $maxRowsPerPage); @endphp
+                    @foreach ($chunks as $chunkIndex => $chunk)
+                        @if($chunkIndex > 0)
+                            </tbody></table>
+                            <table class="results-table" width="100%" cellpadding="5" cellspacing="0" style="border-collapse: collapse; page-break-before: always; margin-top: 20px;">
+                                <thead>
+                                    <tr style="background-color: #fff !important; border-bottom: 3px solid #8d2d36 !important;">
+                                        <th style="text-align: left; padding: 12px; font-weight: bold; width: 50%; color: black;">
+                                            <i class="fas fa-tag" style="margin-right: 5px;"></i>Test Name
+                                        </th>
+                                        <th style="text-align: left; padding: 12px; font-weight: bold; width: 25%; color: black;">
+                                            <i class="fas fa-chart-line" style="margin-right: 5px;"></i>Results
+                                        </th>
+                                        <th style="text-align: left; padding: 12px; font-weight: bold; width: 10%; color: black;">
+                                            <i class="fas fa-balance-scale" style="margin-right: 5px;"></i>Unit
+                                        </th>
+                                        <th style="text-align: left; padding: 12px; font-weight: bold; width: 15%; color: black;">
+                                            <i class="fas fa-ruler" style="margin-right: 5px;"></i>Reference Ranges
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                        @endif
+                        @php $rowCount = 0; @endphp
+                        @foreach ($chunk as $analyte)
+                            @php $rowCount++; @endphp
+                            <tr style="background: {{ $rowCount % 2 == 0 ? '#f9f9f9' : '#fff' }};">
+                                <td style="padding: 10px; border-bottom: 1px solid #e0e0e0; font-weight: 500;">
+                                    {{ $analyte['name'] ?? ($analyte['code'] ?? 'Unknown') }}
+                                </td>
+                                <td style="padding: 10px; border-bottom: 1px solid #e0e0e0; font-weight: 700; color: black;">
+                                    {{ $analyte['value'] ?? '' }}
+                                </td>
+                                <td style="padding: 10px; border-bottom: 1px solid #e0e0e0;">
+                                    {{ $analyte['units'] ?? '' }}
+                                </td>
+                                <td style="padding: 10px; border-bottom: 1px solid #e0e0e0;">
+                                    {{ $analyte['ref_range'] ?? '' }}
+                                </td>
+                            </tr>
+                        @endforeach
                     @endforeach
                 @else
                     <!-- Actual Test Parameters -->
                     @if(!empty($testEntry['template']['fields']))
-                        @foreach ($testEntry['template']['fields'] as $field)
                         @php
-                            $value = $testEntry['saved_data'][$field['name']] ?? '';
-                            $label = $field['label'] ?? 'Unknown';
-                            $unit = $field['unit'] ?? '';
-                            $ref = $field['ref'] ?? '';
-                            $rowCount++;
-
-                            // Format date values to d-M-Y
-                            if ($value && preg_match('/^\d{4}-\d{2}-\d{2}/', $value)) {
-                                try {
-                                    $dateTime = new \DateTime($value);
-                                    $value = $dateTime->format('d-M-Y');
-                                } catch (\Exception $e) {
-                                    // Leave as-is if invalid
-                                }
-                            }
+                            $fields = $testEntry['template']['fields'];
+                            $chunks = array_chunk($fields, $maxRowsPerPage);
                         @endphp
-                        <tr style="background: {{ $rowCount % 2 == 0 ? '#f9f9f9' : '#fff' }};">
-                            <td style="padding: 10px; border-bottom: 1px solid #e0e0e0; font-weight: 500;">{{ $label }}</td>
-                            <td style="padding: 10px; border-bottom: 1px solid #e0e0e0; font-weight: 700; color: black;">{{ $value }}</td>
-                            <td style="padding: 10px; border-bottom: 1px solid #e0e0e0;">{{ $unit }}</td>
-                            <td style="padding: 10px; border-bottom: 1px solid #e0e0e0;">{{ $ref }}</td>
-                        </tr>
+                        @foreach ($chunks as $chunkIndex => $chunk)
+                            @if($chunkIndex > 0)
+                                </tbody></table>
+                                <table class="results-table" width="100%" cellpadding="5" cellspacing="0" style="border-collapse: collapse; page-break-before: always; margin-top: 20px;">
+                                    <thead>
+                                        <tr style="background-color: #fff !important; border-bottom: 3px solid #8d2d36 !important;">
+                                            <th style="text-align: left; padding: 12px; font-weight: bold; width: 50%; color: black;">
+                                                <i class="fas fa-tag" style="margin-right: 5px;"></i>Test Name
+                                            </th>
+                                            <th style="text-align: left; padding: 12px; font-weight: bold; width: 25%; color: black;">
+                                                <i class="fas fa-chart-line" style="margin-right: 5px;"></i>Results
+                                            </th>
+                                            <th style="text-align: left; padding: 12px; font-weight: bold; width: 10%; color: black;">
+                                                <i class="fas fa-balance-scale" style="margin-right: 5px;"></i>Unit
+                                            </th>
+                                            <th style="text-align: left; padding: 12px; font-weight: bold; width: 15%; color: black;">
+                                                <i class="fas fa-ruler" style="margin-right: 5px;"></i>Reference Ranges
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                            @endif
+                            @php $rowCount = 0; @endphp
+                            @foreach ($chunk as $field)
+                            @php
+                                $value = $testEntry['saved_data'][$field['name']] ?? '';
+                                $label = $field['label'] ?? 'Unknown';
+                                $unit = $field['unit'] ?? '';
+                                $ref = $field['ref'] ?? '';
+                                $fieldType = $field['type'] ?? 'text';
+                                $rowCount++;
+
+                                // Format date values to d-M-Y
+                                if ($value && preg_match('/^\d{4}-\d{2}-\d{2}/', $value)) {
+                                    try {
+                                        $dateTime = new \DateTime($value);
+                                        $value = $dateTime->format('d-M-Y');
+                                    } catch (\Exception $e) {
+                                        // Leave as-is if invalid
+                                    }
+                                }
+
+                                // Standardized display: simply use the saved value for any field type
+                                $displayValue = $value;
+                            @endphp
+                            <tr style="background: {{ $rowCount % 2 == 0 ? '#f9f9f9' : '#fff' }};">
+                                <td style="padding: 10px; border-bottom: 1px solid #e0e0e0; font-weight: 500;">{{ $label }}</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #e0e0e0; font-weight: 700; color: black;">
+                                    {!! $displayValue !!}
+                                    {{-- Dual option options removed from print --}}
+                                </td>
+                                <td style="padding: 10px; border-bottom: 1px solid #e0e0e0;">{{ $unit }}</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #e0e0e0;">{{ $ref }}</td>
+                            </tr>
+                            @endforeach
                         @endforeach
                     @else
                         {{-- No template; print flattened saved data key/value pairs as a fallback --}}
-                        @php $sd = $testEntry['saved_data'] ?? []; @endphp
-                        @foreach($sd as $k => $v)
-                            @php $rowCount++; @endphp
-                            <tr style="background: {{ $rowCount % 2 == 0 ? '#f9f9f9' : '#fff' }};">
-                                <td style="padding: 10px; border-bottom: 1px solid #e0e0e0; font-weight: 500;">{{ $k }}</td>
-                                <td style="padding: 10px; border-bottom: 1px solid #e0e0e0; font-weight: 700; color: black;">{{ $v }}</td>
-                                <td style="padding: 10px; border-bottom: 1px solid #e0e0e0;">&nbsp;</td>
-                                <td style="padding: 10px; border-bottom: 1px solid #e0e0e0;">&nbsp;</td>
-                            </tr>
+                        @php
+                            $sd = $testEntry['saved_data'] ?? [];
+                            $chunks = array_chunk($sd, $maxRowsPerPage);
+                        @endphp
+                        @foreach ($chunks as $chunkIndex => $chunk)
+                            @if($chunkIndex > 0)
+                                </tbody></table>
+                                <table class="results-table" width="100%" cellpadding="5" cellspacing="0" style="border-collapse: collapse; page-break-before: always; margin-top: 20px;">
+                                    <thead>
+                                        <tr style="background-color: #fff !important; border-bottom: 3px solid #8d2d36 !important;">
+                                            <th style="text-align: left; padding: 12px; font-weight: bold; width: 50%; color: black;">
+                                                <i class="fas fa-tag" style="margin-right: 5px;"></i>Test Name
+                                            </th>
+                                            <th style="text-align: left; padding: 12px; font-weight: bold; width: 25%; color: black;">
+                                                <i class="fas fa-chart-line" style="margin-right: 5px;"></i>Results
+                                            </th>
+                                            <th style="text-align: left; padding: 12px; font-weight: bold; width: 10%; color: black;">
+                                                <i class="fas fa-balance-scale" style="margin-right: 5px;"></i>Unit
+                                            </th>
+                                            <th style="text-align: left; padding: 12px; font-weight: bold; width: 15%; color: black;">
+                                                <i class="fas fa-ruler" style="margin-right: 5px;"></i>Reference Ranges
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                            @endif
+                            @php $rowCount = 0; @endphp
+                            @foreach($chunk as $k => $v)
+                                @php $rowCount++; @endphp
+                                <tr style="background: {{ $rowCount % 2 == 0 ? '#f9f9f9' : '#fff' }};">
+                                    <td style="padding: 10px; border-bottom: 1px solid #e0e0e0; font-weight: 500;">{{ $k }}</td>
+                                    <td style="padding: 10px; border-bottom: 1px solid #e0e0e0; font-weight: 700; color: black;">{{ $v }}</td>
+                                    <td style="padding: 10px; border-bottom: 1px solid #e0e0e0;">&nbsp;</td>
+                                    <td style="padding: 10px; border-bottom: 1px solid #e0e0e0;">&nbsp;</td>
+                                </tr>
+                            @endforeach
                         @endforeach
                     @endif
                 @endif
@@ -463,14 +571,13 @@
         }
     @endphp
     @if($categoryNotes)
-        <div class="test-notes-section" style="padding: 10px; margin-bottom: 20px;">
-            <div class="notes-header" style="font-weight: bold; color: #8d2d36; margin-bottom: 8px; font-size: 12px; border-bottom: 1px solid #8d2d36; padding-bottom: 8px;">
-                <i class="fas fa-sticky-note" style="margin-right: 8px;"></i>Notes
-            </div>
-            <div class="notes-content" style="font-size: 20px; color: #333; line-height: 1.5; white-space: pre-wrap;">
-                {{ $categoryNotes }}
-            </div>
-        </div>
+        <x-enhanced-notes 
+            :notes="$categoryNotes" 
+            title="Test Notes & Remarks"
+            :show-icon="true"
+            class="test-notes-section"
+            style="margin-bottom: 20px;"
+        />
     @endif
 
     <!-- Test Notes Section (if any notes exist) -->
@@ -498,7 +605,7 @@
 
     @if (!empty($billNotes))
         <div class="clinical-notes-section" style="background-color: #fffacd !important; border: 2px solid #f39c12 !important; border-radius: 6px; padding: 15px; margin-bottom: 20px;">
-            <div class="clinical-notes-header" style="font-weight: bold; color: #d68910; font-size: 12px; margin-bottom: 10px; border-bottom: 1px solid #f39c12; padding-bottom: 8px;">
+            <div class="clinical-notes-header" style="font-weight: bold; color: #d68910; font-size: 10px; margin-bottom: 10px; border-bottom: 1px solid #f39c12; padding-bottom: 8px;">
                 <i class="fas fa-sticky-note" style="margin-right: 8px;"></i>Clinical Notes & Remarks
             </div>
             @foreach ($billNotes as $department => $notesList)
@@ -507,8 +614,16 @@
                         <i class="fas fa-building" style="margin-right: 5px;"></i>{{ $department }}
                     </div>
                     @foreach ($notesList as $note)
-                        <div class="note-item" style="margin-left: 15px; font-size: 13px; line-height: 1.4; margin-bottom: 6px; color: #333;">
-                            <span style="font-weight: 600; color: #555;">{{ $note['test_name'] }}:</span> {{ $note['notes'] }}
+                        <div class="note-item" style="margin: 8px 0;">
+                            <strong style="color: #555;">{{ $note['test_name'] }}:</strong>
+                            <div style="margin-left: 0; margin-top: 4px;">
+                                <x-enhanced-notes 
+                                    :notes="$note['notes']" 
+                                    :show-icon="false"
+                                    title=""
+                                    class=""
+                                />
+                            </div>
                         </div>
                     @endforeach
                 </div>

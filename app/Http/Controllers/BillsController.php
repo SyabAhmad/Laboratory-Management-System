@@ -373,15 +373,75 @@ class BillsController extends Controller
             if (!empty($testIds)) {
                 $tests = \App\Models\LabTestCat::whereIn('id', $testIds)->get();
             }
-            
+
             // Get referral commission details
             $commissionDetails = $bills->getReferralCommissionDetails();
-            
+
             return view('Bill.billdetails', compact('bills', 'tests', 'commissionDetails'));
         } catch (\Exception $e) {
             Log::error('Error in BillsController@show: ' . $e->getMessage());
             return redirect()->route('billing')
                 ->with('error', 'Bill not found');
+        }
+    }
+
+    /**
+     * Print bill in A4 format
+     */
+    public function printA4($id)
+    {
+        try {
+            $bills = Bills::with('patient')->findOrFail($id);
+            // Get test IDs from all_test JSON
+            $testIds = [];
+            $all_test = json_decode($bills->all_test, true);
+            if (is_array($all_test)) {
+                foreach ($all_test as $test) {
+                    if (isset($test['id'])) {
+                        $testIds[] = $test['id'];
+                    }
+                }
+            }
+            $tests = [];
+            if (!empty($testIds)) {
+                $tests = \App\Models\LabTestCat::whereIn('id', $testIds)->get();
+            }
+
+            return view('Bill.bill_print', compact('bills', 'tests'));
+        } catch (\Exception $e) {
+            Log::error('Error in BillsController@printA4: ' . $e->getMessage());
+            return redirect()->route('billing.details', $id)
+                ->with('error', 'Unable to print bill');
+        }
+    }
+
+    /**
+     * Print bill in thermal format
+     */
+    public function printThermal($id)
+    {
+        try {
+            $bills = Bills::with('patient')->findOrFail($id);
+            // Get test IDs from all_test JSON
+            $testIds = [];
+            $all_test = json_decode($bills->all_test, true);
+            if (is_array($all_test)) {
+                foreach ($all_test as $test) {
+                    if (isset($test['id'])) {
+                        $testIds[] = $test['id'];
+                    }
+                }
+            }
+            $tests = [];
+            if (!empty($testIds)) {
+                $tests = \App\Models\LabTestCat::whereIn('id', $testIds)->get();
+            }
+
+            return view('Bill.bill_print_thermal', compact('bills', 'tests'));
+        } catch (\Exception $e) {
+            Log::error('Error in BillsController@printThermal: ' . $e->getMessage());
+            return redirect()->route('billing.details', $id)
+                ->with('error', 'Unable to print bill');
         }
     }
 

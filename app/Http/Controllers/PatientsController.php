@@ -99,19 +99,29 @@ class PatientsController extends Controller
                 $fields = [];
 
                 foreach ($parameters as $param) {
-                    $unitStr = $param->unit ? ' (' . $param->unit . ')' : '';
-                    $refRangeStr = $param->reference_range ? ' - Ref: ' . $param->reference_range : '';
+                    $unitStr = ($param->field_type !== 'dual_option' && $param->unit) ? ' (' . $param->unit . ')' : '';
+                    $refRangeStr = ($param->field_type !== 'dual_option' && $param->reference_range) ? ' - Ref: ' . $param->reference_range : '';
 
                     // Normalize parameter name to a safe key for form input / JSON storage
                     $key = Str::slug($param->parameter_name, '_');
 
-                    $fields[] = [
+                    $field = [
                         'name' => $key, // use slug key in the template
                         'label' => $param->parameter_name . $unitStr . $refRangeStr,
                         'orig_name' => $param->parameter_name, // keep original for mapping
-                        'type' => 'text',
+                        'type' => $param->field_type ?? 'text',
                         'required' => false,
                     ];
+
+                    // Add dual options if field type is dual_option
+                    if ($param->field_type === 'dual_option' && $param->dual_options) {
+                        $dualOptions = is_array($param->dual_options) ? $param->dual_options : json_decode($param->dual_options, true);
+                        if (is_array($dualOptions) && count($dualOptions) >= 2) {
+                            $field['dual_options'] = $dualOptions;
+                        }
+                    }
+
+                    $fields[] = $field;
                 }
 
                 // Only use DB-driven fields; do not add any predefined/report metadata fields
@@ -941,13 +951,24 @@ class PatientsController extends Controller
                 foreach ($params as $p) {
                     // create a stable field name key that matches view expectations
                     $fieldName = \Str::slug($p->parameter_name, '_');
-                    $templateFields[] = [
+                    $field = [
                         'name' => $fieldName,
                         'label' => $p->parameter_name,
                         'unit' => $p->unit ?? '',
                         'ref' => $p->reference_range ?? '',
+                        'type' => $p->field_type ?? 'text',
                         'required' => false,
                     ];
+
+                    // Add dual options if field type is dual_option
+                    if ($p->field_type === 'dual_option' && $p->dual_options) {
+                        $dualOptions = is_array($p->dual_options) ? $p->dual_options : json_decode($p->dual_options, true);
+                        if (is_array($dualOptions) && count($dualOptions) >= 2) {
+                            $field['dual_options'] = $dualOptions;
+                        }
+                    }
+
+                    $templateFields[] = $field;
                 }
             }
         } catch (\Exception $e) {
@@ -1033,13 +1054,24 @@ class PatientsController extends Controller
                         ->get();
                     foreach ($params as $p) {
                         $fieldName = \Str::slug($p->parameter_name, '_');
-                        $templateFields[] = [
+                        $field = [
                             'name' => $fieldName,
                             'label' => $p->parameter_name,
                             'unit' => $p->unit ?? '',
                             'ref' => $p->reference_range ?? '',
+                            'type' => $p->field_type ?? 'text',
                             'required' => false,
                         ];
+
+                        // Add dual options if field type is dual_option
+                        if ($p->field_type === 'dual_option' && $p->dual_options) {
+                            $dualOptions = is_array($p->dual_options) ? $p->dual_options : json_decode($p->dual_options, true);
+                            if (is_array($dualOptions) && count($dualOptions) >= 2) {
+                                $field['dual_options'] = $dualOptions;
+                            }
+                        }
+
+                        $templateFields[] = $field;
                     }
                 }
             } catch (\Exception $e) {

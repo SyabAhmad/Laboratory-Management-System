@@ -66,6 +66,9 @@
     <!-- Global color palette (external CSS) -->
     <link href="{{ asset('assets/css/palette.css') }}" rel="stylesheet" type="text/css" />
 
+    <!-- Enhanced Notes CSS -->
+    <link href="{{ asset('assets/css/notes-markdown.css') }}" rel="stylesheet" type="text/css" />
+
 </head>
 
 <body>
