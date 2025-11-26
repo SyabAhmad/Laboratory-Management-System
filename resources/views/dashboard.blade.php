@@ -65,7 +65,7 @@
 
             <!-- Stats Cards Section -->
             <div class="row mb-4">
-                <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+                <div class="col-lg-6 col-md-6 col-sm-12 mb-3">
                     <a href="{{ route('patients.list') }}" class="text-decoration-none">
                         <div class="card dashboard-card h-100">
                             <div class="card-body card-body dashboard-card-unified">
@@ -82,7 +82,7 @@
                         </div>
                     </a>
                 </div>
-                <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+                <div class="col-lg-6 col-md-6 col-sm-12 mb-3">
                     <a href="{{ route('balance.index') }}" class="text-decoration-none" aria-label="View balance details">
                         <div class="card dashboard-card balance-card-accent h-100 clickable-card" role="link">
                             <div class="card-body card-body dashboard-card-unified">
@@ -94,23 +94,6 @@
                                         <h5 class="card-title dashboard-card-unified">Net Company Balance</h5>
                                         <p class="dashboard-card-text1">
                                             {{ isset($totalBalance) ? number_format($totalBalance, 2) : '0.00' }}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-                <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
-                    <a href="{{ route('referrals.patients') }}" class="text-decoration-none">
-                        <div class="card dashboard-card h-100">
-                            <div class="card-body card-body dashboard-card-unified">
-                                <div class="d-flex align-items-center">
-                                    <div class="icon-section">
-                                        <i class="fas fa-handshake dashboard-card-icon"></i>
-                                    </div>
-                                    <div class="content-section">
-                                        <h5 class="card-title dashboard-card-unified">Referrals</h5>
-                                        <p class="dashboard-card-text1">{{ App\Models\Referrals::get()->count() }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -171,11 +154,11 @@
                         <div class="card-body card-body dashboard-card-unified">
                             <div class="d-flex align-items-center">
                                 <div class="icon-section">
-                                    <i class="fas fa-receipt dashboard-card-icon"></i>
+                                    <i class="fas fa-balance-scale dashboard-card-icon"></i>
                                 </div>
                                 <div class="content-section">
-                                    <h5 class="card-title dashboard-card-unified">Transactions Today</h5>
-                                    <p class="dashboard-card-text1">Bills: {{ $billsCountToday ?? 0 }} | Payments: {{ $paymentsCountToday ?? 0 }} | Commissions: {{ $commissionsCountToday ?? 0 }}</p>
+                                    <h5 class="card-title dashboard-card-unified">Today's Balance</h5>
+                                    <p class="dashboard-card-text1">{{ isset($balanceToday) ? number_format($balanceToday, 2) : '0.00' }}</p>
                                 </div>
                             </div>
                         </div>

@@ -90,6 +90,9 @@ class DashboardController extends Controller
         // Today's expenses
         $expensesToday = Expense::whereDate('expense_date', Carbon::today())->sum('amount') ?? 0;
 
+        // Today's balance (billed - expenses for daily cash flow)
+        $balanceToday = $billedToday - $expensesToday;
+
         // Prepare monthly billed and paid totals for last 12 months
         $end = Carbon::now()->endOfMonth();
         $start = (clone $end)->subMonths(11)->startOfMonth();
@@ -192,6 +195,7 @@ class DashboardController extends Controller
             'billedToday' => $billedToday,
             'paidToday' => $paidToday,
             'expensesToday' => $expensesToday,
+            'balanceToday' => $balanceToday,
             'billsCountToday' => $billsCountToday,
             'paymentsCountToday' => $paymentsCountToday,
             'commissionsCountToday' => $commissionsCountToday ?? 0,
