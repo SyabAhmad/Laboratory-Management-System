@@ -73,12 +73,14 @@
 
     @media print {
             :root {
-                --print-header-height: 20mm; /* smaller header for thermal */
-                --print-footer-height: 15mm; /* smaller footer for thermal */
+                --print-header-height: 30mm; /* header for A4 */
+                --print-footer-height: 20mm; /* footer for A4 */
+                --print-page-width: 210mm;
+                --print-inner-width-mm: 190mm;
             }
         @page {
-                    size: 80mm auto;
-                    margin: 2mm 0mm 2mm 0mm; /* minimal margins for thermal */
+                    size: A4;
+                    margin: 10mm 10mm 10mm 10mm; /* standard margins for A4 */
         }
         
         body {
@@ -109,9 +111,9 @@
         /* Header/Footer positioning handled by the shared partial (print_header_footer.blade.php) */
 
         .print-body {
-            padding-top: calc(var(--print-header-height) + 2mm) !important; /* ensure content clears header */
-            /* ensure body-bottom keeps clear space equal to footer height + bottom anchor */
-            padding-bottom: calc(var(--print-footer-height) + 2mm) !important;
+            padding-top: calc(var(--print-header-height) + 15mm) !important; /* ensure content clears header with margin */
+            /* ensure body-bottom keeps clear space equal to footer height + margin */
+            padding-bottom: calc(var(--print-footer-height) + 15mm) !important;
             /* rely on report-inner for horizontal spacing so inner content matches header/footer */
             padding-left: 0 !important; padding-right: 0 !important;
             box-sizing: border-box;
@@ -234,6 +236,7 @@
 
 {{-- Header and footer are included by Layout.print now to avoid duplication --}}
 <!-- end include print header/footer -->
+@php $maxRowsPerPage = 15; @endphp
     {{-- Personal information block (table format) --}}
     @if(!isset($skipPatientInfo) || !$skipPatientInfo)
     <style>
@@ -265,7 +268,7 @@
         .personal-info-table .value { color: #333; }
         .personal-info-row { background: transparent; }
         @media print {
-            .personal-info-table { font-size: 12px !important; }
+            .personal-info-table { font-size: 14px !important; }
         }
     </style>
     <style>
@@ -292,13 +295,31 @@
         @media print {
             .personal-card { border: 1px solid #e7e7e7 !important; }
             .section-title { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            /* Adjust sizes for thermal printing */
-            .results-table { font-size: 9px !important; }
-            .results-table th { font-size: 9px !important; }
-            .results-table td { font-size: 9px !important; }
-            .pi-value { font-size: 9px !important; }
-            .pi-label { font-size: 9px !important; }
-            .section-title { font-size: 12px !important; padding: 6px 8px !important; }
+            /* Adjust sizes for A4 printing */
+                .results-table { font-size: 12px !important; }
+                .results-table th { font-size: 12px !important; }
+                .results-table td { font-size: 12px !important; }
+                .pi-value { font-size: 12px !important; }
+                .pi-label { font-size: 12px !important; }
+                .section-title { font-size: 16px !important; padding: 8px 10px !important; }
+    
+            /* Adjust header and footer fonts for A4 printing */
+            .print-header .lab-name { font-size: 20px !important; }
+            .print-header .lab-subtitle { font-size: 14px !important; }
+            .print-header .lab-address { font-size: 12px !important; }
+            .print-header .contact-info { font-size: 12px !important; }
+            .print-header-details { font-size: 12px !important; }
+            .print-footer .footer-item { font-size: 12px !important; }
+            .print-footer .footer-signature strong { font-size: 14px !important; }
+    
+            /* Adjust logo size for A4 printing */
+            .print-header .print-inner table td img { width: 30mm !important; height: 30mm !important; }
+            .print-header .print-inner table td img.header-logo { width: 25mm !important; height: 25mm !important; }
+            .print-header .print-logo img.header-logo { width: 28mm !important; height: 28mm !important; }
+    
+            /* Adjust header and footer positioning for A4 */
+            .print-header { top: 10mm !important; }
+            .print-footer { bottom: 10mm !important; }
         }
     </style>
     {{-- Dual option styles removed --}}
@@ -384,74 +405,153 @@
                 @php
                     $analytes = $testEntry['saved_data']['analytes'] ?? [];
                     $hasHL7Data = !empty($analytes) && is_array($analytes);
-                    $rowCount = 0;
                 @endphp
 
                 @if ($hasHL7Data)
                     <!-- HL7 Data -->
-                    @foreach ($analytes as $analyte)
-                        @php $rowCount++; @endphp
-                        <tr style="background: {{ $rowCount % 2 == 0 ? '#f9f9f9' : '#fff' }};">
-                            <td style="padding: 10px; border-bottom: 1px solid #e0e0e0; font-weight: 500;">
-                                {{ $analyte['name'] ?? ($analyte['code'] ?? 'Unknown') }}
-                            </td>
-                            <td style="padding: 10px; border-bottom: 1px solid #e0e0e0; font-weight: 700; color: black;">
-                                {{ $analyte['value'] ?? '' }}
-                            </td>
-                            <td style="padding: 10px; border-bottom: 1px solid #e0e0e0;">
-                                {{ $analyte['units'] ?? '' }}
-                            </td>
-                            <td style="padding: 10px; border-bottom: 1px solid #e0e0e0;">
-                                {{ $analyte['ref_range'] ?? '' }}
-                            </td>
-                        </tr>
+                    @php $chunks = array_chunk($analytes, $maxRowsPerPage); @endphp
+                    @foreach ($chunks as $chunkIndex => $chunk)
+                        @if($chunkIndex > 0)
+                            </tbody></table>
+                            <table class="results-table" width="100%" cellpadding="5" cellspacing="0" style="border-collapse: collapse; page-break-before: always; margin-top: 20px;">
+                                <thead>
+                                    <tr style="background-color: #fff !important; border-bottom: 3px solid #8d2d36 !important;">
+                                        <th style="text-align: left; padding: 12px; font-weight: bold; width: 50%; color: black;">
+                                            <i class="fas fa-tag" style="margin-right: 5px;"></i>Test Name
+                                        </th>
+                                        <th style="text-align: left; padding: 12px; font-weight: bold; width: 25%; color: black;">
+                                            <i class="fas fa-chart-line" style="margin-right: 5px;"></i>Results
+                                        </th>
+                                        <th style="text-align: left; padding: 12px; font-weight: bold; width: 10%; color: black;">
+                                            <i class="fas fa-balance-scale" style="margin-right: 5px;"></i>Unit
+                                        </th>
+                                        <th style="text-align: left; padding: 12px; font-weight: bold; width: 15%; color: black;">
+                                            <i class="fas fa-ruler" style="margin-right: 5px;"></i>Reference Ranges
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                        @endif
+                        @php $rowCount = 0; @endphp
+                        @foreach ($chunk as $analyte)
+                            @php $rowCount++; @endphp
+                            <tr style="background: {{ $rowCount % 2 == 0 ? '#f9f9f9' : '#fff' }};">
+                                <td style="padding: 10px; border-bottom: 1px solid #e0e0e0; font-weight: 500;">
+                                    {{ $analyte['name'] ?? ($analyte['code'] ?? 'Unknown') }}
+                                </td>
+                                <td style="padding: 10px; border-bottom: 1px solid #e0e0e0; font-weight: 700; color: black;">
+                                    {{ $analyte['value'] ?? '' }}
+                                </td>
+                                <td style="padding: 10px; border-bottom: 1px solid #e0e0e0;">
+                                    {{ $analyte['units'] ?? '' }}
+                                </td>
+                                <td style="padding: 10px; border-bottom: 1px solid #e0e0e0;">
+                                    {{ $analyte['ref_range'] ?? '' }}
+                                </td>
+                            </tr>
+                        @endforeach
                     @endforeach
                 @else
                     <!-- Actual Test Parameters -->
                     @if(!empty($testEntry['template']['fields']))
-                        @foreach ($testEntry['template']['fields'] as $field)
                         @php
-                            $value = $testEntry['saved_data'][$field['name']] ?? '';
-                            $label = $field['label'] ?? 'Unknown';
-                            $unit = $field['unit'] ?? '';
-                            $ref = $field['ref'] ?? '';
-                            $fieldType = $field['type'] ?? 'text';
-                            $rowCount++;
-
-                            // Format date values to d-M-Y
-                            if ($value && preg_match('/^\d{4}-\d{2}-\d{2}/', $value)) {
-                                try {
-                                    $dateTime = new \DateTime($value);
-                                    $value = $dateTime->format('d-M-Y');
-                                } catch (\Exception $e) {
-                                    // Leave as-is if invalid
-                                }
-                            }
-
-                            // Standardized display: simply use the saved value for any field type
-                            $displayValue = $value;
+                            $fields = $testEntry['template']['fields'];
+                            $chunks = array_chunk($fields, $maxRowsPerPage);
                         @endphp
-                        <tr style="background: {{ $rowCount % 2 == 0 ? '#f9f9f9' : '#fff' }};">
-                            <td style="padding: 10px; border-bottom: 1px solid #e0e0e0; font-weight: 500;">{{ $label }}</td>
-                            <td style="padding: 10px; border-bottom: 1px solid #e0e0e0; font-weight: 700; color: black;">
-                                {!! $displayValue !!}
-                                {{-- Dual option options removed from print --}}
-                            </td>
-                            <td style="padding: 10px; border-bottom: 1px solid #e0e0e0;">{{ $unit }}</td>
-                            <td style="padding: 10px; border-bottom: 1px solid #e0e0e0;">{{ $ref }}</td>
-                        </tr>
+                        @foreach ($chunks as $chunkIndex => $chunk)
+                            @if($chunkIndex > 0)
+                                </tbody></table>
+                                <table class="results-table" width="100%" cellpadding="5" cellspacing="0" style="border-collapse: collapse; page-break-before: always; margin-top: 20px;">
+                                    <thead>
+                                        <tr style="background-color: #fff !important; border-bottom: 3px solid #8d2d36 !important;">
+                                            <th style="text-align: left; padding: 12px; font-weight: bold; width: 50%; color: black;">
+                                                <i class="fas fa-tag" style="margin-right: 5px;"></i>Test Name
+                                            </th>
+                                            <th style="text-align: left; padding: 12px; font-weight: bold; width: 25%; color: black;">
+                                                <i class="fas fa-chart-line" style="margin-right: 5px;"></i>Results
+                                            </th>
+                                            <th style="text-align: left; padding: 12px; font-weight: bold; width: 10%; color: black;">
+                                                <i class="fas fa-balance-scale" style="margin-right: 5px;"></i>Unit
+                                            </th>
+                                            <th style="text-align: left; padding: 12px; font-weight: bold; width: 15%; color: black;">
+                                                <i class="fas fa-ruler" style="margin-right: 5px;"></i>Reference Ranges
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                            @endif
+                            @php $rowCount = 0; @endphp
+                            @foreach ($chunk as $field)
+                            @php
+                                $value = $testEntry['saved_data'][$field['name']] ?? '';
+                                $label = $field['label'] ?? 'Unknown';
+                                $unit = $field['unit'] ?? '';
+                                $ref = $field['ref'] ?? '';
+                                $fieldType = $field['type'] ?? 'text';
+                                $rowCount++;
+
+                                // Format date values to d-M-Y
+                                if ($value && preg_match('/^\d{4}-\d{2}-\d{2}/', $value)) {
+                                    try {
+                                        $dateTime = new \DateTime($value);
+                                        $value = $dateTime->format('d-M-Y');
+                                    } catch (\Exception $e) {
+                                        // Leave as-is if invalid
+                                    }
+                                }
+
+                                // Standardized display: simply use the saved value for any field type
+                                $displayValue = $value;
+                            @endphp
+                            <tr style="background: {{ $rowCount % 2 == 0 ? '#f9f9f9' : '#fff' }};">
+                                <td style="padding: 10px; border-bottom: 1px solid #e0e0e0; font-weight: 500;">{{ $label }}</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #e0e0e0; font-weight: 700; color: black;">
+                                    {!! $displayValue !!}
+                                    {{-- Dual option options removed from print --}}
+                                </td>
+                                <td style="padding: 10px; border-bottom: 1px solid #e0e0e0;">{{ $unit }}</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #e0e0e0;">{{ $ref }}</td>
+                            </tr>
+                            @endforeach
                         @endforeach
                     @else
                         {{-- No template; print flattened saved data key/value pairs as a fallback --}}
-                        @php $sd = $testEntry['saved_data'] ?? []; @endphp
-                        @foreach($sd as $k => $v)
-                            @php $rowCount++; @endphp
-                            <tr style="background: {{ $rowCount % 2 == 0 ? '#f9f9f9' : '#fff' }};">
-                                <td style="padding: 10px; border-bottom: 1px solid #e0e0e0; font-weight: 500;">{{ $k }}</td>
-                                <td style="padding: 10px; border-bottom: 1px solid #e0e0e0; font-weight: 700; color: black;">{{ $v }}</td>
-                                <td style="padding: 10px; border-bottom: 1px solid #e0e0e0;">&nbsp;</td>
-                                <td style="padding: 10px; border-bottom: 1px solid #e0e0e0;">&nbsp;</td>
-                            </tr>
+                        @php
+                            $sd = $testEntry['saved_data'] ?? [];
+                            $chunks = array_chunk($sd, $maxRowsPerPage);
+                        @endphp
+                        @foreach ($chunks as $chunkIndex => $chunk)
+                            @if($chunkIndex > 0)
+                                </tbody></table>
+                                <table class="results-table" width="100%" cellpadding="5" cellspacing="0" style="border-collapse: collapse; page-break-before: always; margin-top: 20px;">
+                                    <thead>
+                                        <tr style="background-color: #fff !important; border-bottom: 3px solid #8d2d36 !important;">
+                                            <th style="text-align: left; padding: 12px; font-weight: bold; width: 50%; color: black;">
+                                                <i class="fas fa-tag" style="margin-right: 5px;"></i>Test Name
+                                            </th>
+                                            <th style="text-align: left; padding: 12px; font-weight: bold; width: 25%; color: black;">
+                                                <i class="fas fa-chart-line" style="margin-right: 5px;"></i>Results
+                                            </th>
+                                            <th style="text-align: left; padding: 12px; font-weight: bold; width: 10%; color: black;">
+                                                <i class="fas fa-balance-scale" style="margin-right: 5px;"></i>Unit
+                                            </th>
+                                            <th style="text-align: left; padding: 12px; font-weight: bold; width: 15%; color: black;">
+                                                <i class="fas fa-ruler" style="margin-right: 5px;"></i>Reference Ranges
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                            @endif
+                            @php $rowCount = 0; @endphp
+                            @foreach($chunk as $k => $v)
+                                @php $rowCount++; @endphp
+                                <tr style="background: {{ $rowCount % 2 == 0 ? '#f9f9f9' : '#fff' }};">
+                                    <td style="padding: 10px; border-bottom: 1px solid #e0e0e0; font-weight: 500;">{{ $k }}</td>
+                                    <td style="padding: 10px; border-bottom: 1px solid #e0e0e0; font-weight: 700; color: black;">{{ $v }}</td>
+                                    <td style="padding: 10px; border-bottom: 1px solid #e0e0e0;">&nbsp;</td>
+                                    <td style="padding: 10px; border-bottom: 1px solid #e0e0e0;">&nbsp;</td>
+                                </tr>
+                            @endforeach
                         @endforeach
                     @endif
                 @endif
