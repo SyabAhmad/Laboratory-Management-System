@@ -73,12 +73,12 @@
 
     @media print {
             :root {
-                --print-header-height: 36mm; /* slightly smaller header to allow more body space */
-                --print-footer-height: 32mm; /* slightly smaller footer for more body space */
+                --print-header-height: 20mm; /* smaller header for thermal */
+                --print-footer-height: 15mm; /* smaller footer for thermal */
             }
         @page {
-                    size: A4;
-                    margin: 6mm 0mm 10mm 0mm; /* minimal left/right to reduce side white area */
+                    size: 80mm auto;
+                    margin: 2mm 0mm 2mm 0mm; /* minimal margins for thermal */
         }
         
         body {
@@ -88,17 +88,17 @@
             height: 100%;
         }
         
-        /* Ensure proper A4 sizing */
+        /* Ensure proper thermal sizing */
         html, body {
-            size: A4;
+            size: 80mm auto;
             width: var(--print-page-width);
-            min-height: 297mm;
+            min-height: auto;
         }
         
-        /* Layout calibration */
+        /* Layout calibration for thermal */
             .report-container {
-            /* use relative widths so different printers don't scale unexpectedly */
-            width: calc(100% - 12mm) !important;
+            /* use full width for thermal printers */
+            width: 100% !important;
             max-width: var(--print-inner-width-mm) !important;
             margin: 0 auto !important;
             padding: 0 !important;
@@ -109,9 +109,9 @@
         /* Header/Footer positioning handled by the shared partial (print_header_footer.blade.php) */
 
         .print-body {
-            padding-top: calc(var(--print-header-height) + 12mm) !important; /* ensure content clears header */
+            padding-top: calc(var(--print-header-height) + 2mm) !important; /* ensure content clears header */
             /* ensure body-bottom keeps clear space equal to footer height + bottom anchor */
-            padding-bottom: calc(var(--print-footer-height) + 10mm) !important;
+            padding-bottom: calc(var(--print-footer-height) + 2mm) !important;
             /* rely on report-inner for horizontal spacing so inner content matches header/footer */
             padding-left: 0 !important; padding-right: 0 !important;
             box-sizing: border-box;
@@ -119,15 +119,15 @@
 
         /* Adjust padding for multiple tests to avoid empty pages */
         .multiple-tests.print-body {
-            padding-top: calc(var(--print-header-height) + 6mm) !important;
-            padding-bottom: calc(var(--print-footer-height) + 5mm) !important;
+            padding-top: calc(var(--print-header-height) + 1mm) !important;
+            padding-bottom: calc(var(--print-footer-height) + 1mm) !important;
         }
 
         .footer-container {
-            padding: 10px 0;
+            padding: 2px 0;
             margin: 0;
             display: flex;
-            gap: 12px;
+            gap: 4px;
             width: 100%;
             align-items: center;
             justify-content: space-between;
@@ -179,28 +179,28 @@
             print-color-adjust: exact !important;
         }
 
-        /* Smaller fonts for multiple tests */
-        .multiple-tests .personal-info-table { font-size: 12px !important; }
-        .multiple-tests .personal-info-table th { font-size: 12px !important; }
-        .multiple-tests .personal-info-table td { font-size: 12px !important; }
-        .multiple-tests .pi-value { font-size: 8px !important; }
-        .multiple-tests .pi-label { font-size: 8px !important; }
-        .multiple-tests .section-title { font-size: 14px !important; padding: 8px 10px !important; }
-        .multiple-tests .results-table { font-size: 10px !important; }
-        .multiple-tests .results-table th { font-size: 10px !important; }
-        .multiple-tests .results-table td { font-size: 10px !important; }
-        .multiple-tests .footer-container { font-size: 8px !important; }
+        /* Smaller fonts for multiple tests on thermal */
+        .multiple-tests .personal-info-table { font-size: 9px !important; }
+        .multiple-tests .personal-info-table th { font-size: 9px !important; }
+        .multiple-tests .personal-info-table td { font-size: 9px !important; }
+        .multiple-tests .pi-value { font-size: 7px !important; }
+        .multiple-tests .pi-label { font-size: 7px !important; }
+        .multiple-tests .section-title { font-size: 10px !important; padding: 4px 6px !important; }
+        .multiple-tests .results-table { font-size: 8px !important; }
+        .multiple-tests .results-table th { font-size: 8px !important; }
+        .multiple-tests .results-table td { font-size: 8px !important; }
+        .multiple-tests .footer-container { font-size: 6px !important; }
         .multiple-tests .footer-note { font-size: 8px !important; }
 
-        /* Adjust notes section for multiple tests */
-        .multiple-tests .test-notes-section { margin-bottom: 5px !important; padding: 5px !important; }
-        .multiple-tests .notes-header { font-size: 10px !important; margin-bottom: 4px !important; padding-bottom: 4px !important; }
-        .multiple-tests .notes-content { font-size: 10px !important; line-height: 1.2 !important; }
-        .multiple-tests .clinical-notes-section { margin-bottom: 5px !important; padding: 5px !important; }
-        .multiple-tests .clinical-notes-header { font-size: 10px !important; margin-bottom: 5px !important; padding-bottom: 4px !important; }
-        .multiple-tests .dept-title { font-size: 8px !important; margin-bottom: 3px !important; }
-        .multiple-tests .note-item { font-size: 9px !important; margin-bottom: 3px !important; line-height: 1.2 !important; }
-        .multiple-tests .clinical-notes-dept { margin-bottom: 6px !important; padding-bottom: 5px !important; }
+        /* Adjust notes section for multiple tests on thermal */
+        .multiple-tests .test-notes-section { margin-bottom: 2px !important; padding: 2px !important; }
+        .multiple-tests .notes-header { font-size: 8px !important; margin-bottom: 2px !important; padding-bottom: 2px !important; }
+        .multiple-tests .notes-content { font-size: 8px !important; line-height: 1.1 !important; }
+        .multiple-tests .clinical-notes-section { margin-bottom: 2px !important; padding: 2px !important; }
+        .multiple-tests .clinical-notes-header { font-size: 8px !important; margin-bottom: 2px !important; padding-bottom: 2px !important; }
+        .multiple-tests .dept-title { font-size: 6px !important; margin-bottom: 2px !important; }
+        .multiple-tests .note-item { font-size: 7px !important; margin-bottom: 2px !important; line-height: 1.1 !important; }
+        .multiple-tests .clinical-notes-dept { margin-bottom: 3px !important; padding-bottom: 2px !important; }
 
         /* Ensure proper page breaks */
         .test-title-section {
@@ -270,14 +270,14 @@
     </style>
     <style>
         /* Personal card grid styles (screen and print friendly) */
-        .personal-card { border-radius: 8px; background: #fff; border: 1px solid #e7e7e7; padding: 8px; margin-bottom: 12px; width: var(--print-inner-width-mm) !important; max-width: var(--print-inner-width-mm) !important; margin-left: auto; margin-right: auto; box-sizing: border-box; }
+        .personal-card { border-radius: 4px; background: #fff; border: 1px solid #e7e7e7; padding: 4px; margin-bottom: 6px; width: 100% !important; max-width: 100% !important; margin-left: auto; margin-right: auto; box-sizing: border-box; }
         .personal-card-inner { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px 18px; }
         .pi-cell { display:flex; gap: 10px; align-items: center; }
         .pi-cell i { color: #8d2d36; width: 30px; text-align: center; }
         .pi-meta { display:flex; flex-direction:column; }
         .pi-label { font-size: 10px; color: #8d2d36; font-weight: 700; }
         .pi-value { font-size: 10px; color: #333; font-weight: 600; }
-        .section-title { background: #8d2d36; color: #fff; border-radius: 6px; padding: 10px 12px; text-align:center; font-weight:700; margin-bottom: 12px; display:block; }
+        .section-title { background: #8d2d36; color: #fff; border-radius: 4px; padding: 6px 8px; text-align:center; font-weight:700; margin-bottom: 8px; display:block; font-size: 14px; }
         .section-title i { margin-right: 8px; }
 
         /* Results table styling */
@@ -288,17 +288,17 @@
         .results-table tbody tr td:first-child { color: #222 !important; font-weight: 400; }
         .results-table tbody tr td:nth-child(3) { color: #222 !important; font-weight: 400; }
         .results-table tbody tr td:nth-child(4) { color: #222 !important; font-weight: 400; }
-        .results-table { border-radius: 6px; overflow: hidden; border: 1px solid #e6e6e6; width: var(--print-inner-width-mm) !important; max-width: var(--print-inner-width-mm) !important; box-sizing: border-box; font-size: 11px; }
+        .results-table { border-radius: 4px; overflow: hidden; border: 1px solid #e6e6e6; width: 100% !important; max-width: 100% !important; box-sizing: border-box; font-size: 10px; }
         @media print {
             .personal-card { border: 1px solid #e7e7e7 !important; }
             .section-title { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            /* Make table text larger for print so it's readable on paper */
-            .results-table { font-size: 12px !important; }
-            .results-table th { font-size: 12px !important; }
-            .results-table td { font-size: 12px !important; }
-            .pi-value { font-size: 12px !important; }
-            .pi-label { font-size: 12px !important; }
-            .section-title { font-size: 16px !important; padding: 12px 14px !important; }
+            /* Adjust sizes for thermal printing */
+            .results-table { font-size: 9px !important; }
+            .results-table th { font-size: 9px !important; }
+            .results-table td { font-size: 9px !important; }
+            .pi-value { font-size: 9px !important; }
+            .pi-label { font-size: 9px !important; }
+            .section-title { font-size: 12px !important; padding: 6px 8px !important; }
         }
     </style>
     {{-- Dual option styles removed --}}
