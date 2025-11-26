@@ -1,4 +1,4 @@
-<?php
+th<?php
 
 namespace App\Http\Controllers;
 
@@ -18,17 +18,39 @@ class LabTestParameterController extends Controller
     {
         $request->validate([
             'parameter_name.*' => 'required|string|max:191',
+            'field_type.*' => 'nullable|in:text,number,dual_option,textarea',
+            'dual_options[0][*]' => 'nullable|string|max:100',
+            'dual_options[1][*]' => 'nullable|string|max:100',
             'unit.*' => 'nullable|string|max:50',
             'reference_range.*' => 'nullable|string|max:191',
         ]);
 
         $created = [];
         foreach ($request->parameter_name as $index => $name) {
+            $dualOptions = null;
+            $fieldType = $request->field_type[$index] ?? 'text';
+            
+            if ($fieldType === 'dual_option') {
+                // For dual option fields, get the two options from the request
+                $option1 = $request->input("dual_options.0.{$index}");
+                $option2 = $request->input("dual_options.1.{$index}");
+                
+                if (!empty($option1) || !empty($option2)) {
+                    $dualOptions = array_filter([$option1, $option2]);
+                    // Ensure we have at least one option
+                    if (empty($dualOptions)) {
+                        $dualOptions = null;
+                    }
+                }
+            }
+
             $p = LabTestParameter::create([
                 'lab_test_cat_id' => $testId,
                 'parameter_name' => $name,
-                'unit' => $request->unit[$index] ?? null,
-                'reference_range' => $request->reference_range[$index] ?? null,
+                'unit' => $fieldType === 'dual_option' ? null : ($request->unit[$index] ?? null),
+                'reference_range' => $fieldType === 'dual_option' ? null : ($request->reference_range[$index] ?? null),
+                'field_type' => $fieldType,
+                'dual_options' => $dualOptions ? json_encode($dualOptions) : null,
             ]);
 
             $created[] = $p;
@@ -70,6 +92,7 @@ class LabTestParameterController extends Controller
             'parameter_name' => 'required|string|max:191',
             'unit' => 'nullable|string|max:50',
             'reference_range' => 'nullable|string|max:191',
+            'field_type' => 'nullable|in:text,number,dual_option,textarea',
         ]);
 
         $param = LabTestParameter::findOrFail($id);
@@ -77,6 +100,18 @@ class LabTestParameterController extends Controller
         $param->parameter_name = $request->input('parameter_name');
         $param->unit = $request->input('unit');
         $param->reference_range = $request->input('reference_range');
+        $param->field_type = $request->input('field_type', 'text');
+
+        // Handle dual options for dual_option field type
+        if ($param->field_type === 'dual_option') {
+            $option1 = $request->input('dual_option_1');
+            $option2 = $request->input('dual_option_2');
+            $dualOptions = array_filter([$option1, $option2]);
+            $param->dual_options = !empty($dualOptions) ? json_encode($dualOptions) : null;
+        } else {
+            $param->dual_options = null;
+        }
+
         $param->save();
 
         if ($request->ajax() || $request->wantsJson()) {

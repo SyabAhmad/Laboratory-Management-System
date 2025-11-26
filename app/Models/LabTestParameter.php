@@ -16,6 +16,12 @@ class LabTestParameter extends Model
         'parameter_name',
         'unit',
         'reference_range',
+        'field_type',
+        'dual_options',
+    ];
+
+    protected $casts = [
+        'dual_options' => 'array',
     ];
 
     public function category()

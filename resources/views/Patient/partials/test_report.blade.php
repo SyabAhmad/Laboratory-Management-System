@@ -180,15 +180,15 @@
         }
 
         /* Smaller fonts for multiple tests */
-        .multiple-tests .personal-info-table { font-size: 16px !important; }
-        .multiple-tests .personal-info-table th { font-size: 16px !important; }
-        .multiple-tests .personal-info-table td { font-size: 16px !important; }
-        .multiple-tests .pi-value { font-size: 10px !important; }
-        .multiple-tests .pi-label { font-size: 10px !important; }
-        .multiple-tests .section-title { font-size: 18px !important; padding: 8px 10px !important; }
-        .multiple-tests .results-table { font-size: 12px !important; }
-        .multiple-tests .results-table th { font-size: 12px !important; }
-        .multiple-tests .results-table td { font-size: 12px !important; }
+        .multiple-tests .personal-info-table { font-size: 12px !important; }
+        .multiple-tests .personal-info-table th { font-size: 12px !important; }
+        .multiple-tests .personal-info-table td { font-size: 12px !important; }
+        .multiple-tests .pi-value { font-size: 8px !important; }
+        .multiple-tests .pi-label { font-size: 8px !important; }
+        .multiple-tests .section-title { font-size: 14px !important; padding: 8px 10px !important; }
+        .multiple-tests .results-table { font-size: 10px !important; }
+        .multiple-tests .results-table th { font-size: 10px !important; }
+        .multiple-tests .results-table td { font-size: 10px !important; }
         .multiple-tests .footer-container { font-size: 8px !important; }
         .multiple-tests .footer-note { font-size: 8px !important; }
 
@@ -241,7 +241,7 @@
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 10px;
-            font-size: 20px; /* increase baseline personal info font */
+            font-size: 12px; /* increase baseline personal info font */
             border: 1px solid #e7e7e7;
                 border-radius: 6px;
                 background: #fff;
@@ -265,7 +265,7 @@
         .personal-info-table .value { color: #333; }
         .personal-info-row { background: transparent; }
         @media print {
-            .personal-info-table { font-size: 18px !important; }
+            .personal-info-table { font-size: 12px !important; }
         }
     </style>
     <style>
@@ -275,8 +275,8 @@
         .pi-cell { display:flex; gap: 10px; align-items: center; }
         .pi-cell i { color: #8d2d36; width: 30px; text-align: center; }
         .pi-meta { display:flex; flex-direction:column; }
-        .pi-label { font-size: 12px; color: #8d2d36; font-weight: 700; }
-        .pi-value { font-size: 12px; color: #333; font-weight: 600; }
+        .pi-label { font-size: 10px; color: #8d2d36; font-weight: 700; }
+        .pi-value { font-size: 10px; color: #333; font-weight: 600; }
         .section-title { background: #8d2d36; color: #fff; border-radius: 6px; padding: 10px 12px; text-align:center; font-weight:700; margin-bottom: 12px; display:block; }
         .section-title i { margin-right: 8px; }
 
@@ -288,19 +288,20 @@
         .results-table tbody tr td:first-child { color: #222 !important; font-weight: 400; }
         .results-table tbody tr td:nth-child(3) { color: #222 !important; font-weight: 400; }
         .results-table tbody tr td:nth-child(4) { color: #222 !important; font-weight: 400; }
-        .results-table { border-radius: 6px; overflow: hidden; border: 1px solid #e6e6e6; width: var(--print-inner-width-mm) !important; max-width: var(--print-inner-width-mm) !important; box-sizing: border-box; font-size: 13px; }
+        .results-table { border-radius: 6px; overflow: hidden; border: 1px solid #e6e6e6; width: var(--print-inner-width-mm) !important; max-width: var(--print-inner-width-mm) !important; box-sizing: border-box; font-size: 11px; }
         @media print {
             .personal-card { border: 1px solid #e7e7e7 !important; }
             .section-title { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             /* Make table text larger for print so it's readable on paper */
-            .results-table { font-size: 18px !important; }
-            .results-table th { font-size: 18px !important; }
-            .results-table td { font-size: 18px !important; }
-            .pi-value { font-size: 16px !important; }
-            .pi-label { font-size: 16px !important; }
-            .section-title { font-size: 22px !important; padding: 12px 14px !important; }
+            .results-table { font-size: 12px !important; }
+            .results-table th { font-size: 12px !important; }
+            .results-table td { font-size: 12px !important; }
+            .pi-value { font-size: 12px !important; }
+            .pi-label { font-size: 12px !important; }
+            .section-title { font-size: 16px !important; padding: 12px 14px !important; }
         }
     </style>
+    {{-- Dual option styles removed --}}
 
     <div class="personal-card" role="region" aria-label="Patient information">
         <div class="personal-card-inner">
@@ -356,7 +357,7 @@
         <span>{{ strtoupper($testEntry['name'] ?? 'TEST') }}</span>
     </div>
     @if(!empty($testEntry['department']))
-        <div style="text-align: center; font-weight: 600; margin-bottom: 8px; font-size: 14px; color: #333;">
+        <div style="text-align: center; font-weight: 600; margin-bottom: 8px; font-size: 12px; color: #333;">
             Department: {{ $testEntry['department'] ?? '-' }}
         </div>
     @endif
@@ -368,13 +369,13 @@
                     <th style="text-align: left; padding: 12px; font-weight: bold; width: 50%; color: black;">
                         <i class="fas fa-tag" style="margin-right: 5px;"></i>Test Name
                     </th>
-                    <th style="text-align: left; padding: 12px; font-weight: bold; width: 10%; color: black;">
+                    <th style="text-align: left; padding: 12px; font-weight: bold; width: 25%; color: black;">
                         <i class="fas fa-chart-line" style="margin-right: 5px;"></i>Results
                     </th>
-                    <th style="text-align: left; padding: 12px; font-weight: bold; width: 15%; color: black;">
+                    <th style="text-align: left; padding: 12px; font-weight: bold; width: 10%; color: black;">
                         <i class="fas fa-balance-scale" style="margin-right: 5px;"></i>Unit
                     </th>
-                    <th style="text-align: left; padding: 12px; font-weight: bold; width: 25%; color: black;">
+                    <th style="text-align: left; padding: 12px; font-weight: bold; width: 15%; color: black;">
                         <i class="fas fa-ruler" style="margin-right: 5px;"></i>Reference Ranges
                     </th>
                 </tr>
@@ -414,6 +415,7 @@
                             $label = $field['label'] ?? 'Unknown';
                             $unit = $field['unit'] ?? '';
                             $ref = $field['ref'] ?? '';
+                            $fieldType = $field['type'] ?? 'text';
                             $rowCount++;
 
                             // Format date values to d-M-Y
@@ -425,10 +427,16 @@
                                     // Leave as-is if invalid
                                 }
                             }
+
+                            // Standardized display: simply use the saved value for any field type
+                            $displayValue = $value;
                         @endphp
                         <tr style="background: {{ $rowCount % 2 == 0 ? '#f9f9f9' : '#fff' }};">
                             <td style="padding: 10px; border-bottom: 1px solid #e0e0e0; font-weight: 500;">{{ $label }}</td>
-                            <td style="padding: 10px; border-bottom: 1px solid #e0e0e0; font-weight: 700; color: black;">{{ $value }}</td>
+                            <td style="padding: 10px; border-bottom: 1px solid #e0e0e0; font-weight: 700; color: black;">
+                                {!! $displayValue !!}
+                                {{-- Dual option options removed from print --}}
+                            </td>
                             <td style="padding: 10px; border-bottom: 1px solid #e0e0e0;">{{ $unit }}</td>
                             <td style="padding: 10px; border-bottom: 1px solid #e0e0e0;">{{ $ref }}</td>
                         </tr>
@@ -463,14 +471,13 @@
         }
     @endphp
     @if($categoryNotes)
-        <div class="test-notes-section" style="padding: 10px; margin-bottom: 20px;">
-            <div class="notes-header" style="font-weight: bold; color: #8d2d36; margin-bottom: 8px; font-size: 12px; border-bottom: 1px solid #8d2d36; padding-bottom: 8px;">
-                <i class="fas fa-sticky-note" style="margin-right: 8px;"></i>Notes
-            </div>
-            <div class="notes-content" style="font-size: 20px; color: #333; line-height: 1.5; white-space: pre-wrap;">
-                {{ $categoryNotes }}
-            </div>
-        </div>
+        <x-enhanced-notes 
+            :notes="$categoryNotes" 
+            title="Test Notes & Remarks"
+            :show-icon="true"
+            class="test-notes-section"
+            style="margin-bottom: 20px;"
+        />
     @endif
 
     <!-- Test Notes Section (if any notes exist) -->
@@ -498,7 +505,7 @@
 
     @if (!empty($billNotes))
         <div class="clinical-notes-section" style="background-color: #fffacd !important; border: 2px solid #f39c12 !important; border-radius: 6px; padding: 15px; margin-bottom: 20px;">
-            <div class="clinical-notes-header" style="font-weight: bold; color: #d68910; font-size: 12px; margin-bottom: 10px; border-bottom: 1px solid #f39c12; padding-bottom: 8px;">
+            <div class="clinical-notes-header" style="font-weight: bold; color: #d68910; font-size: 10px; margin-bottom: 10px; border-bottom: 1px solid #f39c12; padding-bottom: 8px;">
                 <i class="fas fa-sticky-note" style="margin-right: 8px;"></i>Clinical Notes & Remarks
             </div>
             @foreach ($billNotes as $department => $notesList)
@@ -507,8 +514,16 @@
                         <i class="fas fa-building" style="margin-right: 5px;"></i>{{ $department }}
                     </div>
                     @foreach ($notesList as $note)
-                        <div class="note-item" style="margin-left: 15px; font-size: 13px; line-height: 1.4; margin-bottom: 6px; color: #333;">
-                            <span style="font-weight: 600; color: #555;">{{ $note['test_name'] }}:</span> {{ $note['notes'] }}
+                        <div class="note-item" style="margin: 8px 0;">
+                            <strong style="color: #555;">{{ $note['test_name'] }}:</strong>
+                            <div style="margin-left: 0; margin-top: 4px;">
+                                <x-enhanced-notes 
+                                    :notes="$note['notes']" 
+                                    :show-icon="false"
+                                    title=""
+                                    class=""
+                                />
+                            </div>
                         </div>
                     @endforeach
                 </div>

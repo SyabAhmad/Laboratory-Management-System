@@ -69,6 +69,11 @@ Route::middleware(['auth:sanctum', 'verified'])
         Route::get('/patients/{patient}/tests/{testName}/print', [App\Http\Controllers\PatientsController::class, 'printTestReport'])->name('patients.printTest');
         // Print multiple selected test reports combined into one print page
         Route::get('/patients/{patient}/tests/print-multiple/{testNames}', [App\Http\Controllers\PatientsController::class, 'printMultipleTestReports'])->name('patients.printMultipleTests');
+        
+        // Print Debug Routes (for troubleshooting 404 errors)
+        Route::get('/print/debug/{patient}/{testName}', 'App\Http\Controllers\PrintDebugController@debugPrintTest')->name('print.debug.test');
+        Route::get('/print/test-urls/{patient}', 'App\Http\Controllers\PrintDebugController@testUrlGeneration')->name('print.test.urls');
+        
         // Save-to-system routes removed
 
         Route::put('/patients/{id}', 'App\Http\Controllers\PatientsController@update')->name('patients.update');
