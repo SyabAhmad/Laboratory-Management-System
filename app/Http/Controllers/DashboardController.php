@@ -90,8 +90,13 @@ class DashboardController extends Controller
         // Today's expenses
         $expensesToday = Expense::whereDate('expense_date', Carbon::today())->sum('amount') ?? 0;
 
-        // Today's balance (billed - expenses for daily cash flow)
-        $balanceToday = $billedToday - $expensesToday;
+        // Today's pending commissions
+        $commissionsPendingToday = ReferralCommission::where('status', 'pending')
+            ->whereBetween('created_at', [$todayStart, $todayEnd])
+            ->sum('commission_amount') ?? 0;
+
+        // Today's balance (billed - expenses - pending commissions for daily cash flow)
+        $balanceToday = $billedToday - $expensesToday - $commissionsPendingToday;
 
         // Prepare monthly billed and paid totals for last 12 months
         $end = Carbon::now()->endOfMonth();
@@ -196,6 +201,7 @@ class DashboardController extends Controller
             'paidToday' => $paidToday,
             'expensesToday' => $expensesToday,
             'balanceToday' => $balanceToday,
+            'commissionsPendingToday' => $commissionsPendingToday,
             'billsCountToday' => $billsCountToday,
             'paymentsCountToday' => $paymentsCountToday,
             'commissionsCountToday' => $commissionsCountToday ?? 0,
