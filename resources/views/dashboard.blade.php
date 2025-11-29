@@ -65,7 +65,7 @@
 
             <!-- Stats Cards Section -->
             <div class="row mb-4">
-                <div class="col-lg-6 col-md-6 col-sm-12 mb-3">
+                <div class="col-lg-12 col-md-6 col-sm-12 mb-3">
                     <a href="{{ route('patients.list') }}" class="text-decoration-none">
                         <div class="card dashboard-card h-100">
                             <div class="card-body card-body dashboard-card-unified">
@@ -82,7 +82,7 @@
                         </div>
                     </a>
                 </div>
-                <div class="col-lg-6 col-md-6 col-sm-12 mb-3">
+                <!-- <div class="col-lg-6 col-md-6 col-sm-12 mb-3">
                     <a href="{{ route('balance.index') }}" class="text-decoration-none" aria-label="View balance details">
                         <div class="card dashboard-card balance-card-accent h-100 clickable-card" role="link">
                             <div class="card-body card-body dashboard-card-unified">
@@ -99,7 +99,7 @@
                             </div>
                         </div>
                     </a>
-                </div>
+                </div> -->
             </div>
             <!-- End Stats Cards Section -->
             <!-- Today's Finance Stats -->
