@@ -111,9 +111,9 @@
         /* Header/Footer positioning handled by the shared partial (print_header_footer.blade.php) */
 
         .print-body {
-            padding-top: calc(var(--print-header-height) + 15mm) !important; /* ensure content clears header with margin */
+            padding-top: calc(var(--print-header-height) + 20mm) !important; /* ensure content clears header with margin */
             /* ensure body-bottom keeps clear space equal to footer height + margin */
-            padding-bottom: calc(var(--print-footer-height) + 15mm) !important;
+            padding-bottom: calc(var(--print-footer-height) + 20mm) !important;
             /* rely on report-inner for horizontal spacing so inner content matches header/footer */
             padding-left: 0 !important; padding-right: 0 !important;
             box-sizing: border-box;
@@ -121,8 +121,8 @@
 
         /* Adjust padding for multiple tests to avoid empty pages */
         .multiple-tests.print-body {
-            padding-top: calc(var(--print-header-height) + 1mm) !important;
-            padding-bottom: calc(var(--print-footer-height) + 1mm) !important;
+            padding-top: calc(var(--print-header-height) + 5mm) !important;
+            padding-bottom: calc(var(--print-footer-height) + 5mm) !important;
         }
 
         .footer-container {
@@ -212,6 +212,11 @@
         .results-table {
             page-break-inside: auto;
         }
+        
+        /* Add space after page break */
+        .results-table[style*="page-break-before"] {
+            margin-top: 40px !important;
+        }
 
         /* Repeat table headers on each page */
         thead { display: table-header-group; }
@@ -236,7 +241,7 @@
 
 {{-- Header and footer are included by Layout.print now to avoid duplication --}}
 <!-- end include print header/footer -->
-@php $maxRowsPerPage = 15; @endphp
+@php $maxRowsPerPage = 14; @endphp
     {{-- Personal information block (table format) --}}
     @if(!isset($skipPatientInfo) || !$skipPatientInfo)
     <style>
@@ -244,7 +249,7 @@
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 10px;
-            font-size: 12px; /* increase baseline personal info font */
+            font-size: 14px; /* increased baseline personal info font */
             border: 1px solid #e7e7e7;
                 border-radius: 6px;
                 background: #fff;
@@ -268,7 +273,7 @@
         .personal-info-table .value { color: #333; }
         .personal-info-row { background: transparent; }
         @media print {
-            .personal-info-table { font-size: 14px !important; }
+            .personal-info-table { font-size: 16px !important; }
         }
     </style>
     <style>
@@ -280,7 +285,7 @@
         .pi-meta { display:flex; flex-direction:column; }
         .pi-label { font-size: 10px; color: #8d2d36; font-weight: 700; }
         .pi-value { font-size: 10px; color: #333; font-weight: 600; }
-        .section-title { background: #8d2d36; color: #fff; border-radius: 4px; padding: 6px 8px; text-align:center; font-weight:700; margin-bottom: 8px; display:block; font-size: 14px; }
+        .section-title { background: #8d2d36; color: #fff; border-radius: 4px; padding: 6px 8px; text-align:center; font-weight:700; margin-bottom: 8px; display:block; font-size: 16px; }
         .section-title i { margin-right: 8px; }
 
         /* Results table styling */
@@ -296,26 +301,26 @@
             .personal-card { border: 1px solid #e7e7e7 !important; }
             .section-title { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             /* Adjust sizes for A4 printing */
-                .results-table { font-size: 12px !important; }
-                .results-table th { font-size: 12px !important; }
-                .results-table td { font-size: 12px !important; }
-                .pi-value { font-size: 12px !important; }
-                .pi-label { font-size: 12px !important; }
-                .section-title { font-size: 16px !important; padding: 8px 10px !important; }
+                .results-table { font-size: 14px !important; }
+                .results-table th { font-size: 14px !important; }
+                .results-table td { font-size: 14px !important; }
+                .pi-value { font-size: 14px !important; }
+                .pi-label { font-size: 14px !important; }
+                .section-title { font-size: 18px !important; padding: 8px 10px !important; }
     
             /* Adjust header and footer fonts for A4 printing */
-            .print-header .lab-name { font-size: 20px !important; }
-            .print-header .lab-subtitle { font-size: 14px !important; }
-            .print-header .lab-address { font-size: 12px !important; }
-            .print-header .contact-info { font-size: 12px !important; }
-            .print-header-details { font-size: 12px !important; }
-            .print-footer .footer-item { font-size: 12px !important; }
-            .print-footer .footer-signature strong { font-size: 14px !important; }
+            .print-header .lab-name { font-size: 22px !important; }
+            .print-header .lab-subtitle { font-size: 16px !important; }
+            .print-header .lab-address { font-size: 14px !important; }
+            .print-header .contact-info { font-size: 14px !important; }
+            .print-header-details { font-size: 14px !important; }
+            .print-footer .footer-item { font-size: 14px !important; }
+            .print-footer .footer-signature strong { font-size: 16px !important; }
     
             /* Adjust logo size for A4 printing */
-            .print-header .print-inner table td img { width: 30mm !important; height: 30mm !important; }
-            .print-header .print-inner table td img.header-logo { width: 25mm !important; height: 25mm !important; }
-            .print-header .print-logo img.header-logo { width: 28mm !important; height: 28mm !important; }
+            .print-header .print-inner table td img { width: 32mm !important; height: 32mm !important; }
+            .print-header .print-inner table td img.header-logo { width: 27mm !important; height: 27mm !important; }
+            .print-header .print-logo img.header-logo { width: 30mm !important; height: 30mm !important; }
     
             /* Adjust header and footer positioning for A4 */
             .print-header { top: 10mm !important; }
@@ -413,7 +418,7 @@
                     @foreach ($chunks as $chunkIndex => $chunk)
                         @if($chunkIndex > 0)
                             </tbody></table>
-                            <table class="results-table" width="100%" cellpadding="5" cellspacing="0" style="border-collapse: collapse; page-break-before: always; margin-top: 20px;">
+                            <table class="results-table" width="100%" cellpadding="5" cellspacing="0" style="border-collapse: collapse; page-break-before: always; margin-top: 40px;">
                                 <thead>
                                     <tr style="background-color: #fff !important; border-bottom: 3px solid #8d2d36 !important;">
                                         <th style="text-align: left; padding: 12px; font-weight: bold; width: 50%; color: black;">
@@ -461,7 +466,7 @@
                         @foreach ($chunks as $chunkIndex => $chunk)
                             @if($chunkIndex > 0)
                                 </tbody></table>
-                                <table class="results-table" width="100%" cellpadding="5" cellspacing="0" style="border-collapse: collapse; page-break-before: always; margin-top: 20px;">
+                                <table class="results-table" width="100%" cellpadding="5" cellspacing="0" style="border-collapse: collapse; page-break-before: always; margin-top: 40px;">
                                     <thead>
                                         <tr style="background-color: #fff !important; border-bottom: 3px solid #8d2d36 !important;">
                                             <th style="text-align: left; padding: 12px; font-weight: bold; width: 50%; color: black;">
@@ -523,7 +528,7 @@
                         @foreach ($chunks as $chunkIndex => $chunk)
                             @if($chunkIndex > 0)
                                 </tbody></table>
-                                <table class="results-table" width="100%" cellpadding="5" cellspacing="0" style="border-collapse: collapse; page-break-before: always; margin-top: 20px;">
+                                <table class="results-table" width="100%" cellpadding="5" cellspacing="0" style="border-collapse: collapse; page-break-before: always; margin-top: 40px;">
                                     <thead>
                                         <tr style="background-color: #fff !important; border-bottom: 3px solid #8d2d36 !important;">
                                             <th style="text-align: left; padding: 12px; font-weight: bold; width: 50%; color: black;">

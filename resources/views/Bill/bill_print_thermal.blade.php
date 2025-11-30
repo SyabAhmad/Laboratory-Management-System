@@ -7,7 +7,7 @@
     <style>
         @media print {
             @page {
-                size: 80mm auto; /* Thermal printer width */
+                size: 80mm 297mm; /* Thermal printer width with standard height */
                 margin: 0;
             }
             body {
@@ -38,6 +38,15 @@
         table { width: 100%; border-collapse: collapse; }
         td { padding: 2px 0; }
         .small { font-size: 10px; }
+        .bold { font-weight: bold; }
+        .center { text-align: center; }
+        .right { text-align: right; }
+        /* Ensure content fits within 80mm thermal paper */
+        @media screen and (max-width: 80mm) {
+            body { width: 100%; margin: 0; padding: 2mm; }
+            table { width: 100%; }
+            .center, .right { text-align: unset; }
+        }
     </style>
 </head>
 <body>
