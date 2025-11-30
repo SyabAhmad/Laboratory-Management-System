@@ -22,21 +22,21 @@ class DashboardController extends Controller
     public function index()
     {
         $company = MainCompanys::first();
-        
+
         if (!$company) {
             return view('maincompany.maincompany');
         }
-        
+
         // Calculate total balance from bills
         $totalBilled = Bills::sum('amount') ?? 0;
-        
+
         // Calculate total paid from Payments table
         $totalPaymentsPaid = Payments::sum('amount') ?? 0;
-        
+
         // Calculate total paid from ReferralCommission (paid status)
         $totalCommissionsPaid = ReferralCommission::where('status', 'paid')
             ->sum('commission_amount') ?? 0;
-        
+
         // Combined total paid
         $totalPaid = $totalPaymentsPaid + $totalCommissionsPaid;
 
@@ -54,24 +54,24 @@ class DashboardController extends Controller
         $todayEnd = Carbon::today()->endOfDay();
 
         // Include newly created bills and bills updated today (some flows update existing bill rows rather than creating new ones)
-        $billedToday = Bills::where(function($q) use ($todayStart, $todayEnd) {
+        $billedToday = Bills::where(function ($q) use ($todayStart, $todayEnd) {
             $q->whereBetween('created_at', [$todayStart, $todayEnd])
-              ->orWhereBetween('updated_at', [$todayStart, $todayEnd]);
+                ->orWhereBetween('updated_at', [$todayStart, $todayEnd]);
+        })->sum('amount') ?? 0;
+        // Only use payments.date when column exists (older schema)
+        if (Schema::hasColumn('payments', 'date')) {
+            $paidToday = Payments::where(function ($q) use ($todayStart, $todayEnd) {
+                $q->whereBetween('created_at', [$todayStart, $todayEnd])
+                    ->orWhereDate('date', Carbon::today());
             })->sum('amount') ?? 0;
-                // Only use payments.date when column exists (older schema)
-                if (Schema::hasColumn('payments', 'date')) {
-                    $paidToday = Payments::where(function($q) use ($todayStart, $todayEnd) {
-                        $q->whereBetween('created_at', [$todayStart, $todayEnd])
-                          ->orWhereDate('date', Carbon::today());
-                    })->sum('amount') ?? 0;
-                    $paymentsCountToday = Payments::where(function($q) use ($todayStart, $todayEnd) {
-                        $q->whereBetween('created_at', [$todayStart, $todayEnd])
-                          ->orWhereDate('date', Carbon::today());
-                    })->count();
-                } else {
-                    $paidToday = Payments::whereBetween('created_at', [$todayStart, $todayEnd])->sum('amount') ?? 0;
-                    $paymentsCountToday = Payments::whereBetween('created_at', [$todayStart, $todayEnd])->count();
-                }
+            $paymentsCountToday = Payments::where(function ($q) use ($todayStart, $todayEnd) {
+                $q->whereBetween('created_at', [$todayStart, $todayEnd])
+                    ->orWhereDate('date', Carbon::today());
+            })->count();
+        } else {
+            $paidToday = Payments::whereBetween('created_at', [$todayStart, $todayEnd])->sum('amount') ?? 0;
+            $paymentsCountToday = Payments::whereBetween('created_at', [$todayStart, $todayEnd])->count();
+        }
         // Also include referral commissions that were marked paid today (some commission records are created earlier, and are marked paid later)
         $paidCommissionsToday = ReferralCommission::where('status', 'paid')
             ->whereBetween('updated_at', [$todayStart, $todayEnd])
@@ -82,10 +82,10 @@ class DashboardController extends Controller
             ->count();
 
         $paidToday = ($paidToday ?? 0) + $paidCommissionsToday;
-        $billsCountToday = Bills::where(function($q) use ($todayStart, $todayEnd) {
+        $billsCountToday = Bills::where(function ($q) use ($todayStart, $todayEnd) {
             $q->whereBetween('created_at', [$todayStart, $todayEnd])
-              ->orWhereBetween('updated_at', [$todayStart, $todayEnd]);
-            })->count();
+                ->orWhereBetween('updated_at', [$todayStart, $todayEnd]);
+        })->count();
 
         // Today's expenses
         $expensesToday = Expense::whereDate('expense_date', Carbon::today())->sum('amount') ?? 0;
@@ -96,7 +96,7 @@ class DashboardController extends Controller
             ->sum('commission_amount') ?? 0;
 
         // Today's balance (billed - expenses - pending commissions for daily cash flow)
-        $balanceToday = $billedToday - $expensesToday - $commissionsPendingToday;
+        $balanceToday = $billedToday - $expensesToday - $paidCommissionsToday;
 
         // Prepare monthly billed and paid totals for last 12 months
         $end = Carbon::now()->endOfMonth();
@@ -125,7 +125,7 @@ class DashboardController extends Controller
             ->groupBy('month')
             ->pluck('total', 'month')
             ->toArray();
-        
+
         // Query paid commissions from ReferralCommission table
         // Use updated_at for paid commissions grouping so a commission paid today but created earlier is counted under the month it was paid
         $paidCommissionsRows = DB::table('referral_commissions')
@@ -135,16 +135,22 @@ class DashboardController extends Controller
             ->groupBy('month')
             ->pluck('total', 'month')
             ->toArray();
-        
+
         // Merge paid amounts (payments + commissions)
         $paidRows = [];
         foreach ($period as $month) {
             $paidRows[$month] = ($paidPaymentsRows[$month] ?? 0) + ($paidCommissionsRows[$month] ?? 0);
         }
 
-        $labels = array_map(function($m){ return Carbon::createFromFormat('Y-m', $m)->format('M Y'); }, $period);
-        $billedData = array_map(function($m) use ($billedRows){ return isset($billedRows[$m]) ? (float)$billedRows[$m] : 0; }, $period);
-        $paidData = array_map(function($m) use ($paidRows){ return isset($paidRows[$m]) ? (float)$paidRows[$m] : 0; }, $period);
+        $labels = array_map(function ($m) {
+            return Carbon::createFromFormat('Y-m', $m)->format('M Y');
+        }, $period);
+        $billedData = array_map(function ($m) use ($billedRows) {
+            return isset($billedRows[$m]) ? (float)$billedRows[$m] : 0;
+        }, $period);
+        $paidData = array_map(function ($m) use ($paidRows) {
+            return isset($paidRows[$m]) ? (float)$paidRows[$m] : 0;
+        }, $period);
 
         // --- Daily Stats for Last 30 Days ---
         $dailyEnd = Carbon::today()->endOfDay();
@@ -183,9 +189,13 @@ class DashboardController extends Controller
             ->pluck('total', 'day')
             ->toArray();
 
-        $dailyLabels = array_map(function($d){ return Carbon::createFromFormat('Y-m-d', $d)->format('M d'); }, $dailyPeriod);
-        $dailyBilledData = array_map(function($d) use ($dailyBilledRows){ return isset($dailyBilledRows[$d]) ? (float)$dailyBilledRows[$d] : 0; }, $dailyPeriod);
-        
+        $dailyLabels = array_map(function ($d) {
+            return Carbon::createFromFormat('Y-m-d', $d)->format('M d');
+        }, $dailyPeriod);
+        $dailyBilledData = array_map(function ($d) use ($dailyBilledRows) {
+            return isset($dailyBilledRows[$d]) ? (float)$dailyBilledRows[$d] : 0;
+        }, $dailyPeriod);
+
         $dailyPaidData = [];
         foreach ($dailyPeriod as $day) {
             $dailyPaidData[] = ($dailyPaidPaymentsRows[$day] ?? 0) + ($dailyPaidCommissionsRows[$day] ?? 0);
@@ -227,7 +237,7 @@ class DashboardController extends Controller
             "Expires" => "0"
         ];
 
-        $callback = function() use ($type) {
+        $callback = function () use ($type) {
             $file = fopen('php://output', 'w');
 
             if ($type === 'monthly') {
@@ -235,10 +245,10 @@ class DashboardController extends Controller
 
                 $end = Carbon::now()->endOfMonth();
                 $start = (clone $end)->subMonths(11)->startOfMonth();
-                
+
                 // Re-query logic for simplicity or refactor to shared service. 
                 // For now, duplicating query logic for export to ensure fresh data.
-                
+
                 $period = [];
                 $cursor = (clone $start);
                 while ($cursor->lte($end)) {
@@ -270,7 +280,6 @@ class DashboardController extends Controller
                     $paid = ($paidPaymentsRows[$month] ?? 0) + ($paidCommissionsRows[$month] ?? 0);
                     fputcsv($file, [$month, $billed, $paid]);
                 }
-
             } else {
                 // Daily
                 fputcsv($file, ['Date', 'Billed Amount', 'Paid Amount']);
@@ -352,7 +361,8 @@ class DashboardController extends Controller
         return response()->json(['success' => 'Data Add successfully.']);
     }
 
-    public function details(){
+    public function details()
+    {
         return view('maincompany.details');
     }
 

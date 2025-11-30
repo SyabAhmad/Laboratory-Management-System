@@ -83,23 +83,23 @@
                     </a>
                 </div>
                 <!-- <div class="col-lg-6 col-md-6 col-sm-12 mb-3">
-                    <a href="{{ route('balance.index') }}" class="text-decoration-none" aria-label="View balance details">
-                        <div class="card dashboard-card balance-card-accent h-100 clickable-card" role="link">
-                            <div class="card-body card-body dashboard-card-unified">
-                                <div class="d-flex align-items-center">
-                                    <div class="icon-section">
-                                        <i class="fas fa-balance-scale dashboard-card-icon"></i>
-                                    </div>
-                                    <div class="content-section">
-                                        <h5 class="card-title dashboard-card-unified">Net Company Balance</h5>
-                                        <p class="dashboard-card-text1">
-                                            {{ isset($totalBalance) ? number_format($totalBalance, 2) : '0.00' }}</p>
+                        <a href="{{ route('balance.index') }}" class="text-decoration-none" aria-label="View balance details">
+                            <div class="card dashboard-card balance-card-accent h-100 clickable-card" role="link">
+                                <div class="card-body card-body dashboard-card-unified">
+                                    <div class="d-flex align-items-center">
+                                        <div class="icon-section">
+                                            <i class="fas fa-balance-scale dashboard-card-icon"></i>
+                                        </div>
+                                        <div class="content-section">
+                                            <h5 class="card-title dashboard-card-unified">Net Company Balance</h5>
+                                            <p class="dashboard-card-text1">
+                                                {{ isset($totalBalance) ? number_format($totalBalance, 2) : '0.00' }}</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </a>
-                </div> -->
+                        </a>
+                    </div> -->
             </div>
             <!-- End Stats Cards Section -->
             <!-- Today's Finance Stats -->
@@ -113,7 +113,8 @@
                                 </div>
                                 <div class="content-section">
                                     <h5 class="card-title dashboard-card-unified">Today's Billed</h5>
-                                    <p class="dashboard-card-text1">{{ isset($billedToday) ? number_format($billedToday, 2) : '0.00' }}</p>
+                                    <p class="dashboard-card-text1">
+                                        {{ isset($billedToday) ? number_format($billedToday, 2) : '0.00' }}</p>
                                 </div>
                             </div>
                         </div>
@@ -128,27 +129,28 @@
                                 </div>
                                 <div class="content-section">
                                     <h5 class="card-title dashboard-card-unified">Today's Paid</h5>
-                                    <p class="dashboard-card-text1">{{ isset($paidToday) ? number_format($paidToday, 2) : '0.00' }}</p>
+                                    <p class="dashboard-card-text1">
+                                        {{ isset($paidToday) ? number_format($paidToday, 2) : '0.00' }}</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <!-- <div class="col-lg-3 col-md-6 col-sm-12 mb-3">
-                    <div class="card dashboard-card h-100">
-                        <div class="card-body card-body dashboard-card-unified">
-                            <div class="d-flex align-items-center">
-                                <div class="icon-section">
-                                    <i class="fas fa-file-invoice-dollar dashboard-card-icon"></i>
-                                </div>
-                                <div class="content-section">
-                                    <h5 class="card-title dashboard-card-unified">Today's Due</h5>
-                                    <p class="dashboard-card-text1">{{ isset($billedToday, $paidToday) ? number_format(max($billedToday - $paidToday, 0), 2) : '0.00' }}</p>
+                        <div class="card dashboard-card h-100">
+                            <div class="card-body card-body dashboard-card-unified">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-section">
+                                        <i class="fas fa-file-invoice-dollar dashboard-card-icon"></i>
+                                    </div>
+                                    <div class="content-section">
+                                        <h5 class="card-title dashboard-card-unified">Today's Due</h5>
+                                        <p class="dashboard-card-text1">{{ isset($billedToday, $paidToday) ? number_format(max($billedToday - $paidToday, 0), 2) : '0.00' }}</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div> -->
+                    </div> -->
                 <div class="col-lg-3 col-md-6 col-sm-12 mb-3">
                     <div class="card dashboard-card h-100">
                         <div class="card-body card-body dashboard-card-unified">
@@ -158,7 +160,8 @@
                                 </div>
                                 <div class="content-section">
                                     <h5 class="card-title dashboard-card-unified">Today's Balance</h5>
-                                    <p class="dashboard-card-text1">{{ isset($balanceToday) ? number_format($balanceToday, 2) : '0.00' }}</p>
+                                    <p class="dashboard-card-text1">
+                                        {{ isset($balanceToday) ? number_format($balanceToday, 2) : '0.00' }}</p>
                                 </div>
                             </div>
                         </div>
@@ -174,14 +177,15 @@
                                     </div>
                                     <div class="content-section">
                                         <h5 class="card-title dashboard-card-unified">Today's Expenses</h5>
-                                        <p class="dashboard-card-text1">{{ isset($expensesToday) ? number_format($expensesToday, 2) : '0.00' }}</p>
+                                        <p class="dashboard-card-text1">
+                                            {{ isset($expensesToday) ? number_format($expensesToday, 2) : '0.00' }}</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </a>
                 </div>
-                <div class="col-lg-3 col-md-6 col-sm-12 mb-3">
+                {{-- <div class="col-lg-3 col-md-6 col-sm-12 mb-3">
                     <div class="card dashboard-card h-100">
                         <div class="card-body card-body dashboard-card-unified">
                             <div class="d-flex align-items-center">
@@ -195,7 +199,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> --}}
             </div>
         @else
             <div class="card">
@@ -215,10 +219,12 @@
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <h5 class="card-title dashboard-card-unified mb-0">Monthly Billed vs Paid</h5>
                             <div>
-                                <a href="{{ route('dashboard.export', ['type' => 'monthly']) }}" class="btn btn-sm btn-primary me-1" title="Export CSV">
+                                <a href="{{ route('dashboard.export', ['type' => 'monthly']) }}"
+                                    class="btn btn-sm btn-primary me-1" title="Export CSV">
                                     <i class="fas fa-file-csv"></i> CSV
                                 </a>
-                                <button onclick="downloadChart('chartRevenue', 'monthly_chart')" class="btn btn-sm btn-success" title="Download Image">
+                                <button onclick="downloadChart('chartRevenue', 'monthly_chart')"
+                                    class="btn btn-sm btn-success" title="Download Image">
                                     <i class="fas fa-download"></i> Image
                                 </button>
                             </div>
@@ -233,7 +239,8 @@
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <h5 class="card-title dashboard-card-unified mb-0">Monthly Paid (Payments)</h5>
                             <div>
-                                <button onclick="downloadChart('chartPayments', 'monthly_payments_chart')" class="btn btn-sm btn-success" title="Download Image">
+                                <button onclick="downloadChart('chartPayments', 'monthly_payments_chart')"
+                                    class="btn btn-sm btn-success" title="Download Image">
                                     <i class="fas fa-download"></i> Image
                                 </button>
                             </div>
@@ -251,10 +258,12 @@
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <h5 class="card-title dashboard-card-unified mb-0">Daily Billed vs Paid (Last 30 Days)</h5>
                             <div>
-                                <a href="{{ route('dashboard.export', ['type' => 'daily']) }}" class="btn btn-sm btn-primary me-1" title="Export CSV">
+                                <a href="{{ route('dashboard.export', ['type' => 'daily']) }}"
+                                    class="btn btn-sm btn-primary me-1" title="Export CSV">
                                     <i class="fas fa-file-csv"></i> CSV
                                 </a>
-                                <button onclick="downloadChart('chartDaily', 'daily_chart')" class="btn btn-sm btn-success" title="Download Image">
+                                <button onclick="downloadChart('chartDaily', 'daily_chart')"
+                                    class="btn btn-sm btn-success" title="Download Image">
                                     <i class="fas fa-download"></i> Image
                                 </button>
                             </div>
@@ -440,7 +449,7 @@
 
             // Get the canvas element
             const canvas = document.getElementById(chartId);
-            
+
             // Convert to image and download
             const url = canvas.toDataURL('image/png');
             const link = document.createElement('a');
