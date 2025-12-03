@@ -135,7 +135,7 @@
                 <div class="footer-container" style="padding: 4px; margin: 0; display: flex; gap: 6px; width: 100%; align-items: center; justify-content: space-between;">
             <div class="footer-item footer-note" style="background-color: #f8fafb; padding: 4px; border-left: 2px solid #8d2d36; font-size: 9px; flex: 1 1 62%;">
             <strong style="color: black;">Please Note:</strong><br>
-            <i class="fas fa-info-circle" style="margin-right: 5px; color: black;"></i>Test(s) are performed on the state-of-the-art ARCHITECT MODULAR Ci4100 from Abbott Diagnostics, U.S.A.<br>
+            <i class="fas fa-info-circle" style="margin-right: 5px; color: black;"></i>If there is no correlation with your clinical findings then please do ask this lab to repeat the test on the same sample, as we preserve it till late evening.<br>
             <i class="fas fa-signature" style="margin-right: 5px; color: black;"></i>This report is not meant for any sort of medico legal purpose.<br>
             <i class="fas fa-signature" style="margin-right: 5px; color: black;"></i>This is a digitally signed report By <strong style=" color: black; font-size: 15px;">Bacha Khan</strong> and does not require manual signature. <br>
             <!-- This is a digitally signed report by <strong style=" color: black; font-size: 12px;">Bacha Khan</strong> -->
