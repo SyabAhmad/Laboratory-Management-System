@@ -425,8 +425,8 @@
 
             .personal-card-inner {
                 display: grid;
-                grid-template-columns: repeat(2, 1fr);
-                gap: 6px 18px;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 6px 12px;
             }
 
             .pi-cell {
@@ -608,76 +608,58 @@
         </style>
         {{-- Dual option styles removed --}}
 
-        <div class="personal-card" role="region" aria-label="Patient information">
-            <div class="personal-card-inner">
-                <div class="pi-cell">
-                    <i class="fas fa-user-circle fa-lg" aria-hidden="true"></i>
-                    <div class="pi-meta">
-                        <div class="pi-label">Patient Name</div>
-                        <div class="pi-value">{{ $patient->name ?? '-' }}</div>
-                    </div>
-                </div>
-                <div class="pi-cell">
-                    <i class="fas fa-birthday-cake fa-lg" aria-hidden="true"></i>
-                    <div class="pi-meta">
-                        <div class="pi-label">Age / Gender</div>
-                        <div class="pi-value">
-                            @php
-                                // Use individual age parts if available, otherwise use the combined string
-                                if (
-                                    !empty($patient->age_years) ||
-                                    !empty($patient->age_months) ||
-                                    !empty($patient->age_days)
-                                ) {
-                                    $parts = [];
-                                    if (!empty($patient->age_years)) {
-                                        $parts[] = $patient->age_years . 'Y';
-                                    }
-                                    if (!empty($patient->age_months)) {
-                                        $parts[] = $patient->age_months . 'M';
-                                    }
-                                    if (!empty($patient->age_days)) {
-                                        $parts[] = $patient->age_days . 'D';
-                                    }
-                                    $ageDisplay = !empty($parts) ? implode(' ', $parts) : '0Y';
-                                } else {
-                                    $ageDisplay = $patient->age ?: '-';
+        <table class="personal-info-table">
+            <tbody>
+                <tr class="personal-info-row">
+                    <th><i class="fas fa-user-circle fa-lg" aria-hidden="true"></i> Patient Name</th>
+                    <td class="value">{{ $patient->name ?? '-' }}</td>
+                    <th><i class="fas fa-birthday-cake fa-lg" aria-hidden="true"></i> Age / Gender</th>
+                    <td class="value">
+                        @php
+                            // Use individual age parts if available, otherwise use the combined string
+                            if (
+                                !empty($patient->age_years) ||
+                                !empty($patient->age_months) ||
+                                !empty($patient->age_days)
+                            ) {
+                                $parts = [];
+                                if (!empty($patient->age_years)) {
+                                    $parts[] = $patient->age_years . 'Y';
                                 }
-                            @endphp
-                            {{ $ageDisplay }} / {{ ucfirst($patient->gender ?? '-') }}
-                        </div>
-                    </div>
-                </div>
-                <div class="pi-cell">
-                    <i class="fas fa-id-card fa-lg" aria-hidden="true"></i>
-                    <div class="pi-meta">
-                        <div class="pi-label">Patient ID</div>
-                        <div class="pi-value">{{ $patient->patient_id ?? '-' }}</div>
-                    </div>
-                </div>
-                <div class="pi-cell">
-                    <i class="fas fa-phone fa-lg" aria-hidden="true"></i>
-                    <div class="pi-meta">
-                        <div class="pi-label">Mobile</div>
-                        <div class="pi-value">{{ $patient->mobile_phone ?? '-' }}</div>
-                    </div>
-                </div>
-                <div class="pi-cell">
-                    <i class="fas fa-map-marker-alt fa-lg" aria-hidden="true"></i>
-                    <div class="pi-meta">
-                        <div class="pi-label">Address</div>
-                        <div class="pi-value">{{ $patient->address ?? '-' }}</div>
-                    </div>
-                </div>
-                <div class="pi-cell">
-                    <i class="fas fa-user-tie fa-lg" aria-hidden="true"></i>
-                    <div class="pi-meta">
-                        <div class="pi-label">Referred By</div>
-                        <div class="pi-value">{{ $patient->referred_by ?? '-' }}</div>
-                    </div>
-                </div>
-            </div>
-        </div>
+                                if (!empty($patient->age_months)) {
+                                    $parts[] = $patient->age_months . 'M';
+                                }
+                                if (!empty($patient->age_days)) {
+                                    $parts[] = $patient->age_days . 'D';
+                                }
+                                $ageDisplay = !empty($parts) ? implode(' ', $parts) : '0Y';
+                            } else {
+                                $ageDisplay = $patient->age ?: '-';
+                            }
+                        @endphp
+                        {{ $ageDisplay }} / {{ ucfirst($patient->gender ?? '-') }}
+                    </td>
+                </tr>
+                <tr class="personal-info-row">
+                    <th><i class="fas fa-id-card fa-lg" aria-hidden="true"></i> Patient ID</th>
+                    <td class="value">{{ $patient->patient_id ?? '-' }}</td>
+                    <th><i class="fas fa-phone fa-lg" aria-hidden="true"></i> Mobile</th>
+                    <td class="value">{{ $patient->mobile_phone ?? '-' }}</td>
+                </tr>
+                <tr class="personal-info-row">
+                    <th><i class="fas fa-map-marker-alt fa-lg" aria-hidden="true"></i> Address</th>
+                    <td class="value">{{ $patient->address ?? '-' }}</td>
+                    <th><i class="fas fa-user-tie fa-lg" aria-hidden="true"></i> Referred By</th>
+                    <td class="value">{{ $patient->referred_by ?? '-' }}</td>
+                </tr>
+                <tr class="personal-info-row">
+                    <th><i class="fas fa-calendar-check fa-lg" aria-hidden="true"></i> Receiving Date</th>
+                    <td class="value">{{ $patient->receiving_date ? $patient->receiving_date->format('d-M-Y') : '-' }}</td>
+                    <th><i class="fas fa-calendar-alt fa-lg" aria-hidden="true"></i> Reporting Date</th>
+                    <td class="value">{{ $patient->reporting_date ? $patient->reporting_date->format('d-M-Y') : '-' }}</td>
+                </tr>
+            </tbody>
+        </table>
     @endif
     <hr style="border: 0; border-top: 1px solid #e7e7e7; margin: 8px 0 12px 0;">
 
