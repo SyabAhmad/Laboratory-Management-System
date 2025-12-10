@@ -350,6 +350,7 @@
                 :root {
                     --print-header-height: 36mm;
                     --print-footer-height: 32mm;
+                    --print-footer-bottom-gap: 20mm;
                 }
 
             .no-print {
@@ -379,14 +380,14 @@
             }
 
             .print-footer {
-                bottom: 10mm;
+                bottom: var(--print-footer-bottom-gap);
                 height: var(--print-footer-height);
             }
 
             /* Ensure card body leaves enough space for header/footer */
             .print-body {
                 padding-top: calc(var(--print-header-height) + 12mm) !important;
-                padding-bottom: calc(var(--print-footer-height) + 10mm) !important;
+                padding-bottom: calc(var(--print-footer-height) + var(--print-footer-bottom-gap) + 10mm) !important;
             }
 
             /* Do not add mini-header rows in this page to avoid duplication with the fixed print header */

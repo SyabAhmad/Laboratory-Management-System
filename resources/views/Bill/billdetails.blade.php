@@ -41,6 +41,7 @@
                             :root {
                                 --print-header-height: 36mm;
                                 --print-footer-height: 32mm;
+                                --print-footer-bottom-gap: 20mm;
                                 --print-page-width: 210mm;
                                 --print-side-padding: 0mm;
                                 --print-inner-width-mm: calc(var(--print-page-width) - (var(--print-side-padding) * 2));

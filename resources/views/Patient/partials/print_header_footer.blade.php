@@ -3,6 +3,8 @@
         :root {
             --print-header-height: 20mm;
             --print-footer-height: 15mm;
+            /* Gap to lift footer above the page bottom to leave space below it for an extra section */
+            --print-footer-bottom-gap: 20mm; /* Adjust this value to add/remove the space below footer */
         }
 
         .print-header,
@@ -94,8 +96,17 @@
         }
 
         .print-footer {
-            bottom: 2mm;
+            /* place the footer above the bottom by a configurable gap so things can be placed below it */
+            bottom: var(--print-footer-bottom-gap);
             height: var(--print-footer-height);
+        }
+
+        /* A print-only spacer div that can create dedicated vertical space below the fixed footer; useful when adding a new section below the footer. */
+        .post-footer-space {
+            display: block;
+            height: var(--print-footer-bottom-gap);
+            width: var(--print-inner-width-mm);
+            margin: 0 auto;
         }
 
         .print-header,
@@ -174,7 +185,7 @@
                         College/ SGTH Swat
                     </div>
                 </td>
-
+<!-- 
                 <td width="30%" valign="middle" align="right" class="contact-info"
                     style="
                         font-size: 8px;
@@ -193,11 +204,12 @@
                     Email: bachakhanacl@gmail.com <br />
                     Kabal Road, Near Township Chowk<br />
                     Kanju Swat
-                </td>
+                </td> -->
             </tr>
         </table>
     </div>
 </div>
+<div class="post-footer-space" aria-hidden="true" style="display: none;"></div>
 
 <!-- Print Header Details -->
 <div class="print-header-details"
@@ -257,6 +269,24 @@
                 <strong style="color: black; font-size: 15px;">Bacha Khan</strong>
                 and does not require manual signature.
             </div>
+            <div class="extra-section-below-footer">
+  <!-- here the below tag p would be colord bg and white fg, and thiu section needs to b below the footer, like last section of test print report blad file -->
+  <p class="">Contact Information: 0302-8080191  |  0313-9797790 |  Email: bachakhanacl@gmail.com <br />
+                    Kabal Road, Near Township Chowk Kanju Swat</p>
+</div>
+
+<style>
+  @media print {
+    .extra-section-below-footer {
+      width: var(--print-inner-width-mm);
+      margin: 0 auto;
+      /* optional height or padding; adjust as needed */
+      padding-top: 6px;
+      padding-bottom: 6px;
+      font-size: 10px;
+    }
+  }
+</style>
         </div>
     </div>
 </div>
