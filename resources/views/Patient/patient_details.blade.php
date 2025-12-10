@@ -112,6 +112,20 @@
                             </td>
                             <td style="font-weight: 600; font-size: 14px;">{{ $patient->mobile_phone }}</td>
                         </tr>
+                        <tr>
+                            <td style="font-weight: bold; color: black; padding-bottom: 10px; font-size: 14px;">
+                                <i class="fas fa-calendar-check" style="margin-right: 8px;"></i>Receiving Date:
+                            </td>
+                            <td style="padding-bottom: 10px; font-weight: 600; font-size: 14px;">
+                                <strong>{{ $patient->receiving_date ? $patient->receiving_date->format('d-M-Y H:i') : '-' }}</strong>
+                            </td>
+                            <td style="font-weight: bold; color: black; padding-bottom: 10px; font-size: 14px;">
+                                <i class="fas fa-calendar-alt" style="margin-right: 8px;"></i>Reporting Date:
+                            </td>
+                            <td style="padding-bottom: 10px; font-weight: 600; font-size: 14px;">
+                                <strong>{{ $patient->reporting_date ? $patient->reporting_date->format('d-M-Y H:i') : '-' }}</strong>
+                            </td>
+                        </tr>
                     </table>
                 </div>
 

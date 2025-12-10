@@ -654,9 +654,9 @@
                 </tr>
                 <tr class="personal-info-row">
                     <th><i class="fas fa-calendar-check fa-lg" aria-hidden="true"></i> Receiving Date</th>
-                    <td class="value">{{ $patient->receiving_date ? $patient->receiving_date->format('d-M-Y H:i') : '-' }}</td>
+                    <td class="value"><strong>{{ $patient->receiving_date ? $patient->receiving_date->format('d-M-Y H:i') : '-' }}</strong></td>
                     <th><i class="fas fa-calendar-alt fa-lg" aria-hidden="true"></i> Reporting Date</th>
-                    <td class="value">{{ $patient->reporting_date ? $patient->reporting_date->format('d-M-Y H:i') : '-' }}</td>
+                    <td class="value"><strong>{{ $patient->reporting_date ? $patient->reporting_date->format('d-M-Y H:i') : '-' }}</strong></td>
                 </tr>
             </tbody>
         </table>
