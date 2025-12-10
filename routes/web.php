@@ -202,6 +202,10 @@ Route::middleware(['auth:sanctum', 'verified'])
         Route::get('/activities', 'App\Http\Controllers\DaityActivitiesController@index')->name('activities');
         Route::post('/activities/add', 'App\Http\Controllers\DaityActivitiesController@store')->name('activities.add');
         Route::put('/activities/update', 'App\Http\Controllers\DaityActivitiesController@update')->name('activities.update');
+        
+        // Settings Route
+        Route::get('/settings', 'App\Http\Controllers\SettingsController@index')->name('settings.index');
+        Route::put('/settings', 'App\Http\Controllers\SettingsController@update')->name('settings.update');
     });
 
 // User Profile Routes

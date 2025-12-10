@@ -55,6 +55,8 @@ class Patients extends Model
         'blood_group',
         'receiving_date',
         'reporting_date',
+        'receiving_datetime',
+        'reporting_datetime',
         'note',
         'referred_by',
         'test_category',
@@ -67,8 +69,10 @@ class Patients extends Model
     ];
 
     protected $casts = [
-        'receiving_date' => 'date',
-        'reporting_date' => 'date',
+        'receiving_date' => 'datetime',
+        'reporting_date' => 'datetime',
+        'receiving_datetime' => 'datetime',
+        'reporting_datetime' => 'datetime',
         'age_years' => 'integer',
         'age_months' => 'integer',
         'age_days' => 'integer',

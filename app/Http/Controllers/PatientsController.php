@@ -454,12 +454,15 @@ class PatientsController extends Controller
             'age_years' => 'nullable|integer|min:0|max:150',
             'age_months' => 'nullable|integer|min:0|max:11',
             'age_days' => 'nullable|integer|min:0|max:30',
-            'receiving_date' => 'required|date',
-            'reporting_date' => 'required|date',
+            'receiving_date' => 'required|date:Y-m-d H:i',
+            'reporting_date' => 'required|date:Y-m-d H:i',
             'test_category'   => 'required|array|min:1',
             'test_category.*' => 'string|max:255',
             'test_prices'     => 'array',
             'test_prices.*'   => 'numeric',
+        ], [
+            'test_category.required' => 'Please select at least one test category',
+            'test_category.min' => 'Please select at least one test category',
         ]);
 
         // Combine age parts into the `age` string if needed
@@ -727,8 +730,8 @@ class PatientsController extends Controller
             'age_years' => 'nullable|integer|min:0|max:150',
             'age_months' => 'nullable|integer|min:0|max:11',
             'age_days' => 'nullable|integer|min:0|max:30',
-            'receiving_date' => 'required|date',
-            'reporting_date' => 'required|date',
+            'receiving_date' => 'required|date:Y-m-d H:i',
+            'reporting_date' => 'required|date:Y-m-d H:i',
         ]);
 
         // If age wasn't provided as a combined string, try to assemble it from the split parts
@@ -758,6 +761,9 @@ class PatientsController extends Controller
         $patient->blood_group = $request->blood_group ?? null;
         $patient->receiving_date = $request->receiving_date;
         $patient->reporting_date = $request->reporting_date;
+        // 同时保存日期和时间字段
+        $patient->receiving_datetime = $request->receiving_date;
+        $patient->reporting_datetime = $request->reporting_date;
         $patient->note = $request->note;
         $patient->referred_by = $request->referred_by;
         $saved = $patient->save();
@@ -1113,8 +1119,8 @@ class PatientsController extends Controller
     {
         $attempt = 0;
         do {
-            // e.g. 20251025-8421 (date + 4 random digits)
-            $candidate = date('Ymd') . mt_rand(1000, 9999);
+            // e.g. 202510251422-8421 (date and time + 4 random digits)
+            $candidate = date('YmdHis') . mt_rand(1000, 9999);
             $exists = Patients::where('patient_id', $candidate)->exists();
             $attempt++;
         } while ($exists && $attempt < 10);
