@@ -112,6 +112,20 @@
                             </td>
                             <td style="font-weight: 600; font-size: 14px;">{{ $patient->mobile_phone }}</td>
                         </tr>
+                        <tr>
+                            <td style="font-weight: bold; color: black; padding-bottom: 10px; font-size: 14px;">
+                                <i class="fas fa-calendar-check" style="margin-right: 8px;"></i>Receiving Date:
+                            </td>
+                            <td style="padding-bottom: 10px; font-weight: 600; font-size: 14px;">
+                                <strong>{{ $patient->receiving_date ? $patient->receiving_date->format('d-M-Y H:i') : '-' }}</strong>
+                            </td>
+                            <td style="font-weight: bold; color: black; padding-bottom: 10px; font-size: 14px;">
+                                <i class="fas fa-calendar-alt" style="margin-right: 8px;"></i>Reporting Date:
+                            </td>
+                            <td style="padding-bottom: 10px; font-weight: 600; font-size: 14px;">
+                                <strong>{{ $patient->reporting_date ? $patient->reporting_date->format('d-M-Y H:i') : '-' }}</strong>
+                            </td>
+                        </tr>
                     </table>
                 </div>
 
@@ -336,6 +350,7 @@
                 :root {
                     --print-header-height: 36mm;
                     --print-footer-height: 32mm;
+                    --print-footer-bottom-gap: 20mm;
                 }
 
             .no-print {
@@ -365,14 +380,14 @@
             }
 
             .print-footer {
-                bottom: 10mm;
+                bottom: var(--print-footer-bottom-gap);
                 height: var(--print-footer-height);
             }
 
             /* Ensure card body leaves enough space for header/footer */
             .print-body {
                 padding-top: calc(var(--print-header-height) + 12mm) !important;
-                padding-bottom: calc(var(--print-footer-height) + 10mm) !important;
+                padding-bottom: calc(var(--print-footer-height) + var(--print-footer-bottom-gap) + 10mm) !important;
             }
 
             /* Do not add mini-header rows in this page to avoid duplication with the fixed print header */

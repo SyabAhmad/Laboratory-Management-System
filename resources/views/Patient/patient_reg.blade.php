@@ -154,23 +154,23 @@
                                             </div>
                                             <div class="row">
                                                 <div class="col-md-6 mb-4">
-                                                    <label for="receiving_date" class="form-label">Receiving Date <span
+                                                    <label for="receiving_date" class="form-label">Receiving Date & Time <span
                                                             class="text-danger">*</span></label>
-                                                    <input type="date"
+                                                    <input type="datetime-local"
                                                         class="form-control modern-input @error('receiving_date') is-invalid @enderror"
                                                         id="receiving_date" name="receiving_date"
-                                                        value="{{ old('receiving_date', date('Y-m-d')) }}" required>
+                                                        value="???" required>
                                                     @error('receiving_date')
                                                         <span class="invalid-feedback">{{ $message }}</span>
                                                     @enderror
                                                 </div>
                                                 <div class="col-md-6 mb-4">
-                                                    <label for="reporting_date" class="form-label">Reporting Date <span
+                                                    <label for="reporting_date" class="form-label">Reporting Date & Time <span
                                                             class="text-danger">*</span></label>
-                                                    <input type="date"
+                                                    <input type="datetime-local"
                                                         class="form-control modern-input @error('reporting_date') is-invalid @enderror"
                                                         id="reporting_date" name="reporting_date"
-                                                        value="{{ old('reporting_date', date('Y-m-d')) }}" required>
+                                                        value="{{ old('reporting_date', date('Y-m-d\TH:i')) }}" required>
                                                     @error('reporting_date')
                                                         <span class="invalid-feedback">{{ $message }}</span>
                                                     @enderror
@@ -542,161 +542,145 @@
         }
     </style>
 @endsection
-
 @section('scripts')
-    <script>
-        (function() {
-            'use strict';
+<script>
+(function() {
+    'use strict';
 
-            document.addEventListener('DOMContentLoaded', function() {
-                var form = document.getElementById('patientRegistrationForm');
-                var checkboxes = document.querySelectorAll('input.test-checkbox');
-                var container = document.getElementById('test-category-container');
+    document.addEventListener('DOMContentLoaded', function() {
+        // ======== 1. Form & Test Logic ========
+        var form = document.getElementById('patientRegistrationForm');
+        var checkboxes = document.querySelectorAll('input.test-checkbox');
+        var container = document.getElementById('test-category-container');
 
-                if (!form || !container) {
-                    console.error('Form or container not found');
-                    return;
-                }
+        if (!form || !container) {
+            console.error('Form or container not found');
+            return;
+        }
 
-                // Function to combine age fields into a single string
-                function combineAgeFields() {
-                    var years = document.getElementById('age_years').value || '0';
-                    var months = document.getElementById('age_months').value || '0';
-                    var days = document.getElementById('age_days').value || '0';
+        // Combine age fields
+        function combineAgeFields() {
+            var years = document.getElementById('age_years').value || '0';
+            var months = document.getElementById('age_months').value || '0';
+            var days = document.getElementById('age_days').value || '0';
 
-                    var ageParts = [];
-                    if (years && years !== '0') ageParts.push(years + 'Y');
-                    if (months && months !== '0') ageParts.push(months + 'M');
-                    if (days && days !== '0') ageParts.push(days + 'D');
+            var ageParts = [];
+            if (years !== '0') ageParts.push(years + 'Y');
+            if (months !== '0') ageParts.push(months + 'M');
+            if (days !== '0') ageParts.push(days + 'D');
 
-                    var ageString = ageParts.length > 0 ? ageParts.join(' ') : '0Y';
-                    document.getElementById('age').value = ageString;
+            var ageString = ageParts.length ? ageParts.join(' ') : '0Y';
+            document.getElementById('age').value = ageString;
+        }
 
-                    console.log('Combined age:', ageString);
-                }
+        ['age_years', 'age_months', 'age_days'].forEach(function(id) {
+            var field = document.getElementById(id);
+            if (field) field.addEventListener('input', combineAgeFields);
+        });
 
-                // Update age whenever any age field changes
-                ['age_years', 'age_months', 'age_days'].forEach(function(id) {
-                    var field = document.getElementById(id);
-                    if (field) {
-                        field.addEventListener('input', combineAgeFields);
-                    }
-                });
-
-                // Function to update hidden inputs with selected test values
-                function updateTestCategory() {
-                    container.innerHTML = ''; // Clear previous hidden inputs
-
-                    var selected = [];
-                    for (var i = 0; i < checkboxes.length; i++) {
-                        if (checkboxes[i].checked) {
-                            selected.push(checkboxes[i].value);
-
-                            // Create a hidden input for each selected test
-                            var input = document.createElement('input');
-                            input.type = 'hidden';
-                            input.name = 'test_category[]'; // Note the [] — this makes it an array in PHP
-                            input.value = checkboxes[i].value;
-                            container.appendChild(input);
-
-                            // Also send the price
-                            var priceInput = document.createElement('input');
-                            priceInput.type = 'hidden';
-                            priceInput.name = 'test_prices[]';
-                            var priceValue = checkboxes[i].getAttribute('data-price') || '0';
-                            priceInput.value = priceValue;
-                            container.appendChild(priceInput);
-
-                            console.log('Added test:', checkboxes[i].value, 'with price:', priceValue);
-                        }
-                    }
-
-                    console.log('Selected tests:', selected);
-                    console.log('Hidden inputs created:', selected.length);
-
-                    return selected;
-                }
-
-                // Add change event listener to each checkbox - update immediately
-                for (var i = 0; i < checkboxes.length; i++) {
-                    checkboxes[i].addEventListener('change', function() {
-                        updateTestCategory();
-                    });
-                }
-
-                // Handle form submission
-                form.addEventListener('submit', function(e) {
-                    // Combine age fields before validation
-                    combineAgeFields();
-
-                    // Validate that at least one age field is filled
-                    var years = document.getElementById('age_years').value || '0';
-                    var months = document.getElementById('age_months').value || '0';
-                    var days = document.getElementById('age_days').value || '0';
-
-                    if (years === '0' && months === '0' && days === '0') {
-                        e.preventDefault();
-                        if (typeof Swal !== 'undefined') {
-                            Swal.fire({
-                                icon: 'warning',
-                                title: 'Age Required',
-                                text: 'Please enter patient age (years, months, or days)',
-                                confirmButtonColor: '#3085d6',
-                            });
-                        } else {
-                            alert('Please enter patient age');
-                        }
-                        return false;
-                    }
-
-                    // Ensure hidden fields are up to date
-                    var selected = updateTestCategory();
-
-                    console.log('Form submit - Selected count:', selected.length);
-
-                    if (selected.length === 0) {
-                        e.preventDefault(); // Stop submission
-
-                        if (typeof Swal !== 'undefined') {
-                            Swal.fire({
-                                icon: 'warning',
-                                title: 'No Tests Selected',
-                                text: 'Please select at least one test',
-                                confirmButtonColor: '#3085d6',
-                            });
-                        } else {
-                            alert('Please select at least one test');
-                        }
-                        return false;
-                    }
-
-                    // Otherwise, let the form submit normally
-                    console.log('Submitting form with', selected.length, 'tests selected');
-                });
-
-                // Initialize on page load
-                updateTestCategory();
-
-                // Search functionality
-                var searchInput = document.getElementById('testSearch');
-                var testItems = document.querySelectorAll('.test-item');
-
-                if (searchInput) {
-                    searchInput.addEventListener('input', function() {
-                        var searchTerm = this.value.toLowerCase().trim();
-
-                        testItems.forEach(function(item) {
-                            var testName = item.querySelector('.test-name').textContent
-                                .toLowerCase();
-                            if (testName.includes(searchTerm)) {
-                                item.style.display = 'block';
-                            } else {
-                                item.style.display = 'none';
-                            }
-                        });
-                    });
+        // Update selected tests
+        function updateTestCategory() {
+            container.innerHTML = '';
+            var selected = [];
+            checkboxes.forEach(function(checkbox) {
+                if (checkbox.checked) {
+                    selected.push(checkbox.value);
+                    // Test name
+                    var input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'test_category[]';
+                    input.value = checkbox.value;
+                    container.appendChild(input);
+                    // Price
+                    var priceInput = document.createElement('input');
+                    priceInput.type = 'hidden';
+                    priceInput.name = 'test_prices[]';
+                    priceInput.value = checkbox.getAttribute('data-price') || '0';
+                    container.appendChild(priceInput);
                 }
             });
-        })();
-    </script>
+            return selected;
+        }
+
+        checkboxes.forEach(function(checkbox) {
+            checkbox.addEventListener('change', updateTestCategory);
+        });
+
+        // Form submission
+        form.addEventListener('submit', function(e) {
+            combineAgeFields();
+            var years = document.getElementById('age_years').value || '0';
+            var months = document.getElementById('age_months').value || '0';
+            var days = document.getElementById('age_days').value || '0';
+
+            if (years === '0' && months === '0' && days === '0') {
+                e.preventDefault();
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Age Required',
+                        text: 'Please enter patient age (years, months, or days)',
+                        confirmButtonColor: '#3085d6',
+                    });
+                } else {
+                    alert('Please enter patient age');
+                }
+                return false;
+            }
+
+            updateTestCategory();
+            var selectedCount = container.querySelectorAll('input[name="test_category[]"]').length;
+            if (selectedCount === 0) {
+                e.preventDefault();
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'No Tests Selected',
+                        text: 'Please select at least one test',
+                        confirmButtonColor: '#3085d6',
+                    });
+                } else {
+                    alert('Please select at least one test');
+                }
+                return false;
+            }
+        });
+
+        updateTestCategory();
+
+        // Search
+        var searchInput = document.getElementById('testSearch');
+        var testItems = document.querySelectorAll('.test-item');
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                var term = this.value.toLowerCase().trim();
+                testItems.forEach(function(item) {
+                    var name = item.querySelector('.test-name').textContent.toLowerCase();
+                    item.style.display = name.includes(term) ? 'block' : 'none';
+                });
+            });
+        }
+
+        // ======== 2. DATETIME FIELDS — FIXED ========
+        function formatLocalDateTime(date) {
+            const pad = (n) => String(n).padStart(2, '0');
+            return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+        }
+
+        const receivingField = document.getElementById('receiving_date');
+        const reportingField = document.getElementById('reporting_date');
+
+        // Always use USER'S local system time — ignore PHP value
+        if (receivingField) {
+            receivingField.value = formatLocalDateTime(new Date());
+        }
+
+        if (reportingField) {
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            reportingField.value = formatLocalDateTime(tomorrow);
+        }
+    });
+})();
+</script>
 @endsection

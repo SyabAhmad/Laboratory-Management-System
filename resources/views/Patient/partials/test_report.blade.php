@@ -96,13 +96,15 @@
                 /* header for A4 */
                 --print-footer-height: 20mm;
                 /* footer for A4 */
-                --print-page-width: 210mm;
-                --print-inner-width-mm: 190mm;
+                /* bottom gap for the footer; used to lift footer above bottom so extra section can be shown */
+                --print-footer-bottom-gap: 20mm;
+                --print-page-width: 240mm;
+                --print-inner-width-mm: 240mm;
             }
 
             @page {
                 size: A4;
-                margin: 10mm 10mm 10mm 10mm;
+                margin: 2mm 2mm 2mm 2mm;
                 /* standard margins for A4 */
             }
 
@@ -135,10 +137,11 @@
             /* Header/Footer positioning handled by the shared partial (print_header_footer.blade.php) */
 
             .print-body {
-                padding-top: calc(var(--print-header-height) + 20mm) !important;
+                padding-top: calc(var(--print-header-height) + 10mm) !important;
                 /* ensure content clears header with margin */
                 /* ensure body-bottom keeps clear space equal to footer height + margin */
-                padding-bottom: calc(var(--print-footer-height) + 20mm) !important;
+                /* ensure body-bottom keeps clear space equal to footer height + extra bottom gap */
+                padding-bottom: calc(var(--print-footer-height) + var(--print-footer-bottom-gap) + 8mm) !important;
                 /* rely on report-inner for horizontal spacing so inner content matches header/footer */
                 padding-left: 0 !important;
                 padding-right: 0 !important;
@@ -148,7 +151,7 @@
             /* Adjust padding for multiple tests to avoid empty pages */
             .multiple-tests.print-body {
                 padding-top: calc(var(--print-header-height) + 5mm) !important;
-                padding-bottom: calc(var(--print-footer-height) + 5mm) !important;
+                padding-bottom: calc(var(--print-footer-height) + var(--print-footer-bottom-gap) + 3mm) !important;
             }
 
             .footer-container {
@@ -369,7 +372,7 @@
                 margin-bottom: 10px;
                 font-size: 14px;
                 /* increased baseline personal info font */
-                border: 1px solid #e7e7e7;
+                border: 2px solid #e7e7e7;
                 border-radius: 6px;
                 background: #fff;
                 box-sizing: border-box;
@@ -377,7 +380,7 @@
 
             .personal-info-table td,
             .personal-info-table th {
-                padding: 6px 8px;
+                padding: 8px 12px;
                 vertical-align: top;
                 border: none;
             }
@@ -391,11 +394,12 @@
             }
 
             .personal-info-table td.value {
-                padding-left: 4px;
+                padding-left: 8px;
             }
 
             .personal-info-table .value {
                 color: #333;
+                text-decoration: underline;
             }
 
             .personal-info-row {
@@ -414,7 +418,7 @@
                 border-radius: 4px;
                 background: #fff;
                 border: 1px solid #e7e7e7;
-                padding: 4px;
+                padding: 8px;
                 margin-bottom: 6px;
                 width: 100% !important;
                 max-width: 100% !important;
@@ -654,9 +658,9 @@
                 </tr>
                 <tr class="personal-info-row">
                     <th><i class="fas fa-calendar-check fa-lg" aria-hidden="true"></i> Receiving Date</th>
-                    <td class="value">{{ $patient->receiving_date ? $patient->receiving_date->format('d-M-Y') : '-' }}</td>
+                    <td class="value"><strong>{{ $patient->receiving_date ? $patient->receiving_date->format('d-M-Y H:i') : '-' }}</strong></td>
                     <th><i class="fas fa-calendar-alt fa-lg" aria-hidden="true"></i> Reporting Date</th>
-                    <td class="value">{{ $patient->reporting_date ? $patient->reporting_date->format('d-M-Y') : '-' }}</td>
+                    <td class="value"><strong>{{ $patient->reporting_date ? $patient->reporting_date->format('d-M-Y H:i') : '-' }}</strong></td>
                 </tr>
             </tbody>
         </table>
@@ -927,3 +931,26 @@ if (isset($bill) && $bill->all_test) {
     @endif
 
     <!-- Footer will be provided by print_header_footer partial (already included above) -->
+
+    <!-- New section below footer -->
+    <div class="extra-section-below-footer">
+        <h4>Additional Notes</h4>
+        <p>This is a new section below the footer. It should appear in print after the footer.</p>
+    </div>
+
+    <style>
+        @media print {
+            .extra-section-below-footer {
+                width: var(--print-inner-width-mm);
+                margin: 0 auto;
+                padding: 6px;
+                font-size: 10px;
+                border-top: 1px solid #ddd;
+                margin-top: 10px;
+            }
+        }
+        /* Hide on screen */
+        .extra-section-below-footer {
+            display: none;
+        }
+    </style>

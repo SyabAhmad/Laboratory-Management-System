@@ -177,11 +177,11 @@
 
                                     <div class="form-group mb-4">
                                         <label for="receiving_date" class="font-weight-bold">
-                                            <i class="fas fa-calendar-check text-primary-custom mr-1"></i> Receiving Date <span class="text-danger">*</span>
+                                            <i class="fas fa-calendar-check text-primary-custom mr-1"></i> Receiving Date & Time <span class="text-danger">*</span>
                                         </label>
-                                        <input type="date" id="receiving_date" name="receiving_date"
+                                        <input type="datetime-local" id="receiving_date" name="receiving_date"
                                             class="form-control @error('receiving_date') is-invalid @enderror"
-                                            value="{{ old('receiving_date', $patient->receiving_date?->format('Y-m-d')) }}"
+                                            value="{{ old('receiving_date', $patient->receiving_datetime?->format('Y-m-d\TH:i') ?: $patient->receiving_date?->format('Y-m-d\TH:i')) }}"
                                             required>
                                         @error('receiving_date')
                                             <span class="invalid-feedback">{{ $message }}</span>
@@ -190,11 +190,11 @@
 
                                     <div class="form-group mb-4">
                                         <label for="reporting_date" class="font-weight-bold">
-                                            <i class="fas fa-calendar-alt text-primary-custom mr-1"></i> Reporting Date <span class="text-danger">*</span>
+                                            <i class="fas fa-calendar-alt text-primary-custom mr-1"></i> Reporting Date & Time <span class="text-danger">*</span>
                                         </label>
-                                        <input type="date" id="reporting_date" name="reporting_date"
+                                        <input type="datetime-local" id="reporting_date" name="reporting_date"
                                             class="form-control @error('reporting_date') is-invalid @enderror"
-                                            value="{{ old('reporting_date', $patient->reporting_date?->format('Y-m-d')) }}"
+                                            value="{{ old('reporting_date', $patient->reporting_datetime?->format('Y-m-d\TH:i') ?: $patient->reporting_date?->format('Y-m-d\TH:i')) }}"
                                             required>
                                         @error('reporting_date')
                                             <span class="invalid-feedback">{{ $message }}</span>
