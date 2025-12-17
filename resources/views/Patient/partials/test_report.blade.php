@@ -165,7 +165,7 @@
             }
 
             .footer-row {
-                margin-bottom: 8px;
+                margin-bottom: 2px;
                 page-break-inside: avoid;
                 display: block;
             }
@@ -556,9 +556,6 @@
                 }
 
                 /* Adjust header and footer fonts for A4 printing */
-                .print-header .lab-name {
-                    font-size: 22px !important;
-                }
 
                 .print-header .lab-subtitle {
                     font-size: 16px !important;
