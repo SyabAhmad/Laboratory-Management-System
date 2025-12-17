@@ -26,9 +26,13 @@
         .print-header .lab-subtitle {
             font-size: 28px !important;
         }
-
-        .print-header .lab-address {
+        .print-header .lab-address  {
             font-size: 26px !important;
+        }
+
+        .print-header .lab-contact  {
+            font-size: 16px !important;
+            padding-top: 4px !important;
         }
 
         .print-header .contact-info {
@@ -161,6 +165,14 @@
                         ">
                         (KP HCC) REG: 03663 SWAT 
                     </div>
+                    <div class="lab-contact">
+                <!-- <hr style="border: 1px solid #000; margin: 5px 0;"> -->
+                
+                    <p>
+                        📞 0302-8080191  📞 0313-9797790  ✉  bachakhanacl@gmail.com <br> 📍 Kabal Road, Near Township Chowk, Kanju Swat
+                    </p>
+                
+            </div>
                     </div>
                 </td>
                 <td width="25%" valign="middle" align="right" class="contact-info-cell">
