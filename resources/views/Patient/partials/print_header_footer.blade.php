@@ -1,10 +1,10 @@
 <style>
     @media print {
         :root {
-            --print-header-height: 20mm;
-            --print-footer-height: 15mm;
+            --print-header-height: 40mm;
+            --print-footer-height: 45mm;
             /* Gap to lift footer above the page bottom to leave space below it for an extra section */
-            --print-footer-bottom-gap: 20mm; /* Adjust this value to add/remove the space below footer */
+            --print-footer-bottom-gap: 45mm; /* Adjust this value to add/remove the space below footer */
         }
 
         .print-header,
@@ -15,29 +15,28 @@
             width: auto;
             padding: 0;
             z-index: 200000;
-            display: block !important;
             box-sizing: border-box;
             max-width: none;
         }
 
         .print-header .lab-name {
-            font-size: 16px !important;
+            font-size: 32px !important;
         }
 
         .print-header .lab-subtitle {
-            font-size: 10px !important;
+            font-size: 28px !important;
         }
 
         .print-header .lab-address {
-            font-size: 9px !important;
+            font-size: 26px !important;
         }
 
         .print-header .contact-info {
-            font-size: 9px !important;
+            font-size: 24px !important;
         }
 
         .print-header-details {
-            font-size: 9px !important;
+            font-size: 24px !important;
         }
 
         .print-footer .footer-item {
@@ -62,32 +61,21 @@
             display: none;
         }
 
-        .print-header .print-inner table td img {
-            width: 20mm !important;
-            height: 20mm !important;
-        }
-
         .print-header .print-inner table td img.header-logo {
-            position: absolute !important;
-            left: 2mm !important;
-            top: 50% !important;
-            transform: translateY(-50%) !important;
-            width: 24mm !important;
-            height: 24mm !important;
-            z-index: 999999 !important;
-            display: block !important;
+            width: 40mm !important;
+            height: 40mm !important;
         }
 
         .print-header .print-inner .print-logo img.header-logo {
-            width: 24mm !important;
-            height: 24mm !important;
+            width: 40mm !important;
+            height: 40mm !important;
             border-radius: 50% !important;
             border: 2px solid #8d2d36 !important;
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
         }
 
         .print-header .print-inner table td.center-cell {
-            padding-left: 20mm !important;
+            text-align: right !important;
         }
 
         .print-header {
@@ -136,75 +124,58 @@
             box-sizing: border-box;
             position: relative;
         ">
-        <!-- Floating Logo -->
-        <div class="print-logo" style="position: absolute; left: 1mm; top: 1mm; z-index: 999999;">
-            <img src="{{ asset('assets/images/logo.png') }}" class="header-logo" alt="Logo"
-                style="
-                    width: 28mm;
-                    height: 28mm;
-                    border-radius: 50%;
-                    border: 3px solid #8d2d36;
-                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-                " />
-        </div>
 
         <table width="100%" cellpadding="0" cellspacing="0"
-            style="border-bottom: 2px solid #8d2d36; padding-bottom: 8px;">
+            style="border-bottom: 6px solid #8d2d36; padding-bottom: 8px; margin-top: 5px;">
             <tr>
-                <td class="center-cell" style="padding: 0 6px; text-align: center; vertical-align: middle;">
+                <td width="10%" valign="middle" align="left" class="logo-cell"
+                    style="
+                        padding: 0 6px;
+                        vertical-align: middle;
+                    ">
+                    <img src="{{ asset('assets/images/logo.png') }}" class="header-logo" alt="Logo"
+                        style="
+                            width: 50mm;
+                            height: 50mm;
+                            border-radius: 50%;
+                            border: 3px solid #8d2d36;
+                            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                        " />
+                </td>
+                <td class="center-cell" style="padding: 0 6px; text-align: left; vertical-align: middle;">
                     <div class="lab-name"
                         style="
+                        text-align: left;
                             font-weight: bold;
-                            font-size: 14px;
                             margin: 0;
                             line-height: 1.1;
                             color: #8d2d36;
                         ">
                         NEW MODERN CLINICAL LABORATORY
-                    </div>
-
-                    <div class="lab-subtitle"
+                        <div class="lab-subtitle"
                         style="
-                            font-size: 8px;
+                            text-align: left;
                             margin: 2px 0 0 0;
                             font-weight: 600;
                             color: #8d2d36;
                         ">
-                        (KP HCC) REG: 03663 SWAT
+                        (KP HCC) REG: 03663 SWAT 
                     </div>
-
+                    </div>
+                </td>
+                <td width="25%" valign="middle" align="right" class="contact-info-cell">
                     <div class="lab-address"
                         style="
-                            font-size: 7px;
+                        text-align: right;
                             color: #8d2d36;
                             margin: 2px 0 0 0;
                             line-height: 1.2;
                         ">
-                        Bacha Khan, BS Pathology (KMU)<br />
+                        <strong>Bacha Khan</strong>, BS Pathology (KMU)<br />
                         DMLT KPK Peshawar CT Pathology Department Saidu Medical
                         College/ SGTH Swat
                     </div>
                 </td>
-<!-- 
-                <td width="30%" valign="middle" align="right" class="contact-info"
-                    style="
-                        font-size: 8px;
-                        color: #8d2d36;
-                        line-height: 1.3;
-                        padding-left: 4px;
-                        border-left: 2px solid #8d2d36;
-                        vertical-align: middle;
-                    ">
-                    <div style="font-weight: bold; color: #8d2d36; margin-bottom: 2px;">
-                        Contact Information
-                    </div>
-
-                    0302-8080191 <br />
-                    0313-9797790 <br />
-                    Email: bachakhanacl@gmail.com <br />
-                    Kabal Road, Near Township Chowk<br />
-                    Kanju Swat
-                </td> -->
             </tr>
         </table>
     </div>
@@ -274,19 +245,12 @@
   <p class="">Contact Information: 0302-8080191  |  0313-9797790 |  Email: bachakhanacl@gmail.com <br />
                     Kabal Road, Near Township Chowk Kanju Swat</p>
 </div>
-
-<style>
-  @media print {
-    .extra-section-below-footer {
-      width: var(--print-inner-width-mm);
-      margin: 0 auto;
-      /* optional height or padding; adjust as needed */
-      padding-top: 6px;
-      padding-bottom: 6px;
-      font-size: 10px;
-    }
-  }
-</style>
+            <div class="red-contact-section">
+                <hr style="border: 1px solid #000; margin: 5px 0;">
+                <p style="background-color: red; color: white; padding: 5px; margin: 0;">
+                    Contact: 0302-8080191 | 0313-9797790 | Email: bachakhanacl@gmail.com | Kabal Road, Near Township Chowk, Kanju Swat
+                </p>
+            </div>
         </div>
     </div>
 </div>
