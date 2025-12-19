@@ -28,7 +28,7 @@
         body {
             font-family: 'Courier New', Arial, sans-serif;
             line-height: 1.2;
-            color: #333;
+            color: black;
             background-color: #f5f5f5;
             margin: 0;
             padding: 0;
@@ -73,15 +73,17 @@
         }
 
         .slip-subtitle {
+            font-weight: bold;
             font-size: 16px; /*12px */
-            color: #666;
+            color: black;
             margin-bottom: 0.2mm;
         }
 
         .slip-marker {
+            font-weight: bold;
             /* 9px */
             font-size: 15px; 
-            color: #999;
+            color: black;
         }
 
         /* Patient Information Section */
@@ -105,6 +107,7 @@
         }
 
         .patient-value {
+            font-weight: bold;
             width: 70%;
             text-align: left;
             word-break: break-word;
@@ -120,9 +123,10 @@
         }
 
         .token-label {
+            font-weight: bold;
             /* 10px */
             font-size: 16px;
-            color: #666;
+            color: black;
             margin-bottom: 0.3mm;
         }
 
@@ -132,7 +136,7 @@
             font-weight: 800;
             font-family: 'Courier New', monospace;
             letter-spacing: 0.5px;
-            color: #333;
+            color: black;
         }
 
         /* Tests Section with Prices */
@@ -160,6 +164,7 @@
         }
 
         .test-name {
+            font-weight: bold;
             flex: 1;
             margin-right: 1mm;
             /* 10px */
@@ -209,21 +214,23 @@
         }
 
         .barcode-text {
+            font-weight: bold;
             /* 10px */
             font-size: 16px;
-            color: #666;
+            color: black;
             margin-top: 0.3mm;
             font-family: 'Courier New', monospace;
         }
 
         /* Footer */
         .slip-footer {
+            font-weight: bold;
             padding-top: 1mm;
             margin-top: 1mm;
             /* 10px */
             font-size: 16px;
             text-align: center;
-            color: #666;
+            color: black;
         }
 
         /* Print Controls */
@@ -270,7 +277,7 @@
             margin: 3mm 0;
             text-align: center;
             font-size: 9px;
-            color: #333;
+            color: black;
         }
         .cut-line .scissors { margin-right: 8px; margin-left: 8px; }
     </style>
