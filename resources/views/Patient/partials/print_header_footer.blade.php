@@ -27,7 +27,7 @@
             font-size: 28px !important;
         }
         .print-header .lab-address  {
-            font-size: 26px !important;
+            font-size: 36px !important;
         }
 
         .print-header .lab-contact  {
@@ -175,15 +175,15 @@
             </div>
                     </div>
                 </td>
-                <td width="25%" valign="middle" align="right" class="contact-info-cell">
+                <td width="20%" >
                     <div class="lab-address"
                         style="
-                        text-align: right;
+                        text-align: left;
                             color: #8d2d36;
                             margin: 2px 0 0 0;
                             line-height: 1.2;
                         ">
-                        <strong>Bacha Khan</strong>, BS Pathology (KMU)<br />
+                        <strong style="font-size: 20px">Bacha Khan</strong> <br /> BS Pathology (KMU)
                         DMLT KPK Peshawar CT Pathology Department Saidu Medical
                         College/ SGTH Swat
                     </div>

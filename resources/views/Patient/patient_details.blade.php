@@ -261,7 +261,7 @@
                 <div style="flex: 1; text-align: left;">
                     <div style="background: rgba(255, 255, 255, 0.8); padding: 15px; border-radius: 6px; border-left: 4px solid #8d2d36;">
                         <strong style="color: black;">Please Note:</strong><br>
-                        <i class="fas fa-info-circle" style="margin-right: 5px; color: #8d2d36;"></i>Test(s) are performed on the state-of-the-art ARCHITECT MODULAR Ci4100 from Abbott Diagnostics, U.S.A.<br>
+                        <i class="fas fa-info-circle" style="margin-right: 5px; color: #8d2d36;"></i>if there is no correlation with your clinical findings then please do ask this lab to repeat the test on the same sample, as we preserve it till late evening.<br>
                         <i class="fas fa-signature" style="margin-right: 5px; color: #8d2d36;"></i>This is a digitally signed report and does not require manual signature.
                     </div>
                 </div>
