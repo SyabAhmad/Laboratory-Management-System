@@ -102,11 +102,7 @@
                 --print-inner-width-mm: 240mm;
             }
 
-            @page {
-                size: A4;
-                margin: 2mm 2mm 2mm 2mm;
-                /* standard margins for A4 */
-            }
+            /* @page removed - handled by Layout/print.blade.php */
 
             body {
                 margin: 0;
@@ -115,13 +111,7 @@
                 height: 100%;
             }
 
-            /* Ensure proper thermal sizing */
-            html,
-            body {
-                size: 80mm auto;
-                width: var(--print-page-width);
-                min-height: auto;
-            }
+            /* html, body sizing removed - handled by Layout/print.blade.php */
 
             /* Layout calibration for thermal */
             .report-container {
@@ -137,21 +127,12 @@
             /* Header/Footer positioning handled by the shared partial (print_header_footer.blade.php) */
 
             .print-body {
-                padding-top: calc(var(--print-header-height) + 10mm) !important;
-                /* ensure content clears header with margin */
-                /* ensure body-bottom keeps clear space equal to footer height + margin */
-                /* ensure body-bottom keeps clear space equal to footer height + extra bottom gap */
-                padding-bottom: calc(var(--print-footer-height) + var(--print-footer-bottom-gap) + 8mm) !important;
-                /* rely on report-inner for horizontal spacing so inner content matches header/footer */
-                padding-left: 0 !important;
-                padding-right: 0 !important;
-                box-sizing: border-box;
+                padding: 0 !important;
+                margin: 0 !important;
             }
 
-            /* Adjust padding for multiple tests to avoid empty pages */
             .multiple-tests.print-body {
-                padding-top: calc(var(--print-header-height) + 5mm) !important;
-                padding-bottom: calc(var(--print-footer-height) + var(--print-footer-bottom-gap) + 3mm) !important;
+                padding: 0 !important;
             }
 
             .footer-container {
@@ -362,7 +343,7 @@
 
     {{-- Header and footer are included by Layout.print now to avoid duplication --}}
     <!-- end include print header/footer -->
-    @php $maxRowsPerPage = 14; @endphp
+    @php $maxRowsPerPage = 15; @endphp
     {{-- Personal information block (table format) --}}
     @if (!isset($skipPatientInfo) || !$skipPatientInfo)
         <style>
