@@ -20,11 +20,12 @@
         }
 
         .print-header .lab-name {
-            font-size: 32px !important;
+            font-size: 24px !important;
+            white-space: nowrap !important;
         }
 
         .print-header .lab-subtitle {
-            font-size: 28px !important;
+            font-size: 20px !important;
         }
         .print-header .lab-address  {
             font-size: 36px !important;
@@ -63,6 +64,7 @@
 
         .print-header .print-inner table td.header-logo-cell {
             display: none;
+            
         }
 
         .print-header .print-inner table td img.header-logo {
@@ -136,6 +138,7 @@
                     style="
                         padding: 0 6px;
                         vertical-align: middle;
+                        
                     ">
                     <img src="{{ asset('assets/images/logo.png') }}" class="header-logo" alt="Logo"
                         style="
@@ -183,7 +186,7 @@
                             margin: 2px 0 0 0;
                             line-height: 1.2;
                         ">
-                        <strong style="font-size: 20px">Bacha Khan</strong> <br /> BS Pathology (KMU)
+                        <strong style="font-size: 20px ">Bacha Khan</strong> <br /> BS Pathology (KMU)
                         DMLT KPK Peshawar CT Pathology Department Saidu Medical
                         College/ SGTH Swat
                     </div>
@@ -233,35 +236,29 @@
                     background-color: #f8fafb;
                     padding: 4px;
                     border-left: 2px solid #8d2d36;
-                    font-size: 9px;
+                    font-size: 9px; 
                     flex: 1 1 62%;
                 ">
                 <strong style="color: black;">Please Note:</strong><br />
 
-                <div class="note-line">
-                    <i class="fas fa-info-circle" style="margin-right: 5px; color: black;"></i>
+                <div class="note-line  ">
+                    <i class="fas fa-info-circle" style="margin-right: 5px; color: black; "></i>
                     If there is no correlation with your clinical findings then please do ask this lab
                     to repeat the test on the same sample, as we preserve it till late evening.
+                    
                 </div>
 
-                <i class="fas fa-signature" style="margin-right: 5px; color: black;"></i>
-                This report is not meant for any medico-legal purpose.<br />
+                 <div style="margin-top: 4px; font-size: 16px">
+                    <i class="fas fa-signature" style="margin-right: 5px; color: black;"></i>
+                    This report is not meant for any medico-legal purpose.
+                </div>
 
-                <i class="fas fa-signature" style="margin-right: 5px; color: black;"></i>
-                This is a digitally signed report by
-                <strong style="color: black; font-size: 15px;">Bacha Khan</strong>
-                and does not require manual signature.
-            </div>
-            <div class="extra-section-below-footer">
-  <!-- here the below tag p would be colord bg and white fg, and thiu section needs to b below the footer, like last section of test print report blad file -->
-  <p class="">Contact Information: 0302-8080191  |  0313-9797790 |  Email: bachakhanacl@gmail.com <br />
-                    Kabal Road, Near Township Chowk Kanju Swat</p>
-</div>
-            <div class="red-contact-section">
-                <hr style="border: 1px solid #000; margin: 5px 0;">
-                <p style="background-color: red; color: white; padding: 5px; margin: 0;">
-                    Contact: 0302-8080191 | 0313-9797790 | Email: bachakhanacl@gmail.com | Kabal Road, Near Township Chowk, Kanju Swat
-                </p>
+                <div style="margin-top: 4px;font-size: 16px">
+                    <i class="fas fa-signature" style="margin-right: 5px; color: black;"></i>
+                    This is a digitally signed report by
+                    <strong style="color: black; font-size: 16px;">Bacha Khan</strong>
+                    and does not require manual signature.
+                </div>
             </div>
         </div>
     </div>
