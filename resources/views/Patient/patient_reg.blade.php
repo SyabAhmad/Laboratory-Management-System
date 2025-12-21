@@ -677,7 +677,7 @@
 
         if (reportingField) {
             const tomorrow = new Date();
-            tomorrow.setDate(tomorrow.getDate() + 1);
+            tomorrow.setDate(tomorrow.getDate());
             reportingField.value = formatLocalDateTime(tomorrow);
         }
     });
