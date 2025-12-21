@@ -243,10 +243,10 @@
                         @endphp
                         @if($categoryNotes)
                             <div style="border: 1px solid #8d2d36; border-radius: 6px; padding: 12px 15px; margin-bottom: 20px; border-left: 4px solid #8d2d36;">
-                                <div style="font-weight: bold; color: #8d2d36; margin-bottom: 8px; font-size: 12px;">
+                                <div style="font-weight: bold; color: #8d2d36; margin-bottom: 8px; font-size: 14px;">
                                     <i class="fas fa-sticky-note" style="margin-right: 6px;"></i>Test Notes & Remarks
                                 </div>
-                                <div style="font-size: 11px; color: #333; line-height: 1.5; white-space: pre-wrap;">
+                                <div style="font-size: 13px; color: #333; line-height: 1.5; white-space: pre-wrap;">
                                     {{ $categoryNotes }}
                                 </div>
                             </div>

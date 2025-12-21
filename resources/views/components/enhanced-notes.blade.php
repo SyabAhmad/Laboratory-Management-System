@@ -9,7 +9,7 @@
 
 <div class="enhanced-notes-section {{ $class }}" style="{{ $maxHeight ? 'max-height: ' . $maxHeight . '; overflow-y: auto;' : '' }}">
     @if($title || $showIcon)
-        <div class="notes-header" style="font-weight: bold; color: #8d2d36; margin-bottom: 8px; font-size: 12px; border-bottom: 1px solid #8d2d36; padding-bottom: 8px;">
+        <div class="notes-header" style="font-weight: bold; color: #8d2d36; margin-bottom: 8px; font-size: 15px; border-bottom: 1px solid #8d2d36; padding-bottom: 8px;">
             @if($showIcon)
                 <i class="fas fa-sticky-note" style="margin-right: 8px;"></i>
             @endif
@@ -19,7 +19,7 @@
         </div>
     @endif
     
-    <div class="notes-content" style="font-size: 12px; color: #333; line-height: 1.5; white-space: normal;">
+    <div class="notes-content" style="font-size: 15px; color: #333; line-height: 1.5; white-space: normal;">
         @if(!empty(trim($notes)))
             {!! \App\Helpers\MarkdownRenderer::render($notes) !!}
         @else

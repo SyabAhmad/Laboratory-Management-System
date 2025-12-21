@@ -249,6 +249,7 @@
             .multiple-tests .test-notes-section {
                 margin-bottom: 2px !important;
                 padding: 2px !important;
+                font-size: 15px !important;
             }
 
             .multiple-tests .notes-header {
