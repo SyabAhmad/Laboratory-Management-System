@@ -6,10 +6,10 @@
     <title>@yield('title', 'Print') - New Modern Clinical Laboratory</title>
     <style>
             /* A4 printer settings */
-            @page { size: A4; margin: 10mm; }
+            @page { size: A4; margin: 0; }
         :root {
             --print-page-width: 210mm; /* A4 width */
-            --print-side-padding: 10mm;
+            --print-side-padding: 0mm;
             --print-inner-width-mm: calc(var(--print-page-width) - (var(--print-side-padding) * 2));
         }
         html, body { margin: 0; padding: 0; width: 100%; height: auto; }

@@ -20,7 +20,7 @@
         }
 
         .footer-container {
-            background-color: #f8fafb;
+            background-color: #ffffff;
             border: 1px solid #e0e0e0 !important;
             border-radius: 6px;
             padding: 15px;
@@ -98,8 +98,8 @@
                 /* footer for A4 */
                 /* bottom gap for the footer; used to lift footer above bottom so extra section can be shown */
                 --print-footer-bottom-gap: 20mm;
-                --print-page-width: 240mm;
-                --print-inner-width-mm: 240mm;
+                --print-page-width: 100%;
+                --print-inner-width-mm: 100%;
             }
 
             /* @page removed - handled by Layout/print.blade.php */
@@ -266,6 +266,7 @@
             .multiple-tests .clinical-notes-section {
                 margin-bottom: 2px !important;
                 padding: 2px !important;
+                background-color: #ffffff !important;
             }
 
             .multiple-tests .clinical-notes-header {
@@ -344,55 +345,65 @@
 
     {{-- Header and footer are included by Layout.print now to avoid duplication --}}
     <!-- end include print header/footer -->
-    @php $maxRowsPerPage = 15; @endphp
+    @php $maxRowsPerPage = 22; @endphp
     {{-- Personal information block (table format) --}}
     @if (!isset($skipPatientInfo) || !$skipPatientInfo)
         <style>
             .personal-info-table {
-                width: 100%;
-                border-collapse: collapse;
-                margin-bottom: 10px;
-                font-size: 14px;
-                /* increased baseline personal info font */
-                border: 2px solid #e7e7e7;
-                border-radius: 6px;
-                background: #fff;
-                box-sizing: border-box;
-            }
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 2px; /* reduced from 5px */
+    font-size: 14px;
+    border: 2px solid #e7e7e7;
+    border-radius: 6px;
+    background: #fff;
+    box-sizing: border-box;
+}
 
-            .personal-info-table td,
-            .personal-info-table th {
-                padding: 8px 12px;
-                vertical-align: top;
-                border: none;
-            }
+.personal-info-table td,
+.personal-info-table th {
+    padding: 5px 8px; /* reduced padding */
+    vertical-align: top;
+    border: none;
+}
 
-            .personal-info-table th {
-                text-align: left;
-                color: #8d2d36;
-                font-weight: 600;
-                width: 14rem;
-                white-space: nowrap;
-            }
+.personal-info-table th {
+    text-align: left;
+    color: #8d2d36;
+    font-weight: 600;
+    width: 14rem;
+    white-space: nowrap;
+}
 
-            .personal-info-table td.value {
-                padding-left: 8px;
-            }
+.personal-info-table td.value {
+    padding-left: 6px; /* slightly reduced */
+}
 
-            .personal-info-table .value {
-                color: #333;
-                text-decoration: underline;
-            }
+/* 🔑 Force single-line values (fixes Referred By wrapping) */
+.personal-info-table .value {
+    color: #333;
+    text-decoration: underline;
+    white-space: nowrap;        /* no line break */
+    overflow: hidden;           /* hide overflow */
+    text-overflow: ellipsis;    /* show ... if too long */
+    max-width: 1px;             /* required for ellipsis in tables */
+}
 
-            .personal-info-row {
-                background: transparent;
-            }
+.personal-info-row {
+    background: transparent;
+}
 
-            @media print {
-                .personal-info-table {
-                    font-size: 16px !important;
-                }
-            }
+@media print {
+    .personal-info-table {
+        font-size: 13px !important; /* slightly tighter for print */
+    }
+
+    .personal-info-table td,
+    .personal-info-table th {
+        padding: 4px 6px !important;
+    }
+}
+
         </style>
         <style>
             /* Personal card grid styles (screen and print friendly) */
@@ -657,7 +668,7 @@
         </div>
     @endif
     <div
-        style="border: 1px solid #e0e0e0; border-radius: 6px; overflow: hidden; margin-bottom: 20px; width: var(--print-inner-width-mm); max-width: var(--print-inner-width-mm); margin-left:auto; margin-right:auto; box-sizing: border-box;">
+        style="border: 1px solid #e0e0e0; border-radius: 6px; overflow: hidden; margin-bottom: 20px; width: 100%; max-width: 100%; margin-left:auto; margin-right:auto; box-sizing: border-box;">
         <table class="results-table" width="100%" cellpadding="5" cellspacing="0" style="border-collapse: collapse;">
             <thead>
                 <!-- mini-header fallback removed to avoid duplication; use fixed header from partial -->
@@ -712,7 +723,7 @@
                 @php $rowCount = 0; @endphp
                 @foreach ($chunk as $analyte)
                     @php $rowCount++; @endphp
-                    <tr style="background: {{ $rowCount % 2 == 0 ? '#f9f9f9' : '#fff' }};">
+                    <tr style="background: #ffffff;">
                         <td style="padding: 10px; border-bottom: 1px solid #e0e0e0; font-weight: 500;">
                             {{ $analyte['name'] ?? ($analyte['code'] ?? 'Unknown') }}
                         </td>
@@ -782,7 +793,7 @@
                         // Standardized display: simply use the saved value for any field type
                         $displayValue = $value;
                     @endphp
-                    <tr style="background: {{ $rowCount % 2 == 0 ? '#f9f9f9' : '#fff' }};">
+                    <tr style="background: #ffffff;">
                         <td style="padding: 10px; border-bottom: 1px solid #e0e0e0; font-weight: 500;">
                             {{ $label }}</td>
                         <td style="padding: 10px; border-bottom: 1px solid #e0e0e0; font-weight: 700; color: black;">
@@ -827,7 +838,7 @@
                 @php $rowCount = 0; @endphp
                 @foreach ($chunk as $k => $v)
                     @php $rowCount++; @endphp
-                    <tr style="background: {{ $rowCount % 2 == 0 ? '#f9f9f9' : '#fff' }};">
+                    <tr style="background: #ffffff;">
                         <td style="padding: 10px; border-bottom: 1px solid #e0e0e0; font-weight: 500;">
                             {{ $k }}</td>
                         <td style="padding: 10px; border-bottom: 1px solid #e0e0e0; font-weight: 700; color: black;">
@@ -884,7 +895,7 @@ if (isset($bill) && $bill->all_test) {
 
     @if (!empty($billNotes))
         <div class="clinical-notes-section"
-            style="background-color: #fffacd !important; border: 2px solid #f39c12 !important; border-radius: 6px; padding: 15px; margin-bottom: 20px;">
+            style="background-color: #ffffff !important; border: 2px solid #f39c12 !important; border-radius: 6px; padding: 15px; margin-bottom: 20px;">
             <div class="clinical-notes-header"
                 style="font-weight: bold; color: #d68910; font-size: 10px; margin-bottom: 10px; border-bottom: 1px solid #f39c12; padding-bottom: 8px;">
                 <i class="fas fa-sticky-note" style="margin-right: 8px;"></i>Clinical Notes & Remarks
