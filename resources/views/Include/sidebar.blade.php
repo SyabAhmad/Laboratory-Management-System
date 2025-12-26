@@ -12,6 +12,23 @@
                 display: none;
             }
         }
+        
+        /* Custom styles to make sidebar icons and text larger and stronger */
+        #side-menu i {
+            font-size: 1.4em;
+            font-weight: bold;
+        }
+        #side-menu span {
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+        #side-menu a {
+            font-size: 1.1em;
+        }
+        #side-menu .nav-second-level a {
+            font-size: 1em;
+            font-weight: 500;
+        }
     </style>
 
     <!-- Sidebar Toggle Button -->
@@ -34,7 +51,7 @@
                             <span>Add Lab Details</span>
                         </a>
                     </li>
-                @else
+                @elseif (Auth::check())
                     @if (Auth::user()->user_type == 'Super Admin' || Auth::user()->user_type == 'Admin')
                         <li>
                             <a href="{{ route('dashboard') }}">
@@ -42,6 +59,8 @@
                                 <span> Dashboard </span>
                             </a>
                         </li>
+
+                        
 
                         
 
@@ -199,7 +218,6 @@
                                 <span> Electrocardiography </span>
                             </a>
                         </li> -->
-
                         <!-- <li>
                             <a href="{{ route('ultrasonography') }}">
                                 <i class="fas fa-monitor-heart-rate"></i>
@@ -261,6 +279,14 @@
                             <a href="{{ route('labdetails.show') }}">
                                 <i class="fas fa-building"></i>
                                 <span> Lab Information </span>
+                            </a>
+                        </li>
+
+
+                        <li>
+                            <a href="{{ route('settings.index') }}">
+                                <i class="fas fa-cog"></i>
+                                <span> Settings </span>
                             </a>
                         </li>
             </ul>

@@ -9,63 +9,85 @@
         <li class="dropdown notification-list">
             <a class="nav-link dropdown-toggle nav-user mr-0 waves-effect waves-light" data-toggle="dropdown"
                 href="#" role="button" aria-haspopup="false" aria-expanded="false">
-                @if (Auth::user()->profile_photo_path == null)
+                @if (Auth::check() && Auth::user()->profile_photo_path == null)
                     <img src="{{ asset('assets/HMS/default/user.png') }}" alt="user-image" class="rounded-circle">
-                @else
+                @elseif (Auth::check())
                     <img src="{{ asset('assets/HMS/employees/' . Auth::user()->profile_photo_path) }}" alt="user-image"
                         class="rounded-circle">
+                @else
+                    <img src="{{ asset('assets/HMS/default/user.png') }}" alt="user-image" class="rounded-circle">
                 @endif
 
                 <span class="pro-user-name ml-1 text-white">
-                    {{ Auth::user()->name }} <i class="mdi mdi-chevron-down"></i>
+                    @if (Auth::check())
+                        {{ Auth::user()->name }}
+                    @else
+                        Guest
+                    @endif
+                    <i class="mdi mdi-chevron-down"></i>
                 </span>
             </a>
             <div class="dropdown-menu dropdown-menu-right profile-dropdown bg-cards"
                 style="border: 1px solid rgba(100,116,139,0.12);">
                 <!-- item-->
-                <div class="dropdown-item noti-title" style="background: #8d2d36;">
-                    <h6 class="m-0 text-white">
-                        Welcome !
-                    </h6>
-                </div>
+                @if (Auth::check())
+                    <div class="dropdown-item noti-title" style="background: #8d2d36;">
+                        <h6 class="m-0 text-white">
+                            Welcome {{ Auth::user()->name }}!
+                        </h6>
+                    </div>
+                @else
+                    <div class="dropdown-item noti-title" style="background: #8d2d36;">
+                        <h6 class="m-0 text-white">
+                            Welcome Guest!
+                        </h6>
+                    </div>
+                @endif
 
                 <!-- item-->
-                <a href="{{ route('user.profile') }}" class="dropdown-item notify-item" style="color: var(--text-heading); border-bottom: 1px solid rgba(100,116,139,0.06);">
-                    <i class="dripicons-user text-primary-custom"></i>
-                    <span>My Account</span>
-                </a>
+                @if (Auth::check())
+                    <a href="{{ route('user.profile') }}" class="dropdown-item notify-item" style="color: var(--text-heading); border-bottom: 1px solid rgba(100,116,139,0.06);">
+                        <i class="dripicons-user text-primary-custom"></i>
+                        <span>My Account</span>
+                    </a>
 
-                <a href="javascript:void(0);" class="dropdown-item notify-item" data-toggle="modal"
-                    data-target="#attendance" style="color: var(--text-heading); border-bottom: 1px solid rgba(100,116,139,0.06);">
-                    <i class="dripicons-user text-primary-custom"></i>
-                    <span>Attendance</span>
-                </a>
+                    <a href="javascript:void(0);" class="dropdown-item notify-item" data-toggle="modal"
+                        data-target="#attendance" style="color: var(--text-heading); border-bottom: 1px solid rgba(100,116,139,0.06);">
+                        <i class="dripicons-user text-primary-custom"></i>
+                        <span>Attendance</span>
+                    </a>
 
-                <a href="javascript:void(0);" class="dropdown-item notify-item" data-toggle="modal"
-                    data-target="#dailyactivities" style="color: var(--text-heading); border-bottom: 1px solid rgba(100,116,139,0.06);">
-                    <i class="dripicons-user text-primary-custom"></i>
-                    <span>Daily Activity</span>
-                </a>
+                    <a href="javascript:void(0);" class="dropdown-item notify-item" data-toggle="modal"
+                        data-target="#dailyactivities" style="color: var(--text-heading); border-bottom: 1px solid rgba(100,116,139,0.06);">
+                        <i class="dripicons-user text-primary-custom"></i>
+                        <span>Daily Activity</span>
+                    </a>
 
-                <a href="javascript:void(0);" class="dropdown-item notify-item" data-toggle="modal"
-                    data-target="#support" style="color: var(--text-heading); border-bottom: 1px solid rgba(100,116,139,0.06);">
-                    <i class="dripicons-help text-primary-custom"></i>
-                    <span>Support</span>
-                </a>
+                    <a href="javascript:void(0);" class="dropdown-item notify-item" data-toggle="modal"
+                        data-target="#support" style="color: var(--text-heading); border-bottom: 1px solid rgba(100,116,139,0.06);">
+                        <i class="dripicons-help text-primary-custom"></i>
+                        <span>Support</span>
+                    </a>
 
-                <div class="dropdown-divider" style="background-color: rgba(100,116,139,0.12);"></div>
+                    <div class="dropdown-divider" style="background-color: rgba(100,116,139,0.12);"></div>
 
-                <!-- item-->
-                <a href="{{ route('logout') }}" class="dropdown-item notify-item"
-                    onclick="event.preventDefault();
-                document.getElementById('logout-form').submit();"
-                    style="color: var(--danger);">
-                    <i class="dripicons-power text-danger"></i>
-                    <span>Logout</span>
-                </a>
-                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                    @csrf
-                </form>
+                    <!-- item-->
+                    <a href="{{ route('logout') }}" class="dropdown-item notify-item"
+                        onclick="event.preventDefault();
+                    document.getElementById('logout-form').submit();"
+                        style="color: var(--danger);">
+                        <i class="dripicons-power text-danger"></i>
+                        <span>Logout</span>
+                    </a>
+                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                        @csrf
+                    </form>
+                @else
+                    <a href="{{ route('login') }}" class="dropdown-item notify-item" style="color: var(--text-heading); border-bottom: 1px solid rgba(100,116,139,0.06);">
+                        <i class="dripicons-enter text-primary-custom"></i>
+                        <span>Login</span>
+                    </a>
+                @endif
 
             </div>
         </li>
@@ -121,6 +143,8 @@
 </div>
 
 
+
+@if(Auth::check())
 <!-- Attendance Modal -->
 <div class="modal fade" id="attendance" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -340,6 +364,8 @@
         </div>
     </div>
 </div>
+@endif
+
 
 
 <!-- Activites Modal -->
