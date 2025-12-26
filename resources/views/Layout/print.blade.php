@@ -12,7 +12,7 @@
             --print-side-padding: 0mm;
             --print-inner-width-mm: calc(var(--print-page-width) - (var(--print-side-padding) * 2));
         }
-        html, body { margin: 0; padding: 0; width: 100%; height: auto; }
+        html, body { margin: 15mm; padding: 0; width: 100%; height: auto; }
         .report-container { width: 100%; margin: 0; padding: 0; box-sizing: border-box; }
            /* report-inner should be the single source of truth for inner width and should not apply horizontal padding
               so that header/footer inner wrappers and body content can match exactly. */
