@@ -23,60 +23,22 @@ class UserController extends Controller
                 ->addIndexColumn()
                 ->addColumn('status', function ($item) {
                     $togolebutton = '<input ' . ($item->status == "Active" ? "checked" : "") . ' type="checkbox" class="status" id="status" data-id="' . $item->id . '" />';
-                    $togolebutton .= '<script>
-                                        $(".status").bootstrapToggle({
-                                            on: "Active",
-                                            off: "Pending",
-                                            onstyle: "success",
-                                            offstyle: "danger",
-                                            size: "small"
-                                        });
-                                    </script>';
                     return $togolebutton;
                 })
-                ->addColumn('permission', function ($item) {
-                    if ($item->user_type == 'Admin' || $item->user_type == 'Super Admin') {
-                        $permission = '<p>Can Access Every Here</p>';
-                        return $permission;
-                    } else {
-                        $togolebutton = '<span class="h5">Employees : </span><input ' . ($item->employees == "1" ? "checked" : "") . ' type="checkbox" class="employees toggolebtn" id="employees" data-id="' . $item->id . '" /><br/><br/>';
-                        $togolebutton .= '<span class="h5">Patients : </span><input ' . ($item->patitents == "1" ? "checked" : "") . ' type="checkbox" class="patitents toggolebtn" id="patitents" data-id="' . $item->id . '" /><br/><br/>';
-                        $togolebutton .= '<span class="h5">Test Category : </span><input ' . ($item->testcategory == "1" ? "checked" : "") . ' type="checkbox" class="testcategory toggolebtn" id="testcategory" data-id="' . $item->id . '" /><br/><br/>';
-                        $togolebutton .= '<span class="h5">Referral : </span><input ' . ($item->referral == "1" ? "checked" : "") . ' type="checkbox" class="referral toggolebtn" id="referral" data-id="' . $item->id . '" /><br/><br/>';
-                        $togolebutton .= '<span class="h5">Billing : </span><input ' . ($item->billing == "1" ? "checked" : "") . ' type="checkbox" class="billing toggolebtn" id="billing" data-id="' . $item->id . '" /><br/><br/>';
-                        $togolebutton .= '<span class="h5">Laboratory : </span><input ' . ($item->pathology == "1" ? "checked" : "") . ' type="checkbox" class="pathology toggolebtn" id="pathology" data-id="' . $item->id . '" /><br/><br/>';
-                        $togolebutton .= '<span class="h5">Radiology : </span><input ' . ($item->radiology == "1" ? "checked" : "") . ' type="checkbox" class="radiology toggolebtn" id="radiology" data-id="' . $item->id . '" /><br/><br/>';
-                        $togolebutton .= '<span class="h5">Ultrasonography : </span><input ' . ($item->ultrasonography == "1" ? "checked" : "") . ' type="checkbox" class="ultrasonography toggolebtn" id="ultrasonography" data-id="' . $item->id . '" /><br/><br/>';
-                        $togolebutton .= '<span class="h5">Electrocardiography : </span><input ' . ($item->electrocardiography == "1" ? "checked" : "") . ' type="checkbox" class="electrocardiography toggolebtn" id="electrocardiography" data-id="' . $item->id . '" /><br/><br/>';
-                        $togolebutton .= '<span class="h5">Report Booth : </span><input ' . ($item->reportbooth == "1" ? "checked" : "") . ' type="checkbox" class="reportbooth toggolebtn" id="reportbooth" data-id="' . $item->id . '" /><br/><br/>';
-                        $togolebutton .= '<span class="h5">Financial <br/> Management : </span><input ' . ($item->financial == "1" ? "checked" : "") . ' type="checkbox" class="financial toggolebtn" id="financial" data-id="' . $item->id . '" /><br/><br/>';
-                        $togolebutton .= '<span class="h5">Report <br/> Genaration : </span><input ' . ($item->report_g == "1" ? "checked" : "") . ' type="checkbox" class="report_g toggolebtn" id="report_g" data-id="' . $item->id . '" /><br/><br/>';
-                        $togolebutton .= '<span class="h5">Inventory <br/> Genaration : </span><input ' . ($item->inventory == "1" ? "checked" : "") . ' type="checkbox" class="inventory toggolebtn" id="inventory" data-id="' . $item->id . '" /><br/><br/>';
-                        // $togolebutton .= '<script>
-                        //                     $(".toggolebtn").bootstrapToggle({
-                        //                         on: "Active",
-                        //                         off: "Pending",
-                        //                         onstyle: "success",
-                        //                         offstyle: "danger",
-                        //                         size: "small"
-                        //                     });
-                        //                 </script>';
-                        return $togolebutton;
-                    }
-                })
                 ->addColumn('action', function ($row) {
-                    $btn = '<a href="javascript:void(0);" class="btn btn-warning btn-sm editbtn" data-id="' . $row->id . '"><i class="fas fa-edit"></i></a>';
-                    $btn .= '&nbsp&nbsp<a href="javascript:void(0);" class="btn btn-info btn-sm passchange" data-id="' . $row->id . '"><i class="fas fa-lock"></i></a>';
+                    $btn = '<a href="javascript:void(0);" class="btn btn-info btn-sm view-permissions" data-id="' . $row->id . '" data-name="' . $row->name . '"><i class="fas fa-eye"></i> Permissions</a> ';
+                    $btn .= '<a href="javascript:void(0);" class="btn btn-warning btn-sm editbtn" data-id="' . $row->id . '"><i class="fas fa-edit"></i></a> ';
+                    $btn .= '<a href="javascript:void(0);" class="btn btn-info btn-sm passchange" data-id="' . $row->id . '"><i class="fas fa-lock"></i></a> ';
 
                     if (Auth::user()->user_type == $row->user_type && Auth::user()->email == $row->email) {
-                        $btn = $btn . '&nbsp&nbsp<a href="javascript:void(0);" data-id="' . $row->id . '" class="btn btn-danger btn-sm deletebtn disabled"> <i class="fas fa-trash"></i> </a>';
+                        $btn .= '<a href="javascript:void(0);" data-id="' . $row->id . '" class="btn btn-danger btn-sm deletebtn disabled"> <i class="fas fa-trash"></i> </a>';
                     } else {
-                        $btn = $btn . '&nbsp&nbsp<a href="javascript:void(0);" data-id="' . $row->id . '" class="btn btn-danger btn-sm deletebtn"> <i class="fas fa-trash"></i> </a>';
+                        $btn .= '<a href="javascript:void(0);" data-id="' . $row->id . '" class="btn btn-danger btn-sm deletebtn"> <i class="fas fa-trash"></i> </a>';
                     }
 
                     return $btn;
                 })
-                ->rawColumns(['action', 'status', 'permission'])
+                ->rawColumns(['action', 'status'])
                 ->make(true);
         }
         return view('user.user');
@@ -101,10 +63,10 @@ class UserController extends Controller
         $user->update();
         return response()->json(['success' => 'Status changed successfully.']);
     }
-    public function patitentschange($id, Request $request)
+    public function patientschange($id, Request $request)
     {
         $user = User::find($id);
-        $user->patitents = $request->catstatus;
+        $user->patients = $request->catstatus;
         $user->update();
         return response()->json(['success' => 'Status changed successfully.']);
     }
@@ -184,6 +146,79 @@ class UserController extends Controller
         $user->inventory = $request->catstatus;
         $user->update();
         return response()->json(['success' => 'Status changed successfully.']);
+    }
+
+    // Sub-permission methods
+    public function employees_add_change($id, Request $request)
+    {
+        $user = User::find($id);
+        $user->employees_add = $request->catstatus;
+        $user->update();
+        return response()->json(['success' => 'Employees Add permission updated successfully.']);
+    }
+
+    public function employees_edit_change($id, Request $request)
+    {
+        $user = User::find($id);
+        $user->employees_edit = $request->catstatus;
+        $user->update();
+        return response()->json(['success' => 'Employees Edit permission updated successfully.']);
+    }
+
+    public function employees_delete_change($id, Request $request)
+    {
+        $user = User::find($id);
+        $user->employees_delete = $request->catstatus;
+        $user->update();
+        return response()->json(['success' => 'Employees Delete permission updated successfully.']);
+    }
+
+    public function billing_add_change($id, Request $request)
+    {
+        $user = User::find($id);
+        $user->billing_add = $request->catstatus;
+        $user->update();
+        return response()->json(['success' => 'Billing Add permission updated successfully.']);
+    }
+
+    public function billing_edit_change($id, Request $request)
+    {
+        $user = User::find($id);
+        $user->billing_edit = $request->catstatus;
+        $user->update();
+        return response()->json(['success' => 'Billing Edit permission updated successfully.']);
+    }
+
+    public function billing_delete_change($id, Request $request)
+    {
+        $user = User::find($id);
+        $user->billing_delete = $request->catstatus;
+        $user->update();
+        return response()->json(['success' => 'Billing Delete permission updated successfully.']);
+    }
+
+    public function pathology_add_change($id, Request $request)
+    {
+        $user = User::find($id);
+        $user->pathology_add = $request->catstatus;
+        $user->update();
+        return response()->json(['success' => 'Pathology Add permission updated successfully.']);
+    }
+
+    public function pathology_edit_change($id, Request $request)
+    {
+        $user = User::find($id);
+        $user->pathology_edit = $request->catstatus;
+        $user->update();
+        return response()->json(['success' => 'Pathology Edit permission updated successfully.']);
+    }
+
+    public function pathology_delete_change($id, Request $request)
+    {
+        $user = User::find($id);
+        $user->pathology_delete = $request->catstatus;
+        $user->update();
+        return response()->json(['success' => 'Pathology Delete permission updated successfully.']);
     }
 
     /**
@@ -317,5 +352,25 @@ class UserController extends Controller
         $user->save();
 
         return redirect()->route('user.profile')->with('success', 'Profile updated successfully');
+    }
+
+    public function getPermissions($id)
+    {
+        $user = User::find($id);
+        return view('user.permissions_modal', compact('user'));
+    }
+
+    public function updatePermissions($id, Request $request)
+    {
+        $user = User::find($id);
+        $user->update($request->only([
+            'employees_add', 'employees_edit', 'employees_delete',
+            'patients', 'testcategory', 'referral',
+            'billing_add', 'billing_edit', 'billing_delete',
+            'pathology_add', 'pathology_edit', 'pathology_delete',
+            'radiology', 'ultrasonography', 'electrocardiography',
+            'reportbooth', 'financial', 'report_g', 'inventory'
+        ]));
+        return response()->json(['success' => 'Permissions updated successfully']);
     }
 }

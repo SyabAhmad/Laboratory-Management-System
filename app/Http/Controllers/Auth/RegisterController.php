@@ -71,7 +71,7 @@ class RegisterController extends Controller
             'user_type' => "Super Admin",
             'status' => "Active",
             'employees' => 1,
-            'patitents' => 1,
+            'patients' => 1,
             'testcategory' => 1,
             'referral' => 1,
             'billing' => 1,
