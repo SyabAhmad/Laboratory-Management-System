@@ -24,7 +24,7 @@ class CreateUsersTable extends Migration
             $table->enum('user_type', ['Admin', 'Employees','Super Admin','Patient','Accountant','Receptionist','Lab Scientist','Radiographer','Sonographer']);
             $table->enum('status', ['Active', 'Pending']);
             $table->tinyInteger('employees')->default(0);
-            $table->tinyInteger('patitents')->default(0);
+            $table->tinyInteger('patients')->default(0);
             $table->tinyInteger('testcategory')->default(0);
             $table->tinyInteger('referral')->default(0);
             $table->tinyInteger('billing')->default(0);

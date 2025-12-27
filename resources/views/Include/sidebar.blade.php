@@ -95,18 +95,31 @@
 
 
                         <!-- <li>
-                            <a href="{{ route('user') }}">
-                                <i class="fas fa-users"></i>
-                                <span> Users </span>
-                            </a>
-                        </li> -->
-
-                        <!-- <li>
                             <a href="{{ route('employees') }}">
                                 <i class="fas fa-user-friends"></i>
                                 <span> Employee </span>
                             </a>
                         </li>-->
+                        {{-- <li>
+                            <a href="{{ route('activities') }}">
+                                <i class="fas fa-user-friends"></i>
+                                <span> Activities </span>
+                            </a>
+                        </li> --}}
+
+                        <!-- <li>
+                            <a href="{{ route('Attendance') }}">
+                                <i class="fas fa-user-friends"></i>
+                                <span> Attendance </span>
+                            </a>
+                        </li> -->
+
+                        <li>
+                            <a href="{{ route('user') }}">
+                                <i class="fas fa-users"></i>
+                                <span> User Management </span>
+                            </a>
+                        </li>
                         {{-- <li>
                             <a href="{{ route('activities') }}">
                                 <i class="fas fa-user-friends"></i>
@@ -298,7 +311,7 @@
                     <span> Dashboard </span>
                 </a>
             </li>
-            @if (Auth::user()->employees == 1)
+            @if (Auth::user()->employees == 1 || Auth::user()->employees_add == 1 || Auth::user()->employees_edit == 1 || Auth::user()->employees_delete == 1)
                 <li>
                     <a href="{{ route('employees') }}">
                         <i class="fas fa-user-friends"></i>
@@ -306,7 +319,7 @@
                     </a>
                 </li>
             @endif
-            @if (Auth::user()->patitents == 1)
+            @if (Auth::user()->patients == 1)
                 <li>
                     <a href="javascript: void(0);">
                         <i class="fas fa-user-injured"></i>
@@ -357,7 +370,7 @@
                     </ul>
                 </li>
             @endif
-            @if (Auth::user()->billing == 1)
+            @if (Auth::user()->billing == 1 || Auth::user()->billing_add == 1 || Auth::user()->billing_edit == 1 || Auth::user()->billing_delete == 1)
                 <li>
                     <a href="javascript: void(0);">
                         <i class="fas fa-money-bill"></i>
@@ -365,17 +378,21 @@
                         <span class="menu-arrow"></span>
                     </a>
                     <ul class="nav-second-level" aria-expanded="false">
+                        @if((Auth::user()->billing_add == 1 || Auth::user()->billing == 1) && Auth::user()->user_type != "Employees")
                         <li>
                             <a href="{{ route('billing') }}">Bill Create</a>
                         </li>
+                        @endif
+                        @if(Auth::user()->billing_edit == 1 || Auth::user()->billing == 1)
                         <li>
                             <a href="{{ route('allbills') }}">All Bill</a>
                         </li>
+                        @endif
 
                     </ul>
                 </li>
             @endif
-            @if (Auth::user()->pathology == 1)
+            @if (Auth::user()->pathology == 1 || Auth::user()->pathology_add == 1 || Auth::user()->pathology_edit == 1 || Auth::user()->pathology_delete == 1)
                 <li>
                     <a href="{{ route('pathology') }}">
                         <i class="fas fa-vial"></i>
@@ -470,6 +487,15 @@
 
 
             </ul>
+
+            <!-- User Settings/Profile Section -->
+            <!-- <li class="menu-title text-heading">Account</li>
+            <li>
+                <a href="{{ route('user.profile') }}">
+                    <i class="fas fa-user-cog"></i>
+                    <span> My Profile </span>
+                </a>
+            </li> -->
 
         </div>
         <!-- End Sidebar -->

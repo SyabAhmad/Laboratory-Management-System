@@ -259,14 +259,12 @@
 
                 const nameCell = row.querySelector('.param-name');
                 const fieldTypeCell = row.querySelector('.param-field-type');
-                const dualOptionsCell = row.querySelector('.param-dual-options');
                 const unitCell = row.querySelector('.param-unit');
                 const rangeCell = row.querySelector('.param-range');
                 const actionsCell = row.querySelector('.param-actions');
 
                 const currentName = nameCell.textContent.trim();
                 const currentFieldType = fieldTypeCell.textContent.trim();
-                // dual options column removed; no currentDualOptions required
                 const currentUnit = unitCell.textContent.trim();
                 const currentRange = rangeCell.textContent.trim();
 
@@ -285,11 +283,6 @@
                     <option value="textarea" ${paramData.field_type === 'textarea' ? 'selected' : ''}>Text Area</option>
                 </select>
             `;
-
-                // Dual options inputs (initially hidden)
-                const dualOptions = paramData.dual_options ? (Array.isArray(paramData.dual_options) ? paramData
-                    .dual_options : JSON.parse(paramData.dual_options)) : [];
-                dualOptionsCell.innerHTML = `<span class="text-muted">-</span>`;
 
                 unitCell.innerHTML =
                     `<input type="text" class="form-control form-control-sm edit-unit" value="${escapeHtml(currentUnit)}">`;
@@ -393,12 +386,6 @@
                                         fieldType + '</span>';
                             }
                             fieldTypeCell.innerHTML = fieldTypeBadge;
-
-                            // Update dual options display
-                            const dualOptionsCell = row.querySelector('.param-dual-options');
-                            // Dual options removed - always keep placeholder
-                            if (dualOptionsCell) dualOptionsCell.innerHTML =
-                                '<span class="text-muted">-</span>';
 
                             row.querySelector('.param-unit').textContent = data.param.unit || '';
                             row.querySelector('.param-range').textContent = data.param

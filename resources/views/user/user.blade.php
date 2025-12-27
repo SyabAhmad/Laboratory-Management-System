@@ -34,7 +34,6 @@
                                 <th>Email</th>
                                 <th>User Type</th>
                                 <th>Status</th>
-                                <th>Permission</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -42,6 +41,27 @@
 
                         </tbody>
                     </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Permissions Modal -->
+        <div class="modal fade" id="permissionsModal" tabindex="-1" role="dialog" aria-labelledby="permissionsModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="permissionsModalLabel">Permissions for <span id="userName"></span></h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" id="permissionsContent">
+                        <!-- Permissions content will be loaded here -->
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="savePermissions">Save Changes</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -151,16 +171,23 @@
                         name: 'status'
                     },
                     {
-                        data: 'permission',
-                        name: 'permission'
-                    },
-                    {
                         data: 'action',
                         name: 'action',
                         orderable: true,
                         searchable: true
                     },
                 ]
+            });
+
+            // Initialize bootstrapToggle for status checkboxes
+            table.on('draw', function () {
+                $(".status").bootstrapToggle({
+                    on: "Active",
+                    off: "Pending",
+                    onstyle: "success",
+                    offstyle: "danger",
+                    size: "small"
+                });
             });
 
             $(document).on('change', '#status', function() {
@@ -435,7 +462,7 @@
             });
         });
 
-        $(document).on('change', '#patitents', function() {
+        $(document).on('change', '#patients', function() {
             var id = $(this).attr('data-id');
             if (this.checked) {
                 var catstatus = '1';
@@ -444,7 +471,7 @@
             }
             $.ajax({
                 dataType: "json",
-                url: "{{ URL::route('user.patitents', '') }}/" + id,
+                url: "{{ URL::route('user.patients', '') }}/" + id,
                 method: 'get',
                 data: {
                     "id": id,
@@ -903,7 +930,7 @@
             });
         });
 
-        // $(document).on('change', '#patitents', function() {
+        // $(document).on('change', '#patients', function() {
         //     var id = $(this).attr('data-id');
         //     if (this.checked) {
         //         var catstatus = '1';
@@ -912,7 +939,7 @@
         //     }
         //     $.ajax({
         //         dataType: "json",
-        //         url: "{{ URL::route('user.patitents', '') }}/" + id,
+        //         url: "{{ URL::route('user.patients', '') }}/" + id,
         //         method: 'get',
         //         data: {
         //             "id": id,
@@ -941,5 +968,319 @@
         //         }
         //     });
         // });
+
+        // Sub-permission handlers
+        $(document).on('change', '.employees_add', function() {
+            var id = $(this).attr('data-id');
+            var catstatus = this.checked ? '1' : '0';
+            $.ajax({
+                url: "{{ URL::route('user.employees_add', '') }}/" + id,
+                method: 'GET',
+                data: { catstatus: catstatus },
+                success: function() {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Employees Add Permission Updated',
+                        showConfirmButton: false,
+                        timer: 1800
+                    });
+                },
+                error: function() {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'error',
+                        title: 'Error updating permission',
+                        showConfirmButton: false,
+                        timer: 1800
+                    });
+                }
+            });
+        });
+
+        $(document).on('change', '.employees_edit', function() {
+            var id = $(this).attr('data-id');
+            var catstatus = this.checked ? '1' : '0';
+            $.ajax({
+                url: "{{ URL::route('user.employees_edit', '') }}/" + id,
+                method: 'GET',
+                data: { catstatus: catstatus },
+                success: function() {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Employees Edit Permission Updated',
+                        showConfirmButton: false,
+                        timer: 1800
+                    });
+                },
+                error: function() {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'error',
+                        title: 'Error updating permission',
+                        showConfirmButton: false,
+                        timer: 1800
+                    });
+                }
+            });
+        });
+
+        $(document).on('change', '.employees_delete', function() {
+            var id = $(this).attr('data-id');
+            var catstatus = this.checked ? '1' : '0';
+            $.ajax({
+                url: "{{ URL::route('user.employees_delete', '') }}/" + id,
+                method: 'GET',
+                data: { catstatus: catstatus },
+                success: function() {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Employees Delete Permission Updated',
+                        showConfirmButton: false,
+                        timer: 1800
+                    });
+                },
+                error: function() {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'error',
+                        title: 'Error updating permission',
+                        showConfirmButton: false,
+                        timer: 1800
+                    });
+                }
+            });
+        });
+
+        $(document).on('change', '.billing_add', function() {
+            var id = $(this).attr('data-id');
+            var catstatus = this.checked ? '1' : '0';
+            $.ajax({
+                url: "{{ URL::route('user.billing_add', '') }}/" + id,
+                method: 'GET',
+                data: { catstatus: catstatus },
+                success: function() {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Billing Add Permission Updated',
+                        showConfirmButton: false,
+                        timer: 1800
+                    });
+                },
+                error: function() {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'error',
+                        title: 'Error updating permission',
+                        showConfirmButton: false,
+                        timer: 1800
+                    });
+                }
+            });
+        });
+
+        $(document).on('change', '.billing_edit', function() {
+            var id = $(this).attr('data-id');
+            var catstatus = this.checked ? '1' : '0';
+            $.ajax({
+                url: "{{ URL::route('user.billing_edit', '') }}/" + id,
+                method: 'GET',
+                data: { catstatus: catstatus },
+                success: function() {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Billing Edit Permission Updated',
+                        showConfirmButton: false,
+                        timer: 1800
+                    });
+                },
+                error: function() {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'error',
+                        title: 'Error updating permission',
+                        showConfirmButton: false,
+                        timer: 1800
+                    });
+                }
+            });
+        });
+
+        $(document).on('change', '.billing_delete', function() {
+            var id = $(this).attr('data-id');
+            var catstatus = this.checked ? '1' : '0';
+            $.ajax({
+                url: "{{ URL::route('user.billing_delete', '') }}/" + id,
+                method: 'GET',
+                data: { catstatus: catstatus },
+                success: function() {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Billing Delete Permission Updated',
+                        showConfirmButton: false,
+                        timer: 1800
+                    });
+                },
+                error: function() {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'error',
+                        title: 'Error updating permission',
+                        showConfirmButton: false,
+                        timer: 1800
+                    });
+                }
+            });
+        });
+
+        $(document).on('change', '.pathology_add', function() {
+            var id = $(this).attr('data-id');
+            var catstatus = this.checked ? '1' : '0';
+            $.ajax({
+                url: "{{ URL::route('user.pathology_add', '') }}/" + id,
+                method: 'GET',
+                data: { catstatus: catstatus },
+                success: function() {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Pathology Add Permission Updated',
+                        showConfirmButton: false,
+                        timer: 1800
+                    });
+                },
+                error: function() {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'error',
+                        title: 'Error updating permission',
+                        showConfirmButton: false,
+                        timer: 1800
+                    });
+                }
+            });
+        });
+
+        $(document).on('change', '.pathology_edit', function() {
+            var id = $(this).attr('data-id');
+            var catstatus = this.checked ? '1' : '0';
+            $.ajax({
+                url: "{{ URL::route('user.pathology_edit', '') }}/" + id,
+                method: 'GET',
+                data: { catstatus: catstatus },
+                success: function() {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Pathology Edit Permission Updated',
+                        showConfirmButton: false,
+                        timer: 1800
+                    });
+                },
+                error: function() {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'error',
+                        title: 'Error updating permission',
+                        showConfirmButton: false,
+                        timer: 1800
+                    });
+                }
+            });
+        });
+
+        $(document).on('change', '.pathology_delete', function() {
+            var id = $(this).attr('data-id');
+            var catstatus = this.checked ? '1' : '0';
+            $.ajax({
+                url: "{{ URL::route('user.pathology_delete', '') }}/" + id,
+                method: 'GET',
+                data: { catstatus: catstatus },
+                success: function() {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Pathology Delete Permission Updated',
+                        showConfirmButton: false,
+                        timer: 1800
+                    });
+                },
+                error: function() {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'error',
+                        title: 'Error updating permission',
+                        showConfirmButton: false,
+                        timer: 1800
+                    });
+                }
+            });
+        });
+
+        // View Permissions Modal
+        $(document).on('click', '.view-permissions', function() {
+            var userId = $(this).data('id');
+            var userName = $(this).data('name');
+            $('#userName').text(userName);
+            $('#permissionsModal').data('user-id', userId);
+            $('#permissionsContent').html('<div class="text-center"><i class="fas fa-spinner fa-spin"></i> Loading...</div>');
+            $('#permissionsModal').modal('show');
+
+            $.ajax({
+                url: "{{ url('users/permissions') }}/" + userId,
+                method: 'GET',
+                success: function(data) {
+                    $('#permissionsContent').html(data);
+                },
+                error: function() {
+                    $('#permissionsContent').html('<p class="text-danger">Error loading permissions.</p>');
+                }
+            });
+        });
+
+        // Handle save permissions
+        $(document).on('click', '#savePermissions', function() {
+            var userId = $('#permissionsModal').data('user-id');
+            var formData = {};
+            $('#permissionsForm input[type="checkbox"]').each(function() {
+                formData[$(this).data('field')] = this.checked ? '1' : '0';
+            });
+
+            $.ajax({
+                url: "{{ url('users/permissions') }}/" + userId,
+                method: 'POST',
+                data: formData,
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function() {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Permissions Updated',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                    $('#permissionsModal').modal('hide');
+                    // Reload table
+                    $('.datatable').DataTable().ajax.reload();
+                },
+                error: function() {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'error',
+                        title: 'Error updating permissions',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                }
+            });
+        });
+
     </script>
 @endsection

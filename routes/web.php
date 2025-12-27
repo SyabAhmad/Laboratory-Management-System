@@ -34,9 +34,11 @@ Route::middleware(['auth:sanctum', 'verified'])
         Route::put('/users/pass/update', 'App\Http\Controllers\UserController@updatepass')->name('user.pass.update')->middleware('role:Admin,Super Admin');
         Route::get('/users/status/{id}', 'App\Http\Controllers\UserController@statuschange')->name('user.status')->middleware('role:Admin,Super Admin');
         Route::delete('/user/{id}', 'App\Http\Controllers\UserController@destroy')->name('user.delete')->middleware('role:Admin,Super Admin');
+        Route::get('/users/permissions/{id}', 'App\Http\Controllers\UserController@getPermissions')->name('user.permissions')->middleware('role:Admin,Super Admin');
+        Route::post('/users/permissions/{id}', 'App\Http\Controllers\UserController@updatePermissions')->name('user.update_permissions')->middleware('role:Admin,Super Admin');
 
         Route::get('/users/employees/{id}', 'App\Http\Controllers\UserController@employeeschange')->name('user.employees');
-        Route::get('/users/patitents/{id}', 'App\Http\Controllers\UserController@patitentschange')->name('user.patitents');
+        Route::get('/users/patients/{id}', 'App\Http\Controllers\UserController@patientschange')->name('user.patients');
         Route::get('/users/testcategory/{id}', 'App\Http\Controllers\UserController@testcategory')->name('user.testcategory');
         Route::get('/users/referral/{id}', 'App\Http\Controllers\UserController@referral')->name('user.referral');
         Route::get('/users/billing/{id}', 'App\Http\Controllers\UserController@billing')->name('user.billing');
@@ -49,6 +51,17 @@ Route::middleware(['auth:sanctum', 'verified'])
         Route::get('/users/financial/{id}', 'App\Http\Controllers\UserController@financial')->name('user.financial');
         Route::get('/users/report_g/{id}', 'App\Http\Controllers\UserController@report_g')->name('user.report_g');
         Route::get('/users/inventory/{id}', 'App\Http\Controllers\UserController@inventory')->name('user.inventory');
+
+        // Sub-permissions
+        Route::get('/users/employees_add/{id}', 'App\Http\Controllers\UserController@employees_add_change')->name('user.employees_add');
+        Route::get('/users/employees_edit/{id}', 'App\Http\Controllers\UserController@employees_edit_change')->name('user.employees_edit');
+        Route::get('/users/employees_delete/{id}', 'App\Http\Controllers\UserController@employees_delete_change')->name('user.employees_delete');
+        Route::get('/users/billing_add/{id}', 'App\Http\Controllers\UserController@billing_add_change')->name('user.billing_add');
+        Route::get('/users/billing_edit/{id}', 'App\Http\Controllers\UserController@billing_edit_change')->name('user.billing_edit');
+        Route::get('/users/billing_delete/{id}', 'App\Http\Controllers\UserController@billing_delete_change')->name('user.billing_delete');
+        Route::get('/users/pathology_add/{id}', 'App\Http\Controllers\UserController@pathology_add_change')->name('user.pathology_add');
+        Route::get('/users/pathology_edit/{id}', 'App\Http\Controllers\UserController@pathology_edit_change')->name('user.pathology_edit');
+        Route::get('/users/pathology_delete/{id}', 'App\Http\Controllers\UserController@pathology_delete_change')->name('user.pathology_delete');
 
         // Employees Route
         Route::get('/employees', 'App\Http\Controllers\EmployeesController@index')->name('employees');

@@ -15,6 +15,7 @@
                 padding: 0 !important;
                 width: 100% !important;
                 height: auto !important;
+                background-color: white;
             }
             
             .report-container, .report-inner {
@@ -52,6 +53,7 @@
         
         @page {
             margin: 0 !important;
+
         }
     </style>
 @endpush
@@ -61,7 +63,7 @@
         <table class="report-table">
             <thead>
                 <tr>
-                    <td style="height: 50mm; padding: 0; border: none; vertical-align: bottom;">
+                    <td style="height: 60mm; padding: 0; border: none; vertical-align: bottom;">
                         <!-- Empty header space -->
                     </td>
                 </tr>
