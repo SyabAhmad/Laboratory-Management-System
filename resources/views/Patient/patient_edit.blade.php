@@ -254,6 +254,7 @@
                             </h4>
                                 <div>
                                     <button id="btn-print-selected" class="btn btn-outline-primary btn-sm">Print Selected</button>
+                                    <button id="btn-print-selected-with-header" class="btn btn-success btn-sm ml-2">Print Selected with Header</button>
                                 </div>
                             </div>
 
@@ -336,10 +337,15 @@
                                                                 @endphp
                                                                 <!-- {{ $preview ?? '-' }}{{ strlen($preview ?? '') > 40 ? '...' : '' }} -->
                                                             </small>
-                                                            <a href="#" onclick="printTest(event, '{{ route('patients.printTest', ['patient' => $patient->id, 'testName' => $test['name']]) }}')"
+                                                            <a href="#" onclick="printTest('/patients/{{ $patient->id }}/tests/' + encodeURIComponent({{ json_encode($test['name']) }}) + '/print')"
                                                                 class="btn btn-sm btn-outline-secondary"
                                                                 title="Print Test Report">
-                                                                <i class="fas fa-file-pdf"></i>
+                                                                <i class="fas fa-print"></i>
+                                                            </a>
+                                                            <a href="#" onclick="printTest('/patients/{{ $patient->id }}/tests/' + encodeURIComponent({{ json_encode($test['name']) }}) + '/print-with-header')"
+                                                                class="btn btn-sm btn-success"
+                                                                title="Print with Header">
+                                                                <i class="fas fa-print"></i> <i class="fas fa-header"></i>
                                                             </a>
                                                             <!-- Save to System removed -->
                                                         </div>
@@ -697,74 +703,46 @@
 
 @section('scripts')
    <script>
-    function printTest(e, url) {
-        if (e && e.preventDefault) e.preventDefault();
+    function printTest(url) {
+        console.log('Print request:', url);
 
-        fetch(url, { credentials: 'include' })
-            .then(resp => {
-                const type = (resp.headers.get('content-type') || '').toLowerCase();
-                if (type.indexOf('application/pdf') !== -1) {
-                    return resp.blob().then(b => ({ pdf: b }));
+        // Create a temporary iframe to handle the print
+        const iframe = document.createElement('iframe');
+        iframe.style.position = 'fixed';
+        iframe.style.right = '0';
+        iframe.style.bottom = '0';
+        iframe.style.width = '0';
+        iframe.style.height = '0';
+        iframe.style.border = '0';
+        iframe.style.visibility = 'hidden';
+        document.body.appendChild(iframe);
+        
+        // Set up the iframe to load the URL
+        iframe.src = url;
+        
+        // Handle the print after iframe loads
+        iframe.onload = function() {
+            // Add a small delay to ensure content is loaded
+            setTimeout(() => {
+                try {
+                    iframe.contentWindow.focus();
+                    iframe.contentWindow.print();
+                } catch (err) {
+                    console.error('Print failed', err);
                 }
-                return resp.text().then(t => ({ html: t }));
-            })
-            .then(result => {
-                if (result.pdf) {
-                    const blobUrl = URL.createObjectURL(result.pdf);
-                    const iframe = document.createElement('iframe');
-                    iframe.style.position = 'fixed';
-                    iframe.style.right = '0';
-                    iframe.style.bottom = '0';
-                    iframe.style.width = '0';
-                    iframe.style.height = '0';
-                    iframe.style.border = '0';
-                    iframe.style.visibility = 'hidden';
-                    iframe.src = blobUrl;
-                    document.body.appendChild(iframe);
-                    iframe.onload = function () {
-                        try {
-                            iframe.contentWindow.focus();
-                            iframe.contentWindow.print();
-                        } catch (err) { console.error('Print failed', err); }
-                        setTimeout(() => {
-                            URL.revokeObjectURL(blobUrl);
-                            document.body.removeChild(iframe);
-                        }, 1500);
-                    };
-                    return;
-                }
-
-                const sanitized = result.html.replace(/window\.print\s*\(\s*\)\s*;?/g, '');
-                const iframe = document.createElement('iframe');
-                iframe.style.position = 'fixed';
-                iframe.style.right = '0';
-                iframe.style.bottom = '0';
-                iframe.style.width = '0';
-                iframe.style.height = '0';
-                iframe.style.border = '0';
-                iframe.style.visibility = 'hidden';
-                document.body.appendChild(iframe);
-
-                const idoc = iframe.contentWindow.document;
-                idoc.open();
-                idoc.write(sanitized);
-                idoc.close();
-
-                iframe.onload = function () {
-                    try {
-                        iframe.contentWindow.focus();
-                        iframe.contentWindow.print();
-                    } catch (err) {
-                        console.error('Print failed', err);
-                    }
-                    setTimeout(() => {
-                        document.body.removeChild(iframe);
-                    }, 1500);
-                };
-            })
-            .catch(err => {
-                console.error('Failed to load print view', err);
-            });
+                
+                // Remove iframe after a delay
+                setTimeout(() => {
+                    document.body.removeChild(iframe);
+                }, 2000);
+            }, 1000);
+        };
+        
+        // Handle potential errors in loading the iframe
+        iframe.onerror = function() {
+            console.error('Failed to load print content');
+            document.body.removeChild(iframe);
+        };
     }
 
     $(document).ready(function () {
@@ -777,9 +755,23 @@
                 return;
             }
             const names = []; checked.each(function () { names.push($(this).val()); });
-            const urlBase = '{{ url("/patients/" . $patient->id . "/tests/print-multiple") }}';
-            const target = urlBase + '/' + encodeURIComponent(names.join(','));
-            printTest(null, target);
+            const urlBase = '/patients/{{ $patient->id }}/tests/print-multiple';
+            const target = urlBase + '/' + names.join('_');
+            printTest(target);
+        });
+
+        // Print Selected with Header button handler
+        $('#btn-print-selected-with-header').on('click', function (e) {
+            e.preventDefault();
+            const checked = $('.test-select:checked');
+            if (!checked || checked.length === 0) {
+                alert('Please select at least one test to print.');
+                return;
+            }
+            const names = []; checked.each(function () { names.push($(this).val()); });
+            const urlBase = '/patients/{{ $patient->id }}/tests/print-multiple-with-header';
+            const target = urlBase + '/' + names.join('_');
+            printTest(target);
         });
 
         /* -------------------------------
@@ -807,17 +799,16 @@
 
 
         /* -------------------------------
-           CBC Reload Button
+           CBC Reload Button - FIXED
         --------------------------------*/
         $('#fetchCBCResults').on('click', function () {
             const btn = $(this);
-            const html = btn.html();
+            const originalText = btn.html();
 
             btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Fetching...');
 
-            setTimeout(() => {
-                window.location.reload();
-            }, 1000);
+            // Reload the page to refresh CBC data
+            location.reload();
         });
 
 
@@ -868,10 +859,9 @@
                             showConfirmButton: false
                         });
 
-                        setTimeout(function () {
-                            form.closest('.modal').modal('hide');
-                            window.location.reload();
-                        }, 1800);
+                        // Close modal and refresh the page to update the test data display
+                        form.closest('.modal').modal('hide');
+                        location.reload();
                     } else {
                         Swal.fire({
                             icon: 'error',

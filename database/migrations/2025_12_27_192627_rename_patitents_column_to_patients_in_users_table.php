@@ -13,9 +13,10 @@ class RenamePatitentsColumnToPatientsInUsersTable extends Migration
      */
     public function up()
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->renameColumn('patitents', 'patients');
-        });
+        // This migration is no longer needed as the column is already correctly named
+        // Schema::table('users', function (Blueprint $table) {
+        //     $table->renameColumn('patitents', 'patients');
+        // });
     }
 
     /**
@@ -25,8 +26,9 @@ class RenamePatitentsColumnToPatientsInUsersTable extends Migration
      */
     public function down()
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->renameColumn('patients', 'patitents');
-        });
+        // This migration is no longer needed as the column is already correctly named
+        // Schema::table('users', function (Blueprint $table) {
+        //     $table->renameColumn('patients', 'patitents');
+        // });
     }
 }

@@ -49,6 +49,11 @@
             .report-table tr {
                 page-break-inside: avoid;
             }
+            
+            /* Ensure header and footer are visible when printing */
+            .print-header, .print-footer {
+                display: block !important;
+            }
         }
         
         @page {
@@ -60,13 +65,15 @@
 @section('content')
     <div class="report-content">
         <table class="report-table">
+            @if($includeHeader ?? true)
             <thead>
                 <tr>
                     <td style="height: 60mm; padding: 0; border: none; vertical-align: bottom;">
-                        <!-- Empty header space -->
+                        @include('Patient.partials.print_header')
                     </td>
                 </tr>
             </thead>
+            @endif
             <tbody>
                 <tr>
                     <td style="padding: 0; border: none;">
@@ -97,13 +104,14 @@
                 </td>
             </tr>
         </tbody>
+        @if($includeHeader ?? true)
         <tfoot>
             <tr>
                 <td style="height: 40mm; padding: 0; border: none; vertical-align: top;">
-                    <!-- Empty footer space -->
+                    @include('Patient.partials.print_footer')
                 </td>
             </tr>
         </tfoot>
-    </table>
+        @endif
 </div>
 @endsection
