@@ -229,7 +229,7 @@
 
                         <!-- Individual Test PDF Button -->
                         <div class="no-print" style="margin-bottom: 15px; text-align: right;">
-                            <a href="#" onclick="printTest(event, '{{ route('patients.printTest', ['patient' => $patient->id, 'testName' => $testName]) }}')"
+                            <a href="#" onclick="printTest(event, '{{ route('patients.printTestWithHeader', ['patient' => $patient->id, 'testName' => $testName]) }}')"
                                 class="btn btn-sm btn-outline-secondary">
                                 <i class="mdi mdi-file-pdf"></i> Download Test PDF
                             </a>

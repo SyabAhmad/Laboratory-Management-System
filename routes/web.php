@@ -80,8 +80,18 @@ Route::middleware(['auth:sanctum', 'verified'])
         Route::get('/patients/{id}/edit', 'App\Http\Controllers\PatientsController@edit')->name('patients.edit');
         // Print friendly patient test report (per-test)
         Route::get('/patients/{patient}/tests/{testName}/print', [App\Http\Controllers\PatientsController::class, 'printTestReport'])->name('patients.printTest');
+        // Print friendly patient test report with header/footer (per-test)
+        Route::get('/patients/{patient}/tests/{testName}/print-with-header', [App\Http\Controllers\PatientsController::class, 'printTestReportWithHeader'])->name('patients.printTestWithHeader');
         // Print multiple selected test reports combined into one print page
         Route::get('/patients/{patient}/tests/print-multiple/{testNames}', [App\Http\Controllers\PatientsController::class, 'printMultipleTestReports'])->name('patients.printMultipleTests');
+        // Print multiple selected test reports with header/footer combined into one print page
+        Route::get('/patients/{patient}/tests/print-multiple-with-header/{testNames}', [App\Http\Controllers\PatientsController::class, 'printMultipleTestReportsWithHeader'])->name('patients.printMultipleTestsWithHeader');
+        // Download PDF with header/footer
+        Route::get('/patients/{patient}/tests/{testName}/download-pdf', [App\Http\Controllers\PatientsController::class, 'downloadTestReportPDF'])->name('patients.downloadTestPDF');
+        Route::get('/patients/{patient}/tests/download-multiple/{testNames}', [App\Http\Controllers\PatientsController::class, 'downloadMultipleTestReportsPDF'])->name('patients.downloadMultipleTestsPDF');
+        // Download PDF without header/footer
+        Route::get('/patients/{patient}/tests/{testName}/download-pdf-no-header', [App\Http\Controllers\PatientsController::class, 'downloadTestReportPDFNoHeader'])->name('patients.downloadTestPDFNoHeader');
+        Route::get('/patients/{patient}/tests/download-multiple-no-header/{testNames}', [App\Http\Controllers\PatientsController::class, 'downloadMultipleTestReportsPDFNoHeader'])->name('patients.downloadMultipleTestsPDFNoHeader');
         
         // Print Debug Routes (for troubleshooting 404 errors)
         Route::get('/print/debug/{patient}/{testName}', 'App\Http\Controllers\PrintDebugController@debugPrintTest')->name('print.debug.test');

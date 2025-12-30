@@ -690,12 +690,13 @@
             <tbody>
                 @php
                     $analytes = $testEntry['saved_data']['analytes'] ?? [];
-                    $hasHL7Data = !empty($analytes) && is_array($analytes);
+                    $analytes = is_array($analytes) ? $analytes : [];
+                    $hasHL7Data = !empty($analytes);
                 @endphp
 
                 @if ($hasHL7Data)
                     <!-- HL7 Data -->
-                    @php $chunks = array_chunk($analytes, $maxRowsPerPage); @endphp
+                    @php $chunks = array_chunk($analytes, $maxRowsPerPage ?? 10); @endphp
                     @foreach ($chunks as $chunkIndex => $chunk)
                         @if ($chunkIndex > 0)
             </tbody>

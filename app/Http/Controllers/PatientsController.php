@@ -22,6 +22,62 @@ use App\Models\Bills;
 
 class PatientsController extends Controller
 {
+    // 🔥 OPTIMIZATION: Cache for PDF generation to avoid repeated DB queries
+    private static $pdfTestCache = [];
+
+    private function getTestDataForPDF($testName)
+    {
+        if (isset(self::$pdfTestCache[$testName])) {
+            return self::$pdfTestCache[$testName];
+        }
+
+        $cat = DB::table('labtest_cat')
+            ->whereRaw('LOWER(cat_name) = ?', [strtolower($testName)])
+            ->first();
+
+        if (!$cat) {
+            $cat = DB::table('labtest_cat')
+                ->whereRaw('LOWER(cat_name) LIKE ?', ['%' . strtolower($testName) . '%'])
+                ->first();
+        }
+
+        if (!$cat) {
+            return self::$pdfTestCache[$testName] = null;
+        }
+
+        $departmentName = $cat->department ?? (isset($cat->department_id) ?
+            DB::table('departments')->where('id', $cat->department_id)->value('name') : null);
+
+        $params = DB::table('lab_test_parameters')
+            ->where('lab_test_cat_id', $cat->id)
+            ->orderBy('id')
+            ->get();
+
+        $templateFields = [];
+        foreach ($params as $p) {
+            $fieldName = \Str::slug($p->parameter_name, '_');
+            $field = [
+                'name' => $fieldName,
+                'label' => $p->parameter_name,
+                'unit' => $p->unit ?? '',
+                'ref' => $p->reference_range ?? '',
+                'type' => $p->field_type ?? 'text',
+                'required' => false,
+            ];
+            if ($p->field_type === 'dual_option' && $p->dual_options) {
+                $dualOptions = is_array($p->dual_options) ? $p->dual_options : json_decode($p->dual_options, true);
+                if (is_array($dualOptions) && count($dualOptions) >= 2) {
+                    $field['dual_options'] = $dualOptions;
+                }
+            }
+            $templateFields[] = $field;
+        }
+
+        return self::$pdfTestCache[$testName] = [
+            'templateFields' => $templateFields,
+            'departmentName' => $departmentName
+        ];
+    }
 
     public function registeredTests($id)
     {
@@ -76,6 +132,20 @@ class PatientsController extends Controller
         // Parse saved test reports - expected associative: {"TestName": {...}, ...}
         $existingTestReports = json_decode($patient->test_report ?? '{}', true) ?? [];
 
+        // 🔥 OPTIMIZATION: Cache all test categories and parameters to reduce DB queries
+        $cacheKey = 'lab_test_categories_with_params_' . md5(implode(',', array_map('strtolower', $selectedTests)));
+        $labTestCategories = \Cache::remember($cacheKey, 600, function () use ($selectedTests) { // Cache for 10 minutes
+            $testNamesLower = array_map('strtolower', $selectedTests);
+            return \App\Models\LabTestCat::where(function($query) use ($testNamesLower) {
+                foreach ($testNamesLower as $name) {
+                    $query->orWhereRaw('LOWER(cat_name) = ?', [$name])
+                          ->orWhereRaw('LOWER(cat_name) LIKE ?', ['%' . $name . '%']);
+                }
+            })->with(['parameters', 'departmentRelation'])->get()->keyBy(function($item) {
+                return strtolower($item->cat_name);
+            });
+        });
+
         $testsWithData = [];
         $processedTests = [];
 
@@ -86,16 +156,11 @@ class PatientsController extends Controller
 
             $testData = $existingTestReports[$testName] ?? [];
 
-            // 🔹 Load template dynamically from DB
-            // Try exact case-insensitive match first
-            $labTestCategory = \App\Models\LabTestCat::whereRaw('LOWER(cat_name) = ?', [strtolower($testName)])->first();
-            if (!$labTestCategory) {
-                // Try partial match (contains)
-                $labTestCategory = \App\Models\LabTestCat::whereRaw('LOWER(cat_name) LIKE ?', ['%' . strtolower($testName) . '%'])->first();
-            }
+            // 🔥 OPTIMIZATION: Use pre-loaded categories instead of individual queries
+            $labTestCategory = $labTestCategories[strtolower($testName)] ?? null;
 
             if ($labTestCategory) {
-                $parameters = $labTestCategory->parameters()->get();
+                $parameters = $labTestCategory->parameters;
                 $fields = [];
 
                 foreach ($parameters as $param) {
@@ -144,18 +209,18 @@ class PatientsController extends Controller
                 $template = null;
                 $savedData = $this->flattenTestData($testData);
             }
+
             $isMllpData = isset($testData['instrument']) || isset($testData['analytes']);
+            $departmentName = $labTestCategory ? ($labTestCategory->department ?? optional($labTestCategory->departmentRelation)->name) : null;
 
-                $departmentName = $labTestCategory ? ($labTestCategory->department ?? optional($labTestCategory->departmentRelation)->name) : null;
-
-                $testsWithData[] = [
+            $testsWithData[] = [
                 'name' => $testName,
                 'template' => $template, // ✅ ensure included
                 'saved_data' => $savedData,
                 'has_data' => !empty($testData),
                 'has_template' => $labTestCategory ? true : false,
                 'is_mllp_data' => $isMllpData,
-                    'department' => $departmentName,
+                'department' => $departmentName,
             ];
         }
 
@@ -200,44 +265,12 @@ class PatientsController extends Controller
                             'label' => 'Instrument',
                             'type' => 'text',
                             'required' => false,
-                        ],
-                        [
-                            'name' => 'accession_no',
-                            'label' => 'Accession No',
-                            'type' => 'text',
-                            'required' => false,
-                        ],
+                        ]
                     ], $fields)
                 ]
-                : [
-                    'fields' => [
-                        [
-                            'name' => 'result',
-                            'label' => 'Test Result',
-                            'type' => 'textarea',
-                            'required' => true,
-                        ],
-                        [
-                            'name' => 'notes',
-                            'label' => 'Notes/Comments',
-                            'type' => 'textarea',
-                            'required' => false,
-                        ],
-                    ]
-                ];
+                : null;
 
             $savedData = $this->flattenTestData($testData);
-
-            // Map analyte original names to slug keys so saved_data matches template keys
-            foreach ($analytes as $analyte) {
-                if (is_array($analyte) && isset($analyte['name'])) {
-                    $orig = $analyte['name'];
-                    $key = Str::slug($orig, '_');
-                    if (isset($savedData[$orig]) && !isset($savedData[$key])) {
-                        $savedData[$key] = $savedData[$orig];
-                    }
-                }
-            }
 
             $testsWithData[] = [
                 'name' => $testName,
@@ -246,13 +279,13 @@ class PatientsController extends Controller
                 'has_data' => !empty($testData),
                 'has_template' => false,
                 'is_mllp_data' => $isMllpData,
+                'department' => null,
             ];
         }
 
         return [
-            'selectedTests' => $selectedTests,
             'testsWithData' => $testsWithData,
-            'existingTestReports' => $existingTestReports,
+            'selectedTests' => $selectedTests
         ];
     }
 
@@ -330,7 +363,12 @@ class PatientsController extends Controller
                 ->pluck('id')
                 ->toArray();
 
-            $data = Patients::whereNotIn('id', $completedIds)
+            $data = Patients::with(['bills' => function($query) {
+                $query->select('id', 'patient_id', 'status', 'paid_amount', 'total_price', 'amount');
+            }, 'receipts' => function($query) {
+                $query->select('id', 'patient_id')->latest();
+            }])
+                ->whereNotIn('id', $completedIds)
                 ->orderBy('id', 'DESC')
                 ->get();
             return DataTables::of($data)
@@ -351,7 +389,7 @@ class PatientsController extends Controller
                     return $hasData ? 'Complete' : 'Pending';
                 })
                 ->addColumn('bill_status', function ($row) {
-                    $bill = Bills::where('patient_id', $row->id)->first();
+                    $bill = $row->bills->first();
                     if (!$bill) return 'No Bill';
                     $isPaid = strtolower($bill->status ?? '') === 'paid' || ((float)($bill->paid_amount ?? 0) >= (float)($bill->total_price ?? $bill->amount ?? 0) && (float)($bill->total_price ?? $bill->amount ?? 0) > 0);
                     return $isPaid ? 'Paid' : 'Unpaid';
@@ -361,7 +399,7 @@ class PatientsController extends Controller
                     $btn .= '&nbsp;&nbsp;<a href="' . route("patients.profile", $row->id) . '" class="btn btn-info btn-sm detailsview" data-id="' . $row->id . '" title="View Details"><i class="fas fa-eye"></i></a>';
 
                     // Add Download Slip button if receipt exists
-                    $receipt = PatientReceipt::where('patient_id', $row->id)->latest()->first();
+                    $receipt = $row->receipts->first();
                     if ($receipt) {
                         $btn .= '&nbsp;&nbsp;<a href="' . route('patients.print-receipt', $receipt->id) . '" class="btn btn-success btn-sm" title="Download Slip" onclick="return openPrintModal(event, this)"><i class="fas fa-download"></i> Slip</a>';
                     }
@@ -383,7 +421,10 @@ class PatientsController extends Controller
     public function completedList(Request $request)
     {
         if ($request->ajax()) {
-            $data = Patients::whereNotNull('test_report')
+            $data = Patients::with(['receipts' => function($query) {
+                $query->select('id', 'patient_id')->latest();
+            }])
+                ->whereNotNull('test_report')
                 ->where('test_report', '<>', '')
                 ->whereExists(function ($q) {
                     $q->select(DB::raw(1))
@@ -412,7 +453,7 @@ class PatientsController extends Controller
                     $btn .= '&nbsp;&nbsp;<a href="' . route("patients.profile", $row->id) . '" class="btn btn-info btn-sm detailsview" data-id="' . $row->id . '" title="View Details"><i class="fas fa-eye"></i></a>';
 
                     // Add Download Slip button if receipt exists
-                    $receipt = PatientReceipt::where('patient_id', $row->id)->latest()->first();
+                    $receipt = $row->receipts->first();
                     if ($receipt) {
                         $btn .= '&nbsp;&nbsp;<a href="' . route('patients.print-receipt', $receipt->id) . '" class="btn btn-success btn-sm" title="Download Slip" onclick="return openPrintModal(event, this)"><i class="fas fa-download"></i> Slip</a>';
                     }
@@ -1022,7 +1063,7 @@ class PatientsController extends Controller
         $patient = Patients::findOrFail($patientId);
 
         $decoded = rawurldecode($testNames);
-        $names = array_filter(array_map('trim', explode(',', $decoded)));
+        $names = array_filter(array_map('trim', explode('_', $decoded)));
 
         $testEntries = [];
         foreach ($names as $name) {
@@ -1100,9 +1141,108 @@ class PatientsController extends Controller
         return view('Patient.patient_tests_print', compact('patient', 'testEntries'));
     }
 
-    // Save-to-system functionality removed
+    /**
+     * Print friendly patient test report with header/footer (per-test)
+     */
+    public function printTestReportWithHeader($patientId, $testName)
+    {
+        $patient = Patients::findOrFail($patientId);
+        $testName = rawurldecode($testName);
 
-    // Listing saved reports removed
+        // Reuse the logic from printTestReport
+        $existingTestReports = json_decode($patient->test_report ?? '{}', true) ?? [];
+        $foundKey = null;
+        foreach ($existingTestReports as $k => $v) {
+            if (is_string($k) && strtolower($k) === strtolower($testName)) {
+                $foundKey = $k;
+                break;
+            }
+        }
+        if ($foundKey === null) {
+            foreach ($existingTestReports as $k => $v) {
+                if (is_array($v) && isset($v['test']) && strtolower($v['test']) === strtolower($testName)) {
+                    $foundKey = $k;
+                    break;
+                }
+            }
+        }
+        $testData = $foundKey !== null ? $existingTestReports[$foundKey] : null;
+
+        // 🔥 OPTIMIZATION: Use cached test data instead of repeated DB queries
+        $cachedData = $this->getTestDataForPDF($testName);
+        $templateFields = $cachedData ? $cachedData['templateFields'] : [];
+        $departmentName = $cachedData ? $cachedData['departmentName'] : null;
+
+        $savedDataFlattened = is_array($testData) ? $this->flattenTestData($testData) : [];
+        $savedDataFlattened = $this->mapSavedDataToSlugKeys($savedDataFlattened);
+
+        $testEntry = [
+            'name' => $testName,
+            'template' => ['fields' => $templateFields],
+            'saved_data' => $savedDataFlattened,
+            'department' => $departmentName,
+            'has_template' => !empty($templateFields),
+            'has_data' => !empty($testData),
+        ];
+
+        // Use the view with actual headers and footers
+        return view('Patient.patient_test_download', compact('patient', 'testEntry'));
+    }
+
+    /**
+     * Print multiple selected test reports with header/footer for a patient, combined in a single printable page
+     * Accepts a comma-separated list of test names (URL encoded) using {testNames}
+     */
+    public function printMultipleTestReportsWithHeader($patientId, $testNames)
+    {
+        $patient = Patients::findOrFail($patientId);
+
+        $decoded = rawurldecode($testNames);
+        $names = array_filter(array_map('trim', explode('_', $decoded)));
+
+        $testEntries = [];
+        foreach ($names as $name) {
+            // Reuse the same logic as printTestReport to build each entry
+            $testName = $name;
+            $existingTestReports = json_decode($patient->test_report ?? '{}', true) ?? [];
+            $foundKey = null;
+            foreach ($existingTestReports as $k => $v) {
+                if (is_string($k) && strtolower($k) === strtolower($testName)) {
+                    $foundKey = $k;
+                    break;
+                }
+            }
+            if ($foundKey === null) {
+                foreach ($existingTestReports as $k => $v) {
+                    if (is_array($v) && isset($v['test']) && strtolower($v['test']) === strtolower($testName)) {
+                        $foundKey = $k;
+                        break;
+                    }
+                }
+            }
+            $testData = $foundKey !== null ? $existingTestReports[$foundKey] : null;
+
+            // 🔥 OPTIMIZATION: Use cached test data instead of repeated DB queries
+            $cachedData = $this->getTestDataForPDF($testName);
+            $templateFields = $cachedData ? $cachedData['templateFields'] : [];
+            $departmentName = $cachedData ? $cachedData['departmentName'] : null;
+
+            $flattenedSaved = is_array($testData) ? $this->flattenTestData($testData) : [];
+            $flattenedSaved = $this->mapSavedDataToSlugKeys($flattenedSaved);
+
+            $testEntries[] = [
+                'name' => $testName,
+                'template' => ['fields' => $templateFields],
+                'saved_data' => $flattenedSaved,
+                'department' => $departmentName,
+                'has_template' => !empty($templateFields),
+                'has_data' => !empty($testData),
+            ];
+        }
+
+        // Use the view for printing
+        return view('Patient.patient_tests_download', compact('patient', 'testEntries'));
+    }
 
     // Save single test report functionality removed
 
@@ -1190,5 +1330,294 @@ class PatientsController extends Controller
             'status' => $receipt->status,
             'created_at' => $receipt->created_at->format('d-M-Y H:i A'),
         ]);
+    }
+
+    public function downloadTestReportPDF($patientId, $testName)
+    {
+        $patient = Patients::findOrFail($patientId);
+        $testName = rawurldecode($testName);
+
+        // Reuse the logic from printTestReport to get testEntry
+        $existingTestReports = json_decode($patient->test_report ?? '{}', true) ?? [];
+        $foundKey = null;
+        foreach ($existingTestReports as $k => $v) {
+            if (is_string($k) && strtolower($k) === strtolower($testName)) {
+                $foundKey = $k;
+                break;
+            }
+        }
+        if ($foundKey === null) {
+            foreach ($existingTestReports as $k => $v) {
+                if (is_array($v) && isset($v['test']) && strtolower($v['test']) === strtolower($testName)) {
+                    $foundKey = $k;
+                    break;
+                }
+            }
+        }
+        $testData = $foundKey !== null ? $existingTestReports[$foundKey] : null;
+
+        // 🔥 OPTIMIZATION: Use cached test data instead of repeated DB queries
+        $cachedData = $this->getTestDataForPDF($testName);
+        $templateFields = $cachedData ? $cachedData['templateFields'] : [];
+        $departmentName = $cachedData ? $cachedData['departmentName'] : null;
+
+        $savedDataFlattened = is_array($testData) ? $this->flattenTestData($testData) : [];
+        $savedDataFlattened = $this->mapSavedDataToSlugKeys($savedDataFlattened);
+
+        $testEntry = [
+            'name' => $testName,
+            'template' => ['fields' => $templateFields],
+            'saved_data' => $savedDataFlattened,
+            'department' => $departmentName ?? null,
+            'has_template' => !empty($templateFields),
+            'has_data' => !empty($testData),
+        ];
+
+        $filename = 'test_report_' . $patient->id . '_' . str_replace(' ', '_', $testName) . '.pdf';
+        try {
+            \Log::info('Generating PDF for test', ['testName' => $testName, 'patientId' => $patientId, 'testEntry' => $testEntry]);
+            $pdf = new \Mpdf\Mpdf();
+            $html = view('Patient.patient_test_download', compact('patient', 'testEntry'))->render();
+            $pdf->WriteHTML($html);
+            return $pdf->Output($filename, 'D');
+        } catch (\Exception $e) {
+            \Log::error('PDF Generation Error: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            return response()->json(['error' => 'Failed to generate PDF: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function downloadTestReportPDFNoHeader($patientId, $testName)
+    {
+        // Same as above but pass includeHeader = false
+        $patient = Patients::findOrFail($patientId);
+        $testName = rawurldecode($testName);
+
+        $existingTestReports = json_decode($patient->test_report ?? '{}', true) ?? [];
+        $foundKey = null;
+        foreach ($existingTestReports as $k => $v) {
+            if (is_string($k) && strtolower($k) === strtolower($testName)) {
+                $foundKey = $k;
+                break;
+            }
+        }
+        if ($foundKey === null) {
+            foreach ($existingTestReports as $k => $v) {
+                if (is_array($v) && isset($v['test']) && strtolower($v['test']) === strtolower($testName)) {
+                    $foundKey = $k;
+                    break;
+                }
+            }
+        }
+        $testData = $foundKey !== null ? $existingTestReports[$foundKey] : null;
+
+        // 🔥 OPTIMIZATION: Use cached test data instead of repeated DB queries
+        $cachedData = $this->getTestDataForPDF($testName);
+        $templateFields = $cachedData ? $cachedData['templateFields'] : [];
+        $departmentName = $cachedData ? $cachedData['departmentName'] : null;
+
+        $savedDataFlattened = is_array($testData) ? $this->flattenTestData($testData) : [];
+        $savedDataFlattened = $this->mapSavedDataToSlugKeys($savedDataFlattened);
+
+        $testEntry = [
+            'name' => $testName,
+            'template' => ['fields' => $templateFields],
+            'saved_data' => $savedDataFlattened,
+            'department' => $departmentName ?? null,
+            'has_template' => !empty($templateFields),
+            'has_data' => !empty($testData),
+        ];
+
+        $filename = 'test_report_' . $patient->id . '_' . str_replace(' ', '_', $testName) . '.pdf';
+        $includeHeader = false;
+        try {
+            $pdf = new \Mpdf\Mpdf();
+            $html = view('Patient.patient_test_download', compact('patient', 'testEntry', 'includeHeader'))->render();
+            $pdf->WriteHTML($html);
+            return $pdf->Output($filename, 'D');
+        } catch (\Exception $e) {
+            \Log::error('PDF Generation Error (No Header): ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to generate PDF: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function downloadMultipleTestReportsPDF($patientId, $testNames)
+    {
+        $patient = Patients::findOrFail($patientId);
+        $testNames = explode(',', rawurldecode($testNames));
+        $testEntries = [];
+        $filename = 'multiple_test_reports_' . $patient->id . '.pdf';
+
+        foreach ($testNames as $testName) {
+            // Reuse logic from printMultipleTestReports
+            $existingTestReports = json_decode($patient->test_report ?? '{}', true) ?? [];
+            $foundKey = null;
+            foreach ($existingTestReports as $k => $v) {
+                if (is_string($k) && strtolower($k) === strtolower($testName)) {
+                    $foundKey = $k;
+                    break;
+                }
+            }
+            if ($foundKey === null) {
+                foreach ($existingTestReports as $k => $v) {
+                    if (is_array($v) && isset($v['test']) && strtolower($v['test']) === strtolower($testName)) {
+                        $foundKey = $k;
+                        break;
+                    }
+                }
+            }
+            $testData = $foundKey !== null ? $existingTestReports[$foundKey] : null;
+
+            $templateFields = [];
+            try {
+                $cat = DB::table('labtest_cat')
+                    ->whereRaw('LOWER(cat_name) = ?', [strtolower($testName)])
+                    ->first();
+                if (!$cat) {
+                    $cat = DB::table('labtest_cat')
+                        ->whereRaw('LOWER(cat_name) LIKE ?', ['%' . strtolower($testName) . '%'])
+                        ->first();
+                }
+                if ($cat) {
+                    $departmentName = $cat->department ?? (isset($cat->department_id) ? DB::table('departments')->where('id', $cat->department_id)->value('name') : null);
+                    $params = DB::table('lab_test_parameters')
+                        ->where('lab_test_cat_id', $cat->id)
+                        ->orderBy('id')
+                        ->get();
+                    foreach ($params as $p) {
+                        $fieldName = \Str::slug($p->parameter_name, '_');
+                        $field = [
+                            'name' => $fieldName,
+                            'label' => $p->parameter_name,
+                            'unit' => $p->unit ?? '',
+                            'ref' => $p->reference_range ?? '',
+                            'type' => $p->field_type ?? 'text',
+                            'required' => false,
+                        ];
+                        if ($p->field_type === 'dual_option' && $p->dual_options) {
+                            $dualOptions = is_array($p->dual_options) ? $p->dual_options : json_decode($p->dual_options, true);
+                            if (is_array($dualOptions) && count($dualOptions) >= 2) {
+                                $field['dual_options'] = $dualOptions;
+                            }
+                        }
+                        $templateFields[] = $field;
+                    }
+                }
+            } catch (\Exception $e) {
+                $templateFields = [];
+            }
+
+            $savedDataFlattened = is_array($testData) ? $this->flattenTestData($testData) : [];
+            $savedDataFlattened = $this->mapSavedDataToSlugKeys($savedDataFlattened);
+
+            $testEntries[] = [
+                'name' => $testName,
+                'template' => ['fields' => $templateFields],
+                'saved_data' => $savedDataFlattened,
+                'department' => $departmentName ?? null,
+                'has_template' => !empty($templateFields),
+                'has_data' => !empty($testData),
+            ];
+        }
+
+        try {
+            $pdf = new \Mpdf\Mpdf();
+            $html = view('Patient.patient_tests_download', compact('patient', 'testEntries'))->render();
+            $pdf->WriteHTML($html);
+            return $pdf->Output($filename, 'D');
+        } catch (\Exception $e) {
+            \Log::error('PDF Generation Error (Multiple): ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to generate PDF: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function downloadMultipleTestReportsPDFNoHeader($patientId, $testNames)
+    {
+        // Same as above
+        $patient = Patients::findOrFail($patientId);
+        $testNames = explode(',', rawurldecode($testNames));
+        $testEntries = [];
+        $filename = 'multiple_test_reports_' . $patient->id . '.pdf';
+
+        foreach ($testNames as $testName) {
+            $existingTestReports = json_decode($patient->test_report ?? '{}', true) ?? [];
+            $foundKey = null;
+            foreach ($existingTestReports as $k => $v) {
+                if (is_string($k) && strtolower($k) === strtolower($testName)) {
+                    $foundKey = $k;
+                    break;
+                }
+            }
+            if ($foundKey === null) {
+                foreach ($existingTestReports as $k => $v) {
+                    if (is_array($v) && isset($v['test']) && strtolower($v['test']) === strtolower($testName)) {
+                        $foundKey = $k;
+                        break;
+                    }
+                }
+            }
+            $testData = $foundKey !== null ? $existingTestReports[$foundKey] : null;
+
+            $templateFields = [];
+            try {
+                $cat = DB::table('labtest_cat')
+                    ->whereRaw('LOWER(cat_name) = ?', [strtolower($testName)])
+                    ->first();
+                if (!$cat) {
+                    $cat = DB::table('labtest_cat')
+                        ->whereRaw('LOWER(cat_name) LIKE ?', ['%' . strtolower($testName) . '%'])
+                        ->first();
+                }
+                if ($cat) {
+                    $departmentName = $cat->department ?? (isset($cat->department_id) ? DB::table('departments')->where('id', $cat->department_id)->value('name') : null);
+                    $params = DB::table('lab_test_parameters')
+                        ->where('lab_test_cat_id', $cat->id)
+                        ->orderBy('id')
+                        ->get();
+                    foreach ($params as $p) {
+                        $fieldName = \Str::slug($p->parameter_name, '_');
+                        $field = [
+                            'name' => $fieldName,
+                            'label' => $p->parameter_name,
+                            'unit' => $p->unit ?? '',
+                            'ref' => $p->reference_range ?? '',
+                            'type' => $p->field_type ?? 'text',
+                            'required' => false,
+                        ];
+                        if ($p->field_type === 'dual_option' && $p->dual_options) {
+                            $dualOptions = is_array($p->dual_options) ? $p->dual_options : json_decode($p->dual_options, true);
+                            if (is_array($dualOptions) && count($dualOptions) >= 2) {
+                                $field['dual_options'] = $dualOptions;
+                            }
+                        }
+                        $templateFields[] = $field;
+                    }
+                }
+            } catch (\Exception $e) {
+                $templateFields = [];
+            }
+
+            $savedDataFlattened = is_array($testData) ? $this->flattenTestData($testData) : [];
+            $savedDataFlattened = $this->mapSavedDataToSlugKeys($savedDataFlattened);
+
+            $testEntries[] = [
+                'name' => $testName,
+                'template' => ['fields' => $templateFields],
+                'saved_data' => $savedDataFlattened,
+                'department' => $departmentName ?? null,
+                'has_template' => !empty($templateFields),
+                'has_data' => !empty($testData),
+            ];
+        }
+
+        $includeHeader = false;
+        try {
+            $pdf = new \Mpdf\Mpdf();
+            $html = view('Patient.patient_tests_download', compact('patient', 'testEntries', 'includeHeader'))->render();
+            $pdf->WriteHTML($html);
+            return $pdf->Output($filename, 'D');
+        } catch (\Exception $e) {
+            \Log::error('PDF Generation Error (Multiple No Header): ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to generate PDF: ' . $e->getMessage()], 500);
+        }
     }
 }
