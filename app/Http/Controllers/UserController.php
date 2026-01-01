@@ -367,9 +367,7 @@ class UserController extends Controller
             'employees_add', 'employees_edit', 'employees_delete',
             'patients', 'testcategory', 'referral',
             'billing_add', 'billing_edit', 'billing_delete',
-            'pathology_add', 'pathology_edit', 'pathology_delete',
-            'radiology', 'ultrasonography', 'electrocardiography',
-            'reportbooth', 'financial', 'report_g', 'inventory'
+            'financial', 'report_g'
         ]));
         return response()->json(['success' => 'Permissions updated successfully']);
     }

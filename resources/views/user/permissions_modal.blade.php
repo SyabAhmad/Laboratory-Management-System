@@ -63,55 +63,6 @@
                 </ul>
             </div>
             <div class="col-md-6">
-                <h5>Pathology</h5>
-                <ul class="list-group">
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        Add
-                        <input type="checkbox" class="permission-checkbox" data-field="pathology_add" {{ $user->pathology_add ? 'checked' : '' }}>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        Edit
-                        <input type="checkbox" class="permission-checkbox" data-field="pathology_edit" {{ $user->pathology_edit ? 'checked' : '' }}>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        Delete
-                        <input type="checkbox" class="permission-checkbox" data-field="pathology_delete" {{ $user->pathology_delete ? 'checked' : '' }}>
-                    </li>
-                </ul>
-            </div>
-        </div>
-        <div class="row mt-3">
-            <div class="col-md-6">
-                <h5>Radiology</h5>
-                <ul class="list-group">
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        Access
-                        <input type="checkbox" class="permission-checkbox" data-field="radiology" {{ $user->radiology ? 'checked' : '' }}>
-                    </li>
-                </ul>
-                <h5>Ultrasonography</h5>
-                <ul class="list-group">
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        Access
-                        <input type="checkbox" class="permission-checkbox" data-field="ultrasonography" {{ $user->ultrasonography ? 'checked' : '' }}>
-                    </li>
-                </ul>
-                <h5>Electrocardiography</h5>
-                <ul class="list-group">
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        Access
-                        <input type="checkbox" class="permission-checkbox" data-field="electrocardiography" {{ $user->electrocardiography ? 'checked' : '' }}>
-                    </li>
-                </ul>
-            </div>
-            <div class="col-md-6">
-                <h5>Report Booth</h5>
-                <ul class="list-group">
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        Access
-                        <input type="checkbox" class="permission-checkbox" data-field="reportbooth" {{ $user->reportbooth ? 'checked' : '' }}>
-                    </li>
-                </ul>
                 <h5>Financial Management</h5>
                 <ul class="list-group">
                     <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -124,13 +75,6 @@
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         Access
                         <input type="checkbox" class="permission-checkbox" data-field="report_g" {{ $user->report_g ? 'checked' : '' }}>
-                    </li>
-                </ul>
-                <h5>Inventory Generation</h5>
-                <ul class="list-group">
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        Access
-                        <input type="checkbox" class="permission-checkbox" data-field="inventory" {{ $user->inventory ? 'checked' : '' }}>
                     </li>
                 </ul>
             </div>

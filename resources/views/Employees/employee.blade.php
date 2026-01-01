@@ -24,10 +24,12 @@
         <div class="card">
             <div class="card-body">
                 <h4 class="text-center">Employees</h4>
+                @if(Auth::user()->user_type == 'Super Admin' || Auth::user()->user_type == 'Admin' || Auth::user()->employees_add == 1)
                 <p class="text-right">
                     <button type="button" class="btn btn-info waves-effect waves-light" data-toggle="modal"
                         data-target=".bs-example-modal-lg"><i class="fas fa-plus"></i> Add Employee</button>
                 </p>
+                @endif
                 <h6 class="text-center">List of all employees</h6>
 
                 <div class="table-responsive">
@@ -63,16 +65,20 @@
                                             {{ $item->users->status == 'Active' ? 'checked' : '' }}>
                                     </td>
                                     <td>
+                                        @if(Auth::user()->user_type == 'Super Admin' || Auth::user()->user_type == 'Admin' || Auth::user()->employees_edit == 1)
                                         <a href="{{ route('employees.edit', $item->id) }}" class="btn btn-primary btn-sm">
                                             <i class="fas fa-edit"></i>
                                         </a>
+                                        @endif
                                         <a href="{{ route('employees.profile', $item->id) }}" class="btn btn-info btn-sm">
                                             <i class="fas fa-eye"></i>
                                         </a>
+                                        @if(Auth::user()->user_type == 'Super Admin' || Auth::user()->user_type == 'Admin' || Auth::user()->employees_delete == 1)
                                         <a href="javascript:void(0);" data-id="{{ $item->id }}"
                                             class="btn btn-danger btn-sm deletebtn">
                                             <i class="fas fa-trash"></i>
                                         </a>
+                                        @endif
                                     </td>
                                 </tr>
                             @endforeach

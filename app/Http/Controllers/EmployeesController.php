@@ -6,6 +6,7 @@ use App\Models\Employees;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class EmployeesController extends Controller
 {
@@ -38,6 +39,11 @@ class EmployeesController extends Controller
      */
     public function store(Request $request)
     {
+        // Check permission - only allow if user is Admin/Super Admin or has employees_add permission
+        if (Auth::user()->user_type != 'Super Admin' && Auth::user()->user_type != 'Admin' && Auth::user()->employees_add != 1) {
+            return response()->json(['error' => 'You do not have permission to add employees'], 403);
+        }
+
         $user = new User;
         $user->name = $request->name;
         $user->email = $request->email;
@@ -93,6 +99,11 @@ class EmployeesController extends Controller
      */
     public function edit($id)
     {
+        // Check permission - only allow if user is Admin/Super Admin or has employees_edit permission
+        if (Auth::user()->user_type != 'Super Admin' && Auth::user()->user_type != 'Admin' && Auth::user()->employees_edit != 1) {
+            return redirect()->route('employees')->with('error', 'You do not have permission to edit employees');
+        }
+
         $employee = Employees::find($id);
         return view('Employees.edit', compact('employee'));
     }
@@ -106,6 +117,11 @@ class EmployeesController extends Controller
      */
     public function update(Request $request, $id)
     {
+        // Check permission - only allow if user is Admin/Super Admin or has employees_edit permission
+        if (Auth::user()->user_type != 'Super Admin' && Auth::user()->user_type != 'Admin' && Auth::user()->employees_edit != 1) {
+            return redirect()->route('employees')->with('error', 'You do not have permission to edit employees');
+        }
+
         $employee = Employees::find($id);
 
         $user = User::find($employee->user_id);
@@ -140,6 +156,11 @@ class EmployeesController extends Controller
      */
     public function destroy($id)
     {
+        // Check permission - only allow if user is Admin/Super Admin or has employees_delete permission
+        if (Auth::user()->user_type != 'Super Admin' && Auth::user()->user_type != 'Admin' && Auth::user()->employees_delete != 1) {
+            return response()->json(['error' => 'You do not have permission to delete employees'], 403);
+        }
+
         $employees = Employees::find($id);
         $user = User::find($employees->user_id);
         if (!is_null($user)) {
