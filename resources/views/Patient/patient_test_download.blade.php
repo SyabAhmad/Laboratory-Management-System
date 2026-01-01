@@ -78,7 +78,7 @@
             <tbody>
                 <tr>
                     <td style="padding: 0; border: none;">
-                        <div style="height: 15mm;"></div> <!-- Spacer between header and content -->
+                        <div style="height: 5mm;"></div> <!-- Spacer between header and content -->
                         <div class="print-body">
                             @include('Patient.partials.test_report', [ 'patient' => $patient, 'testEntry' => $testEntry ])
                         </div>
