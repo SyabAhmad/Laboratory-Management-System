@@ -13,10 +13,14 @@ class AddDatetimeColumnsToPatientsTable extends Migration
      */
     public function up()
     {
-        // Add new datetime columns
+        // Add new datetime columns only if they don't exist
         Schema::table('patients', function (Blueprint $table) {
-            $table->dateTime('receiving_datetime')->nullable()->after('receiving_date');
-            $table->dateTime('reporting_datetime')->nullable()->after('reporting_date');
+            if (!Schema::hasColumn('patients', 'receiving_datetime')) {
+                $table->dateTime('receiving_datetime')->nullable()->after('receiving_date');
+            }
+            if (!Schema::hasColumn('patients', 'reporting_datetime')) {
+                $table->dateTime('reporting_datetime')->nullable()->after('reporting_date');
+            }
         });
     }
 

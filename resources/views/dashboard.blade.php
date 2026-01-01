@@ -23,7 +23,7 @@
 
 
 
-        @if (Auth::user()->user_type == 'Admin' || Auth::user()->user_type == 'Super Admin')
+        @if (Auth::user()->user_type == 'Admin' || Auth::user()->user_type == 'Super Admin' || Auth::user()->user_type == 'Employees')
             <!-- Quick Links Section -->
             <div class="row mb-4">
                 <div class="col-lg-6 col-md-6 col-sm-12 mb-3">

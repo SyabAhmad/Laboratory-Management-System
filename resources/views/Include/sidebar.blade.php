@@ -311,14 +311,6 @@
                     <span> Dashboard </span>
                 </a>
             </li>
-            @if (Auth::user()->employees == 1 || Auth::user()->employees_add == 1 || Auth::user()->employees_edit == 1 || Auth::user()->employees_delete == 1)
-                <li>
-                    <a href="{{ route('employees') }}">
-                        <i class="fas fa-user-friends"></i>
-                        <span> Employee </span>
-                    </a>
-                </li>
-            @endif
             @if (Auth::user()->patients == 1)
                 <li>
                     <a href="javascript: void(0);">
@@ -392,7 +384,7 @@
                     </ul>
                 </li>
             @endif
-            @if (Auth::user()->pathology == 1 || Auth::user()->pathology_add == 1 || Auth::user()->pathology_edit == 1 || Auth::user()->pathology_delete == 1)
+            @if ((Auth::user()->pathology == 1 || Auth::user()->pathology_add == 1 || Auth::user()->pathology_edit == 1 || Auth::user()->pathology_delete == 1) && Auth::user()->user_type != 'Employees')
                 <li>
                     <a href="{{ route('pathology') }}">
                         <i class="fas fa-vial"></i>
@@ -400,7 +392,7 @@
                     </a>
                 </li>
             @endif
-            @if (Auth::user()->radiology == 1)
+            @if (Auth::user()->radiology == 1 && Auth::user()->user_type != 'Employees')
                 <li>
                     <a href="{{ route('radiology') }}">
                         <i class="fas fa-skeleton"></i>
@@ -408,7 +400,7 @@
                     </a>
                 </li>
             @endif
-            @if (Auth::user()->ultrasonography == 1)
+            @if (Auth::user()->ultrasonography == 1 && Auth::user()->user_type != 'Employees')
                 <li>
                     <a href="{{ route('ultrasonography') }}">
                         <i class="fas fa-monitor-heart-rate"></i>
@@ -416,15 +408,15 @@
                     </a>
                 </li>
             @endif
-            @if (Auth::user()->electrocardiography == 1)
+            @if (Auth::user()->electrocardiography == 1 && Auth::user()->user_type != 'Employees')
                 <li>
-                    <a href="{{ route('electrocardiography') }}">
+                    <a href="{{ route('Electrocardiography') }}">
                         <i class="fas fa-monitor-heart-rate"></i>
                         <span> Electrocardiography </span>
                     </a>
                 </li>
             @endif
-            @if (Auth::user()->reportbooth == 1)
+            @if (Auth::user()->reportbooth == 1 && Auth::user()->user_type != 'Employees')
                 <li>
                     <a href="{{ route('reportbooth') }}">
                         <i class="dripicons-meter"></i>
@@ -469,7 +461,7 @@
                     </a>
                     <ul class="nav-second-level" aria-expanded="false">
                         <!-- <li>
-                                        <a href="{{ route('Patients.list') }}">Patient List</a>
+                                        <a href="{{ route('patients.list') }}">Patient List</a>
                                     </li> -->
                         <li>
                             <a href="{{ route('ledger') }}">Accounts Statement</a>
