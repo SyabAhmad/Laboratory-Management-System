@@ -404,7 +404,10 @@ class PatientsController extends Controller
                         $btn .= '&nbsp;&nbsp;<a href="' . route('patients.print-receipt', $receipt->id) . '" class="btn btn-success btn-sm" title="Download Slip" onclick="return openPrintModal(event, this)"><i class="fas fa-download"></i> Slip</a>';
                     }
 
-                    $btn .= '&nbsp;&nbsp;<a href="javascript:void(0);" data-id="' . $row->id . '" class="btn btn-danger btn-sm deletebtn" title="Delete"><i class="fas fa-trash"></i></a>';
+                    // Only show delete button for non-employee users
+                    if (Auth::user()->user_type !== 'Employees') {
+                        $btn .= '&nbsp;&nbsp;<a href="javascript:void(0);" data-id="' . $row->id . '" class="btn btn-danger btn-sm deletebtn" title="Delete"><i class="fas fa-trash"></i></a>';
+                    }
                     $btn .= '&nbsp;&nbsp;<a href="' . route("billing.create", ['id' => $row->id]) . '" class="btn btn-success btn-sm" title="Create Bill"><i class="fas fa-file-invoice-dollar"></i> Bill</a>';
                     return $btn;
                 })
@@ -912,7 +915,16 @@ class PatientsController extends Controller
      */
     public function destroy($id)
     {
+        // Prevent employees from deleting patients entirely
+        if (Auth::user()->user_type === 'Employees') {
+            return response()->json(['error' => 'You do not have permission to delete patients.'], 403);
+        }
+
         $patient = Patients::find($id);
+        if (!$patient) {
+            return response()->json(['error' => 'Patient not found.'], 404);
+        }
+
         $patient->delete();
         return response()->json(['success' => 'Patient deleted successfully.']);
     }
