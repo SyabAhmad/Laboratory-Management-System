@@ -345,7 +345,7 @@
 
     {{-- Header and footer are included by Layout.print now to avoid duplication --}}
     <!-- end include print header/footer -->
-    @php $maxRowsPerPage = 22; @endphp
+    @php $maxRowsPerPage = 20; @endphp
     {{-- Personal information block (table format) --}}
     @if (!isset($skipPatientInfo) || !$skipPatientInfo)
         <style>
