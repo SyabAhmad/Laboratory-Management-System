@@ -70,7 +70,7 @@
             <tbody>
                 <tr>
                     <td style="padding: 0; border: none;">
-                    <div style="height: 5mm;"></div> <!-- Spacer between header and content -->
+                    <div style="height: 0mm;"></div> <!-- Spacer between header and content -->
                     <div class="print-body {{ count($testEntries) > 1 ? 'multiple-tests' : '' }}">
                         {{-- Patient info once at top --}}
                         @if (!empty($testEntries))
