@@ -126,13 +126,15 @@
 
             /* Header/Footer positioning handled by the shared partial (print_header_footer.blade.php) */
 
+            /* Give a bit of top breathing room when printing (helps when header is omitted) */
             .print-body {
-                padding: 0 !important;
+                padding: 6mm 0 0 !important;
                 margin: 0 !important;
             }
 
+            /* Keep multiple-tests consistent */
             .multiple-tests.print-body {
-                padding: 0 !important;
+                padding: 6mm 0 0 !important;
             }
 
             .footer-container {
