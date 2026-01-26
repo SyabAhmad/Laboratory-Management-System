@@ -16,9 +16,10 @@ class DaityActivitiesController extends Controller
     public function index(Request $request)
     {
         if($request->ajax()){
-            $data = DailyActivities::orderBy('id', 'DESC')->get();
-            return DataTables::of($data)
+            $query = DailyActivities::with('users')->orderBy('id', 'DESC');
+            return DataTables::eloquent($query)
             ->addIndexColumn()
+            ->orderColumn('DT_RowIndex', 'id $1')
             ->addColumn('user_name', function ($item) {
                 $user_name = $item->users->name;
                 return $user_name;

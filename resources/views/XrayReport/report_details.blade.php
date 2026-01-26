@@ -25,10 +25,10 @@
                 <div id="printarea">
                     <div class="reportprint container">
                         <div class="text-center mt-3">
-                            @foreach (App\Models\MainCompanys::where('id', 1)->get() as $item)
-                                <img src="{{ asset('/assets/HMS/lablogo/' . $item->lab_image) }}" alt="Lab Logo"
+                            @if ($company)
+                                <img src="{{ asset('/assets/HMS/lablogo/' . $company->lab_image) }}" alt="Lab Logo"
                                     style="width: 150px; height: 150px" class="img-fluid"> <br />
-                            @endforeach
+                            @endif
                         </div>
                         <div class="row">
                             <div class="col-sm-6">
@@ -41,12 +41,12 @@
 
                             <div class="col-sm-6">
                                 <div class="text-right">
-                                    @foreach (App\Models\MainCompanys::where('id', 1)->get() as $item)
-                                        <span class="h3">{{ $item->lab_name }}</span><br>
-                                        <span class="h5">{{ $item->lab_address }}</span><br>
-                                        <span class="h5">{{ $item->lab_phone }}</span><br>
-                                        <span class="h5">{{ $item->lab_email }}</span><br>
-                                    @endforeach
+                                    @if ($company)
+                                        <span class="h3">{{ $company->lab_name }}</span><br>
+                                        <span class="h5">{{ $company->lab_address }}</span><br>
+                                        <span class="h5">{{ $company->lab_phone }}</span><br>
+                                        <span class="h5">{{ $company->lab_email }}</span><br>
+                                    @endif
                                 </div>
                             </div>
 

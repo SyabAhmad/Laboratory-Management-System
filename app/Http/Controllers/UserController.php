@@ -18,9 +18,10 @@ class UserController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $data = User::whereIn('user_type', ['Admin', 'Employees', 'Super Admin', 'Accountant', 'Receptionist', 'Lab Scientist', 'Radiographer', 'Sonographer'])->get();
-            return DataTables::of($data)
+            $query = User::whereIn('user_type', ['Admin', 'Employees', 'Super Admin', 'Accountant', 'Receptionist', 'Lab Scientist', 'Radiographer', 'Sonographer']);
+            return DataTables::eloquent($query)
                 ->addIndexColumn()
+                ->orderColumn('DT_RowIndex', 'id $1')
                 ->addColumn('status', function ($item) {
                     $togolebutton = '<input ' . ($item->status == "Active" ? "checked" : "") . ' type="checkbox" class="status" id="status" data-id="' . $item->id . '" />';
                     return $togolebutton;

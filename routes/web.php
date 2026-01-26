@@ -180,9 +180,11 @@ Route::middleware(['auth:sanctum', 'verified'])
 
         //Report Genarate Route
         Route::get('/patientreport', 'App\Http\Controllers\ReportGenarationController@patientindex')->name('patientreport');
+        Route::get('/patientreport/data', 'App\Http\Controllers\ReportGenarationController@patientindexData')->name('patientreport.data');
         Route::get('/ledger', 'App\Http\Controllers\ReportGenarationController@ledger')->name('ledger');
         Route::get('/ledger/details', 'App\Http\Controllers\ReportGenarationController@ledgerdetails')->name('ledger.details');
         Route::get('/referralreport', 'App\Http\Controllers\ReportGenarationController@referrallist')->name('referralreport');
+        Route::get('/referralreport/data', 'App\Http\Controllers\ReportGenarationController@referrallistData')->name('referralreport.data');
         // Daily finance summary/report
         Route::get('/daily-finance', 'App\Http\Controllers\ReportGenarationController@dailyFinance')->name('report.dailyFinance')->middleware('role:Admin,Accountant,Super Admin');
         Route::get('/reportbooth', 'App\Http\Controllers\ReportGenarationController@reportbooth')->name('reportbooth');

@@ -37,7 +37,7 @@
                     <tbody>
                         @foreach ($testreport as $item)
                             <tr>
-                                <td>{{ $loop->iteration }}</td>
+                                <td>{{ $testreport->firstItem() + $loop->index }}</td>
                                 <td>{{ $item->patients->patient_id }}</td>
                                 <td>{{ $item->patients->name }}</td>
                                 <td>{{ $item->invoice->bill_no }}</td>
@@ -59,6 +59,9 @@
                         @endforeach
                     </tbody>
                 </table>
+                <div class="mt-3">
+                    {{ $testreport->links() }}
+                </div>
             </div>
         </div>
 

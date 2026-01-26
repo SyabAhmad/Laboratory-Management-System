@@ -31,10 +31,11 @@ class BillsController extends Controller
     public function allbills(Request $request)
     {
         if ($request->ajax()) {
-            $data = Bills::with('patient')->orderBy('id', 'DESC')->get();
+            $query = Bills::with('patient')->orderBy('id', 'DESC');
 
-            return DataTables::of($data)
+            return DataTables::eloquent($query)
                 ->addIndexColumn()
+                ->orderColumn('DT_RowIndex', 'id $1')
                 ->addColumn('patient_id', function ($item) {
                     return optional($item->patient)->patient_id ?? 'N/A';
                 })
@@ -82,9 +83,10 @@ class BillsController extends Controller
     public function allbills1(Request $request)
     {
         if ($request->ajax()) {
-            $data = Bills::orderBy('id', 'DESC')->get();
-            return DataTables::of($data)
+            $query = Bills::with('patients')->orderBy('id', 'DESC');
+            return DataTables::eloquent($query)
                 ->addIndexColumn()
+                ->orderColumn('DT_RowIndex', 'id $1')
                 ->addColumn('patient_id', function ($item) {
                     return $item->patients->patient_id;
                 })
