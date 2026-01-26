@@ -8,6 +8,7 @@ use App\Models\ReferralCommission;
 use App\Models\Expense;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
 use Carbon\Carbon;
 use App\Models\Bills;
@@ -21,206 +22,220 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        $company = MainCompanys::first();
+        $cacheTtl = 300;
+        $company = Cache::remember('dashboard_company', $cacheTtl, function () {
+            return MainCompanys::first();
+        });
 
         if (!$company) {
             return view('maincompany.maincompany');
         }
 
-        // Calculate total balance from bills
-        $totalBilled = Bills::sum('amount') ?? 0;
+        $totals = Cache::remember('dashboard_totals', $cacheTtl, function () {
+            $totalBilled = Bills::sum('amount') ?? 0;
+            $totalPaymentsPaid = Payments::sum('amount') ?? 0;
+            $totalCommissionsPaid = ReferralCommission::where('status', 'paid')
+                ->sum('commission_amount') ?? 0;
+            $totalPaid = $totalPaymentsPaid + $totalCommissionsPaid;
+            $totalExpenses = Expense::sum('amount') ?? 0;
+            $netBalance = $totalPaid - $totalExpenses;
+            $outstandingBalance = $totalBilled - $totalPaid;
 
-        // Calculate total paid from Payments table
-        $totalPaymentsPaid = Payments::sum('amount') ?? 0;
+            return compact(
+                'totalBilled',
+                'totalPaymentsPaid',
+                'totalCommissionsPaid',
+                'totalPaid',
+                'totalExpenses',
+                'netBalance',
+                'outstandingBalance'
+            );
+        });
 
-        // Calculate total paid from ReferralCommission (paid status)
-        $totalCommissionsPaid = ReferralCommission::where('status', 'paid')
-            ->sum('commission_amount') ?? 0;
+        $today = Carbon::today();
+        $todayKey = $today->format('Y-m-d');
+        $hasPaymentsDateColumn = Cache::remember('payments_has_date_column', 3600, function () {
+            return Schema::hasColumn('payments', 'date');
+        });
 
-        // Combined total paid
-        $totalPaid = $totalPaymentsPaid + $totalCommissionsPaid;
+        $dailyStats = Cache::remember("dashboard_daily_stats_{$todayKey}", $cacheTtl, function () use ($today, $hasPaymentsDateColumn) {
+            $todayStart = $today->copy()->startOfDay();
+            $todayEnd = $today->copy()->endOfDay();
 
-        // Total expenses
-        $totalExpenses = Expense::sum('amount') ?? 0;
-
-        // Net balance (Income - Expenses)
-        $netBalance = $totalPaid - $totalExpenses;
-
-        // Outstanding balance (what's owed to the lab)
-        $outstandingBalance = $totalBilled - $totalPaid;
-
-        // Today's stats
-        $todayStart = Carbon::today()->startOfDay();
-        $todayEnd = Carbon::today()->endOfDay();
-
-        // Include newly created bills and bills updated today (some flows update existing bill rows rather than creating new ones)
-        $billedToday = Bills::where(function ($q) use ($todayStart, $todayEnd) {
-            $q->whereBetween('created_at', [$todayStart, $todayEnd])
-                ->orWhereBetween('updated_at', [$todayStart, $todayEnd]);
-        })->sum('amount') ?? 0;
-        // Only use payments.date when column exists (older schema)
-        if (Schema::hasColumn('payments', 'date')) {
-            $paidToday = Payments::where(function ($q) use ($todayStart, $todayEnd) {
+            $billedToday = Bills::where(function ($q) use ($todayStart, $todayEnd) {
                 $q->whereBetween('created_at', [$todayStart, $todayEnd])
-                    ->orWhereDate('date', Carbon::today());
+                    ->orWhereBetween('updated_at', [$todayStart, $todayEnd]);
             })->sum('amount') ?? 0;
-            $paymentsCountToday = Payments::where(function ($q) use ($todayStart, $todayEnd) {
+
+            if ($hasPaymentsDateColumn) {
+                $paidToday = Payments::where(function ($q) use ($todayStart, $todayEnd, $today) {
+                    $q->whereBetween('created_at', [$todayStart, $todayEnd])
+                        ->orWhereDate('date', $today);
+                })->sum('amount') ?? 0;
+                $paymentsCountToday = Payments::where(function ($q) use ($todayStart, $todayEnd, $today) {
+                    $q->whereBetween('created_at', [$todayStart, $todayEnd])
+                        ->orWhereDate('date', $today);
+                })->count();
+            } else {
+                $paidToday = Payments::whereBetween('created_at', [$todayStart, $todayEnd])->sum('amount') ?? 0;
+                $paymentsCountToday = Payments::whereBetween('created_at', [$todayStart, $todayEnd])->count();
+            }
+
+            $paidCommissionsToday = ReferralCommission::where('status', 'paid')
+                ->whereBetween('updated_at', [$todayStart, $todayEnd])
+                ->sum('commission_amount') ?? 0;
+
+            $commissionsCountToday = ReferralCommission::where('status', 'paid')
+                ->whereBetween('updated_at', [$todayStart, $todayEnd])
+                ->count();
+
+            $paidToday = ($paidToday ?? 0) + $paidCommissionsToday;
+            $billsCountToday = Bills::where(function ($q) use ($todayStart, $todayEnd) {
                 $q->whereBetween('created_at', [$todayStart, $todayEnd])
-                    ->orWhereDate('date', Carbon::today());
+                    ->orWhereBetween('updated_at', [$todayStart, $todayEnd]);
             })->count();
-        } else {
-            $paidToday = Payments::whereBetween('created_at', [$todayStart, $todayEnd])->sum('amount') ?? 0;
-            $paymentsCountToday = Payments::whereBetween('created_at', [$todayStart, $todayEnd])->count();
-        }
-        // Also include referral commissions that were marked paid today (some commission records are created earlier, and are marked paid later)
-        $paidCommissionsToday = ReferralCommission::where('status', 'paid')
-            ->whereBetween('updated_at', [$todayStart, $todayEnd])
-            ->sum('commission_amount') ?? 0;
 
-        $commissionsCountToday = ReferralCommission::where('status', 'paid')
-            ->whereBetween('updated_at', [$todayStart, $todayEnd])
-            ->count();
+            $expensesToday = Expense::whereDate('expense_date', $today)->sum('amount') ?? 0;
 
-        $paidToday = ($paidToday ?? 0) + $paidCommissionsToday;
-        $billsCountToday = Bills::where(function ($q) use ($todayStart, $todayEnd) {
-            $q->whereBetween('created_at', [$todayStart, $todayEnd])
-                ->orWhereBetween('updated_at', [$todayStart, $todayEnd]);
-        })->count();
+            $commissionsPendingToday = ReferralCommission::where('status', 'pending')
+                ->whereBetween('created_at', [$todayStart, $todayEnd])
+                ->sum('commission_amount') ?? 0;
 
-        // Today's expenses
-        $expensesToday = Expense::whereDate('expense_date', Carbon::today())->sum('amount') ?? 0;
+            $balanceToday = $billedToday - $expensesToday - $paidCommissionsToday;
 
-        // Today's pending commissions
-        $commissionsPendingToday = ReferralCommission::where('status', 'pending')
-            ->whereBetween('created_at', [$todayStart, $todayEnd])
-            ->sum('commission_amount') ?? 0;
+            return compact(
+                'billedToday',
+                'paidToday',
+                'expensesToday',
+                'balanceToday',
+                'commissionsPendingToday',
+                'billsCountToday',
+                'paymentsCountToday',
+                'commissionsCountToday',
+                'paidCommissionsToday'
+            );
+        });
 
-        // Today's balance (billed - expenses - pending commissions for daily cash flow)
-        $balanceToday = $billedToday - $expensesToday - $paidCommissionsToday;
-
-        // Prepare monthly billed and paid totals for last 12 months
         $end = Carbon::now()->endOfMonth();
-        $start = (clone $end)->subMonths(11)->startOfMonth();
+        $monthlyKey = $end->format('Y-m');
+        $monthlyStats = Cache::remember("dashboard_monthly_{$monthlyKey}", $cacheTtl, function () use ($end) {
+            $start = (clone $end)->subMonths(11)->startOfMonth();
 
-        // Months labels (YYYY-MM) in ascending order
-        $period = [];
-        $cursor = (clone $start);
-        while ($cursor->lte($end)) {
-            $period[] = $cursor->format('Y-m');
-            $cursor->addMonth();
-        }
+            $period = [];
+            $cursor = (clone $start);
+            while ($cursor->lte($end)) {
+                $period[] = $cursor->format('Y-m');
+                $cursor->addMonth();
+            }
 
-        // Query billed amounts grouped by month
-        $billedRows = DB::table('bills')
-            ->select(DB::raw("DATE_FORMAT(created_at, '%Y-%m') as month"), DB::raw('COALESCE(SUM(amount),0) as total'))
-            ->whereBetween('created_at', [$start->toDateTimeString(), $end->toDateTimeString()])
-            ->groupBy('month')
-            ->pluck('total', 'month')
-            ->toArray();
+            $billedRows = DB::table('bills')
+                ->select(DB::raw("DATE_FORMAT(created_at, '%Y-%m') as month"), DB::raw('COALESCE(SUM(amount),0) as total'))
+                ->whereBetween('created_at', [$start->toDateTimeString(), $end->toDateTimeString()])
+                ->groupBy('month')
+                ->pluck('total', 'month')
+                ->toArray();
 
-        // Query paid amounts from Payments table
-        $paidPaymentsRows = DB::table('payments')
-            ->select(DB::raw("DATE_FORMAT(created_at, '%Y-%m') as month"), DB::raw('COALESCE(SUM(amount),0) as total'))
-            ->whereBetween('created_at', [$start->toDateTimeString(), $end->toDateTimeString()])
-            ->groupBy('month')
-            ->pluck('total', 'month')
-            ->toArray();
+            $paidPaymentsRows = DB::table('payments')
+                ->select(DB::raw("DATE_FORMAT(created_at, '%Y-%m') as month"), DB::raw('COALESCE(SUM(amount),0) as total'))
+                ->whereBetween('created_at', [$start->toDateTimeString(), $end->toDateTimeString()])
+                ->groupBy('month')
+                ->pluck('total', 'month')
+                ->toArray();
 
-        // Query paid commissions from ReferralCommission table
-        // Use updated_at for paid commissions grouping so a commission paid today but created earlier is counted under the month it was paid
-        $paidCommissionsRows = DB::table('referral_commissions')
-            ->where('status', 'paid')
-            ->select(DB::raw("DATE_FORMAT(updated_at, '%Y-%m') as month"), DB::raw('COALESCE(SUM(commission_amount),0) as total'))
-            ->whereBetween('updated_at', [$start->toDateTimeString(), $end->toDateTimeString()])
-            ->groupBy('month')
-            ->pluck('total', 'month')
-            ->toArray();
+            $paidCommissionsRows = DB::table('referral_commissions')
+                ->where('status', 'paid')
+                ->select(DB::raw("DATE_FORMAT(updated_at, '%Y-%m') as month"), DB::raw('COALESCE(SUM(commission_amount),0) as total'))
+                ->whereBetween('updated_at', [$start->toDateTimeString(), $end->toDateTimeString()])
+                ->groupBy('month')
+                ->pluck('total', 'month')
+                ->toArray();
 
-        // Merge paid amounts (payments + commissions)
-        $paidRows = [];
-        foreach ($period as $month) {
-            $paidRows[$month] = ($paidPaymentsRows[$month] ?? 0) + ($paidCommissionsRows[$month] ?? 0);
-        }
+            $paidRows = [];
+            foreach ($period as $month) {
+                $paidRows[$month] = ($paidPaymentsRows[$month] ?? 0) + ($paidCommissionsRows[$month] ?? 0);
+            }
 
-        $labels = array_map(function ($m) {
-            return Carbon::createFromFormat('Y-m', $m)->format('M Y');
-        }, $period);
-        $billedData = array_map(function ($m) use ($billedRows) {
-            return isset($billedRows[$m]) ? (float)$billedRows[$m] : 0;
-        }, $period);
-        $paidData = array_map(function ($m) use ($paidRows) {
-            return isset($paidRows[$m]) ? (float)$paidRows[$m] : 0;
-        }, $period);
+            $labels = array_map(function ($m) {
+                return Carbon::createFromFormat('Y-m', $m)->format('M Y');
+            }, $period);
+            $billedData = array_map(function ($m) use ($billedRows) {
+                return isset($billedRows[$m]) ? (float)$billedRows[$m] : 0;
+            }, $period);
+            $paidData = array_map(function ($m) use ($paidRows) {
+                return isset($paidRows[$m]) ? (float)$paidRows[$m] : 0;
+            }, $period);
 
-        // --- Daily Stats for Last 30 Days ---
-        $dailyEnd = Carbon::today()->endOfDay();
-        $dailyStart = Carbon::today()->subDays(29)->startOfDay();
+            return compact('labels', 'billedData', 'paidData');
+        });
 
-        $dailyPeriod = [];
-        $dCursor = (clone $dailyStart);
-        while ($dCursor->lte($dailyEnd)) {
-            $dailyPeriod[] = $dCursor->format('Y-m-d');
-            $dCursor->addDay();
-        }
+        $dailyChart = Cache::remember("dashboard_daily_chart_{$todayKey}", $cacheTtl, function () use ($today) {
+            $dailyEnd = $today->copy()->endOfDay();
+            $dailyStart = $today->copy()->subDays(29)->startOfDay();
 
-        // Daily Billed
-        $dailyBilledRows = DB::table('bills')
-            ->select(DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d') as day"), DB::raw('COALESCE(SUM(amount),0) as total'))
-            ->whereBetween('created_at', [$dailyStart, $dailyEnd])
-            ->groupBy('day')
-            ->pluck('total', 'day')
-            ->toArray();
+            $dailyPeriod = [];
+            $dCursor = (clone $dailyStart);
+            while ($dCursor->lte($dailyEnd)) {
+                $dailyPeriod[] = $dCursor->format('Y-m-d');
+                $dCursor->addDay();
+            }
 
-        // Daily Paid (Payments)
-        $dailyPaidPaymentsRows = DB::table('payments')
-            ->select(DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d') as day"), DB::raw('COALESCE(SUM(amount),0) as total'))
-            ->whereBetween('created_at', [$dailyStart, $dailyEnd])
-            ->groupBy('day')
-            ->pluck('total', 'day')
-            ->toArray();
+            $dailyBilledRows = DB::table('bills')
+                ->select(DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d') as day"), DB::raw('COALESCE(SUM(amount),0) as total'))
+                ->whereBetween('created_at', [$dailyStart, $dailyEnd])
+                ->groupBy('day')
+                ->pluck('total', 'day')
+                ->toArray();
 
-        // Daily Paid (Commissions)
-        // Use updated_at for daily paid commission grouping to reflect when a commission was paid, not when it was created
-        $dailyPaidCommissionsRows = DB::table('referral_commissions')
-            ->where('status', 'paid')
-            ->select(DB::raw("DATE_FORMAT(updated_at, '%Y-%m-%d') as day"), DB::raw('COALESCE(SUM(commission_amount),0) as total'))
-            ->whereBetween('updated_at', [$dailyStart, $dailyEnd])
-            ->groupBy('day')
-            ->pluck('total', 'day')
-            ->toArray();
+            $dailyPaidPaymentsRows = DB::table('payments')
+                ->select(DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d') as day"), DB::raw('COALESCE(SUM(amount),0) as total'))
+                ->whereBetween('created_at', [$dailyStart, $dailyEnd])
+                ->groupBy('day')
+                ->pluck('total', 'day')
+                ->toArray();
 
-        $dailyLabels = array_map(function ($d) {
-            return Carbon::createFromFormat('Y-m-d', $d)->format('M d');
-        }, $dailyPeriod);
-        $dailyBilledData = array_map(function ($d) use ($dailyBilledRows) {
-            return isset($dailyBilledRows[$d]) ? (float)$dailyBilledRows[$d] : 0;
-        }, $dailyPeriod);
+            $dailyPaidCommissionsRows = DB::table('referral_commissions')
+                ->where('status', 'paid')
+                ->select(DB::raw("DATE_FORMAT(updated_at, '%Y-%m-%d') as day"), DB::raw('COALESCE(SUM(commission_amount),0) as total'))
+                ->whereBetween('updated_at', [$dailyStart, $dailyEnd])
+                ->groupBy('day')
+                ->pluck('total', 'day')
+                ->toArray();
 
-        $dailyPaidData = [];
-        foreach ($dailyPeriod as $day) {
-            $dailyPaidData[] = ($dailyPaidPaymentsRows[$day] ?? 0) + ($dailyPaidCommissionsRows[$day] ?? 0);
-        }
+            $dailyLabels = array_map(function ($d) {
+                return Carbon::createFromFormat('Y-m-d', $d)->format('M d');
+            }, $dailyPeriod);
+            $dailyBilledData = array_map(function ($d) use ($dailyBilledRows) {
+                return isset($dailyBilledRows[$d]) ? (float)$dailyBilledRows[$d] : 0;
+            }, $dailyPeriod);
+
+            $dailyPaidData = [];
+            foreach ($dailyPeriod as $day) {
+                $dailyPaidData[] = ($dailyPaidPaymentsRows[$day] ?? 0) + ($dailyPaidCommissionsRows[$day] ?? 0);
+            }
+
+            return compact('dailyLabels', 'dailyBilledData', 'dailyPaidData');
+        });
 
         return view('dashboard', [
             'company' => $company,
-            'totalBalance' => $netBalance, // Changed from outstandingBalance to netBalance
-            'totalBilled' => $totalBilled,
-            'totalPaid' => $totalPaid,
-            'totalExpenses' => $totalExpenses,
-            'billedToday' => $billedToday,
-            'paidToday' => $paidToday,
-            'expensesToday' => $expensesToday,
-            'balanceToday' => $balanceToday,
-            'commissionsPendingToday' => $commissionsPendingToday,
-            'billsCountToday' => $billsCountToday,
-            'paymentsCountToday' => $paymentsCountToday,
-            'commissionsCountToday' => $commissionsCountToday ?? 0,
-            'chartLabels' => $labels,
-            'chartBilled' => $billedData,
-            'chartPaid' => $paidData,
-            'dailyLabels' => $dailyLabels,
-            'dailyBilled' => $dailyBilledData,
-            'dailyPaid' => $dailyPaidData,
+            'totalBalance' => $totals['netBalance'],
+            'totalBilled' => $totals['totalBilled'],
+            'totalPaid' => $totals['totalPaid'],
+            'totalExpenses' => $totals['totalExpenses'],
+            'billedToday' => $dailyStats['billedToday'],
+            'paidToday' => $dailyStats['paidToday'],
+            'expensesToday' => $dailyStats['expensesToday'],
+            'balanceToday' => $dailyStats['balanceToday'],
+            'commissionsPendingToday' => $dailyStats['commissionsPendingToday'],
+            'billsCountToday' => $dailyStats['billsCountToday'],
+            'paymentsCountToday' => $dailyStats['paymentsCountToday'],
+            'commissionsCountToday' => $dailyStats['commissionsCountToday'] ?? 0,
+            'chartLabels' => $monthlyStats['labels'],
+            'chartBilled' => $monthlyStats['billedData'],
+            'chartPaid' => $monthlyStats['paidData'],
+            'dailyLabels' => $dailyChart['dailyLabels'],
+            'dailyBilled' => $dailyChart['dailyBilledData'],
+            'dailyPaid' => $dailyChart['dailyPaidData'],
         ]);
     }
 

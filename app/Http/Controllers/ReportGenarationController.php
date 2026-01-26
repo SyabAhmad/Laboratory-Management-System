@@ -6,8 +6,10 @@ use App\Models\Patients;
 use App\Models\Payments;
 use App\Models\Referrals;
 use App\Models\TestReport;
+use App\Models\MainCompanys;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Yajra\DataTables\Facades\DataTables;
 
 class ReportGenarationController extends Controller
 {
@@ -18,8 +20,41 @@ class ReportGenarationController extends Controller
      */
     public function patientindex()
     {
-        $patients = Patients::all();
-        return view('allreport.patientlist', compact('patients'));
+        return view('allreport.patientlist');
+    }
+
+    public function patientindexData(Request $request)
+    {
+        $query = Patients::with('referral')->select('patients.*');
+
+        $min = $request->input('min');
+        $max = $request->input('max');
+
+        if ($min && $max) {
+            $start = Carbon::createFromFormat('Y-m-d', $min)->startOfDay();
+            $end = Carbon::createFromFormat('Y-m-d', $max)->endOfDay();
+            $query->whereBetween('created_at', [$start, $end]);
+        } elseif ($min) {
+            $start = Carbon::createFromFormat('Y-m-d', $min)->startOfDay();
+            $query->where('created_at', '>=', $start);
+        } elseif ($max) {
+            $end = Carbon::createFromFormat('Y-m-d', $max)->endOfDay();
+            $query->where('created_at', '<=', $end);
+        }
+
+        return DataTables::eloquent($query)
+            ->addIndexColumn()
+            ->orderColumn('DT_RowIndex', 'id $1')
+            ->addColumn('referral_name', function ($item) {
+                if ($item->referred_by === 'none') {
+                    return 'None';
+                }
+                return optional($item->referral)->name ?? 'N/A';
+            })
+            ->editColumn('created_at', function ($item) {
+                return $item->created_at ? $item->created_at->format('Y-m-d') : '';
+            })
+            ->make(true);
     }
     public function ledger()
     {
@@ -57,13 +92,27 @@ class ReportGenarationController extends Controller
 
     public function referrallist()
     {
-        $referr = Referrals::all();
-        return view('allreport.referrallist', compact('referr'));
+        return view('allreport.referrallist');
+    }
+
+    public function referrallistData()
+    {
+        $query = Referrals::withCount('patients');
+
+        return DataTables::eloquent($query)
+            ->addIndexColumn()
+            ->orderColumn('DT_RowIndex', 'id $1')
+            ->addColumn('total_referred', function ($item) {
+                return $item->patients_count ?? 0;
+            })
+            ->make(true);
     }
 
     public function reportbooth()
     {
-        $testreport = TestReport::where('status', '=', 'Test Complete')->orderBy('updated_at', 'DESC')->get();
+        $testreport = TestReport::where('status', '=', 'Test Complete')
+            ->orderBy('updated_at', 'DESC')
+            ->paginate(50);
         return view('XrayReport.reportbooth', compact('testreport'));
     }
     public function report_statuschange($id, $status)
@@ -77,7 +126,8 @@ class ReportGenarationController extends Controller
     public function report_details($id)
     {
         $testreport = TestReport::find($id);
-        return view('XrayReport.report_details', compact('testreport'));
+        $company = MainCompanys::find(1);
+        return view('XrayReport.report_details', compact('testreport', 'company'));
     }
 
     /**

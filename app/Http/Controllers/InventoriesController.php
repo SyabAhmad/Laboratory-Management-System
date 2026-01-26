@@ -17,9 +17,10 @@ class InventoriesController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $data = Inventories::orderBy('id', 'DESC')->get();
-            return DataTables::of($data)
+            $query = Inventories::orderBy('id', 'DESC');
+            return DataTables::eloquent($query)
                 ->addIndexColumn()
+                ->orderColumn('DT_RowIndex', 'id $1')
                 ->addColumn('amount', function ($row) {
                     return number_format($row->amount, 2);
                 })
@@ -49,9 +50,10 @@ class InventoriesController extends Controller
     {
 
         if ($request->ajax()) {
-            $data = InventoriesHistory::orderBy('id', 'DESC')->get();
-            return DataTables::of($data)
+            $query = InventoriesHistory::with('inventories')->orderBy('id', 'DESC');
+            return DataTables::eloquent($query)
                 ->addIndexColumn()
+                ->orderColumn('DT_RowIndex', 'id $1')
                 ->addColumn('itemname', function ($row) {
                     $item_name =  $row->inventories->name;
                     return $item_name;

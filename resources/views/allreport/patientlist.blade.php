@@ -79,28 +79,7 @@
                                 <th>Create At</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            @foreach ($patients as $item)
-                                <tr>
-                                    <td></td>
-                                    <td>{{ $item->patient_id }}</td>
-                                    <td>{{ $item->name }}</td>
-                                    <td>{{ $item->mobile_phone }}</td>
-                                    <td>{{ $item->age }}</td>
-                                    <td>{{ $item->gender }}</td>
-                                    <td>{{ $item->blood_group }}</td>
-                                    <td>
-                                        @if ($item->referred_by == 'none')
-                                            None
-                                        @else
-                                            {{ optional($item->referral)->name ?? 'N/A' }}
-                                        @endif
-
-                                    </td>
-                                    <td>{{ $item->created_at->format('Y-m-d') }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
+                        <tbody></tbody>
                     </table>
                 </div>
             </div>
@@ -111,33 +90,30 @@
         $(document).ready(function() {
 
             var minDate, maxDate;
-            $.fn.dataTable.ext.search.push(
-                function(settings, data, dataIndex) {
-                    var min = minDate.val();
-                    var max = maxDate.val();
-                    var date = new Date(data[9]);
-                    if (
-                        (min === null && max === null) || (min === null && max >= date) || (min <= date &&
-                            max === null) || (min <= date && max >= date)
-                    ) {
-                        return true;
-                    }
-                    return false;
-                }
-            );
-            minDate = new DateTime($('#min'), {
-                format: 'YYYY-MM-DD'
-            });
-            maxDate = new DateTime($('#max'), {
-                format: 'YYYY-MM-DD'
-            });
+            minDate = new DateTime($('#min'), { format: 'YYYY-MM-DD' });
+            maxDate = new DateTime($('#max'), { format: 'YYYY-MM-DD' });
+
             var table = $('#datatable-buttons').DataTable({
-                "fnRowCallback": function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
-                    //debugger;
-                    var index = iDisplayIndexFull + 1;
-                    $("td:first", nRow).html(index);
-                    return nRow;
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: "{{ route('patientreport.data') }}",
+                    data: function(d) {
+                        d.min = $('#min').val();
+                        d.max = $('#max').val();
+                    }
                 },
+                columns: [
+                    { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
+                    { data: 'patient_id', name: 'patient_id' },
+                    { data: 'name', name: 'name' },
+                    { data: 'mobile_phone', name: 'mobile_phone' },
+                    { data: 'age', name: 'age' },
+                    { data: 'gender', name: 'gender' },
+                    { data: 'blood_group', name: 'blood_group' },
+                    { data: 'referral_name', name: 'referral_name', orderable: false, searchable: false },
+                    { data: 'created_at', name: 'created_at' }
+                ],
                 buttons: [
                     // {
                     // extend: 'copy',
@@ -225,6 +201,16 @@
                     }
 
                     ,
+            });
+
+            $('#min, #max').on('change', function() {
+                table.draw();
+            });
+
+            $('#clearFilters').on('click', function() {
+                $('#min').val('');
+                $('#max').val('');
+                table.draw();
             });
             table.buttons().container().appendTo($('#exp_buttons'))
             //Date Filter

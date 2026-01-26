@@ -41,20 +41,7 @@
                                 <th>Total Referred</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            @foreach ($referr as $item)
-                                <tr>
-                                    <td></td>
-                                    <td>{{ $item->name }}</td>
-                                    <td>{{ $item->email }}</td>
-                                    <td>{{ $item->phone }}</td>
-                                    <td>{{ $item->address }}</td>
-                                    <td>
-                                        {{ App\Models\Patients::where('referred_by', $item->id)->count() }}
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
+                        <tbody></tbody>
                     </table>
                 </div>
             </div>
@@ -64,12 +51,17 @@
     <script>
         $(document).ready(function() {
             var table = $('.datatable-buttons').DataTable({
-                "fnRowCallback": function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
-                    //debugger;
-                    var index = iDisplayIndexFull + 1;
-                    $("td:first", nRow).html(index);
-                    return nRow;
-                },
+                processing: true,
+                serverSide: true,
+                ajax: "{{ route('referralreport.data') }}",
+                columns: [
+                    { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
+                    { data: 'name', name: 'name' },
+                    { data: 'email', name: 'email' },
+                    { data: 'phone', name: 'phone' },
+                    { data: 'address', name: 'address' },
+                    { data: 'total_referred', name: 'total_referred', orderable: false, searchable: false }
+                ],
                 buttons: [
                     // {
                     // extend: 'copy',
