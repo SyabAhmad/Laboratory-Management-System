@@ -38,8 +38,10 @@
                                 <th>Employee Id</th>
                                 <th>Name</th>
                                 <th>Email</th>
+                                <th>Role</th>
                                 <th>Phone</th>
-                                <th>Address</th>
+                                <th>Position</th>
+                                <th>Salary</th>
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
@@ -52,15 +54,21 @@
                                 <tr>
                                     <td>{{ ++$i }}</td>
                                     <td>{{ $item->employee_id }}</td>
-                                    <td>{{ $item->users->name }}</td>
-                                    <td>{{ $item->users->email }}</td>
-                                    <td>{{ $item->phone }}</td>
-                                    <td>{{ $item->address }}</td>
+                                    <td>{{ $item->users->name ?? 'N/A' }}</td>
+                                    <td>{{ $item->users->email ?? 'N/A' }}</td>
+                                    <td><span class="badge badge-info">{{ $item->users->user_type ?? '-' }}</span></td>
+                                    <td>{{ $item->phone ?? '-' }}</td>
+                                    <td>{{ $item->position ?? '-' }}</td>
+                                    <td>Rs. {{ number_format($item->salary ?? 0, 2) }}</td>
                                     <td>
+                                        @if($item->users)
                                         <input type="checkbox" class="status" id="status" data-toggle="toggle"
                                             data-on="Active" data-off="Pending" data-onstyle="success"
                                             data-offstyle="danger" data-id="{{ $item->users->id }}"
                                             {{ $item->users->status == 'Active' ? 'checked' : '' }}>
+                                        @else
+                                        <span class="badge badge-secondary">No User</span>
+                                        @endif
                                     </td>
                                     <td>
                                         <a href="{{ route('employees.edit', $item->id) }}" class="btn btn-primary btn-sm">
@@ -139,13 +147,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group row">
-                            <label for="dob" class="col-sm-4 col-form-label">Date of Birth(DOB)<span
-                                    class="text-danger">*</span></label>
-                            <div class="col-sm-7">
-                                <input type="date" required class="form-control" id="dob" name="dob">
-                            </div>
-                        </div>
+
 
                         <div class="form-group row">
                             <label for="join_of_date" class="col-sm-4 col-form-label">Join of Date<span
@@ -182,14 +184,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group row">
-                            <label for="salary" class="col-sm-4 col-form-label">Picture/Passport<span
-                                    class="text-danger">*</span></label>
-                            <div class="col-sm-7">
-                                <input type="file" required class="form-control border-0" id="image"
-                                    name="image" placeholder="2500.00">
-                            </div>
-                        </div>
+
 
 
                         <div class="form-group row">

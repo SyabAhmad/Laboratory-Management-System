@@ -21,7 +21,7 @@
 
         <div class="card">
             <div class="card-body">
-                <h3 class="text-center mt-5">{{ $employee->users->name }}</h3>
+                <h3 class="text-center mt-5">{{ $employee->users->name ?? 'Employee' }}</h3>
 
                 <div class="row mt-5">
                     <div class="col-md-8">
@@ -35,7 +35,7 @@
                                 <tr>
                                     <td class="font-weight-bold">Email</td>
                                     <td class="text-center">:</td>
-                                    <td>{{ $employee->users->email }}</td>
+                                    <td>{{ $employee->users->email ?? 'N/A' }}</td>
                                 </tr>
                                 <tr>
                                     <td class="font-weight-bold">Phone</td>
@@ -52,11 +52,7 @@
                                     <td class="text-center">:</td>
                                     <td>{{ $employee->address }}</td>
                                 </tr>
-                                <tr>
-                                    <td class="font-weight-bold">Date Of Birth</td>
-                                    <td class="text-center">:</td>
-                                    <td>{{ $employee->dob }}</td>
-                                </tr>
+
                                 <tr>
                                     <td class="font-weight-bold">Date Of Join</td>
                                     <td class="text-center">:</td>
@@ -75,23 +71,19 @@
                                 <tr>
                                     <td class="font-weight-bold">User Type</td>
                                     <td class="text-center">:</td>
-                                    <td>$employee->users->user_type</td>
+                                    <td>{{ $employee->users->user_type ?? '-' }}</td>
                                 </tr>
                                 <tr>
                                     <td class="font-weight-bold">Account Status</td>
                                     <td class="text-center">:</td>
-                                    <td>{{ $employee->users->status }}</td>
+                                    <td>{{ $employee->users->status ?? '-' }}</td>
                                 </tr>
                             </tbody>
                         </table>
 
                     </div>
 
-                    <div class="col-md-4">
-                        <img src="{{ asset('assets/HMS/employees/' . $employee->users->profile_photo_path) }}"
-                            alt="{{ $employee->users->profile_photo_path }}" class="img-fluid rounded-circle"
-                            style="width: 200px; height: 200px" />
-                    </div>
+
                 </div>
 
                 <div class="row mt-5">

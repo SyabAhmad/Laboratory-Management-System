@@ -16,7 +16,10 @@ class EmployeesController extends Controller
      */
     public function index()
     {
-        $employees = Employees::all();
+        // Auto-sync: create employee records for staff users missing one
+        Employees::syncFromUsers();
+
+        $employees = Employees::with('users')->get();
         return view('Employees.employee', compact('employees'));
     }
 
