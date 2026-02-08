@@ -21,7 +21,7 @@
 
         <div class="card">
             <div class="card-body">
-                <h3 class="text-center mt-5">{{ $employee->users->name }}</h3>
+                <h3 class="text-center mt-5">{{ $employee->users->name ?? 'Employee' }}</h3>
                 <div class="row mt-5">
                     <div class="col-md-8">
                         <form role="form" class="parsley-examples" action="{{ route('employees.update' , $employee->id) }}"
@@ -33,7 +33,7 @@
                                         class="text-danger">*</span></label>
                                 <div class="col-sm-7">
                                     <input type="text" parsley-type="text" class="form-control" id="name"
-                                        name="name" value="{{ $employee->users->name }}">
+                                        name="name" value="{{ $employee->users->name ?? '' }}">
                                 </div>
                             </div>
                             <div class="form-group row">
@@ -41,7 +41,7 @@
                                         class="text-danger">*</span></label>
                                 <div class="col-sm-7">
                                     <input type="text" parsley-type="text" class="form-control" id="email"
-                                        name="email" value="{{ $employee->users->email }}">
+                                        name="email" value="{{ $employee->users->email ?? '' }}">
                                 </div>
                             </div>
                             <div class="form-group row">
@@ -66,14 +66,7 @@
                                 </div>
                             </div>
 
-                            <div class="form-group row">
-                                <label for="dob" class="col-sm-4 col-form-label">Date of Birth(DOB)<span
-                                        class="text-danger">*</span></label>
-                                <div class="col-sm-7">
-                                    <input type="date" value="{{ $employee->dob }}" class="form-control" id="dob"
-                                        name="dob">
-                                </div>
-                            </div>
+
 
                             <div class="form-group row">
                                 <label for="join_of_date" class="col-sm-4 col-form-label">Join of Date<span
@@ -110,13 +103,7 @@
                                 </div>
                             </div>
 
-                            <div class="form-group row">
-                                <label for="salary" class="col-sm-4 col-form-label">Image<span
-                                        class="text-danger">*</span></label>
-                                <div class="col-sm-7">
-                                    <input type="file" class="form-control border-0" id="image" name="image">
-                                </div>
-                            </div>
+
 
                             <div class="col-sm-8 offset-sm-4">
                                 <a href="{{ route('employees') }}" class="btn btn-primary">Back</a>
@@ -126,11 +113,7 @@
                             </div>
                         </form>
                     </div>
-                    <div class="col-md-4">
-                        <img src="{{ asset('assets/HMS/employees/' . $employee->users->profile_photo_path) }}"
-                            alt="{{ $employee->users->profile_photo_path }}" class="img-fluid rounded-circle"
-                            style="width: 200px; height: 200px" />
-                    </div>
+
                 </div>
             </div>
         </div>

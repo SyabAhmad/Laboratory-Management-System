@@ -231,6 +231,38 @@ Route::middleware(['auth:sanctum', 'verified'])
         // Settings Route
         Route::get('/settings', 'App\Http\Controllers\SettingsController@index')->name('settings.index');
         Route::put('/settings', 'App\Http\Controllers\SettingsController@update')->name('settings.update');
+
+        // =============================================
+        // Financial Management & Analysis Routes
+        // =============================================
+        Route::prefix('financial')->middleware('role:Admin,Super Admin,Accountant')->group(function () {
+            // Dashboard / Overview
+            Route::get('/dashboard', 'App\Http\Controllers\FinancialStatisticsController@dashboard')->name('financial.dashboard');
+            
+            // Revenue Analysis
+            Route::get('/revenue', 'App\Http\Controllers\FinancialStatisticsController@revenueAnalysis')->name('financial.revenue');
+            
+            // Expense Analysis
+            Route::get('/expense-analysis', 'App\Http\Controllers\FinancialStatisticsController@expenseAnalysis')->name('financial.expense-analysis');
+            
+            // Wages / Salary Management
+            Route::get('/wages', 'App\Http\Controllers\FinancialStatisticsController@wages')->name('financial.wages');
+            Route::post('/wages/store', 'App\Http\Controllers\FinancialStatisticsController@storeSalary')->name('financial.wages.store');
+            Route::post('/wages/{id}/mark-paid', 'App\Http\Controllers\FinancialStatisticsController@markSalaryPaid')->name('financial.wages.mark-paid');
+            
+            // Doctor Commissions
+            Route::get('/doctor-commissions', 'App\Http\Controllers\DoctorCommissionController@index')->name('financial.doctor-commissions');
+            Route::post('/doctor-commissions/store', 'App\Http\Controllers\DoctorCommissionController@store')->name('financial.doctor-commissions.store');
+            Route::post('/doctor-commissions/{id}/mark-paid', 'App\Http\Controllers\DoctorCommissionController@markPaid')->name('financial.doctor-commissions.mark-paid');
+            Route::post('/doctor-commissions/mark-doctor-paid', 'App\Http\Controllers\DoctorCommissionController@markDoctorPaid')->name('financial.doctor-commissions.mark-doctor-paid');
+            Route::delete('/doctor-commissions/{id}', 'App\Http\Controllers\DoctorCommissionController@destroy')->name('financial.doctor-commissions.destroy');
+            
+            // Profit & Loss Statement
+            Route::get('/profit-loss', 'App\Http\Controllers\FinancialStatisticsController@profitLoss')->name('financial.profit-loss');
+            
+            // Monthly Report
+            Route::get('/monthly-report', 'App\Http\Controllers\FinancialStatisticsController@monthlyReport')->name('financial.monthly-report');
+        });
     });
 
 // User Profile Routes

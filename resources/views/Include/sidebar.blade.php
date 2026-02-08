@@ -94,12 +94,12 @@
                         </li>
 
 
-                        <!-- <li>
+                        <li>
                             <a href="{{ route('employees') }}">
                                 <i class="fas fa-user-friends"></i>
                                 <span> Employee </span>
                             </a>
-                        </li>-->
+                        </li>
                         {{-- <li>
                             <a href="{{ route('activities') }}">
                                 <i class="fas fa-user-friends"></i>
@@ -287,6 +287,59 @@
                         {{-- <li>
                                 <a href="#">Test Report</a>
                             </li> --}}
+
+                        {{-- ========================================== --}}
+                        {{-- Financial Management & Analysis --}}
+                        {{-- ========================================== --}}
+                        <li>
+                            <a href="javascript: void(0);">
+                                <i class="fas fa-chart-pie"></i>
+                                <span> Financial & Analysis </span>
+                                <span class="menu-arrow"></span>
+                            </a>
+                            <ul class="nav-second-level" aria-expanded="false">
+                                <li>
+                                    <a href="{{ route('financial.dashboard') }}">
+                                        <i class="fas fa-tachometer-alt"></i> Overview Dashboard
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('financial.revenue') }}">
+                                        <i class="fas fa-chart-line"></i> Revenue Analysis
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('financial.expense-analysis') }}">
+                                        <i class="fas fa-money-bill-wave"></i> Expense Analysis
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('financial.doctor-commissions') }}">
+                                        <i class="fas fa-user-md"></i> Doctor Commissions
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('financial.wages') }}">
+                                        <i class="fas fa-hand-holding-usd"></i> Wages & Salaries
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('financial.profit-loss') }}">
+                                        <i class="fas fa-balance-scale"></i> Profit & Loss
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('financial.monthly-report') }}">
+                                        <i class="fas fa-file-invoice-dollar"></i> Monthly Report
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('expenses.index') }}">
+                                        <i class="fas fa-receipt"></i> Manage Expenses
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
 
                             <li>
                             <a href="{{ route('labdetails.show') }}">
